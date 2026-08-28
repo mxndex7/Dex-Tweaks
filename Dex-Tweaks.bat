@@ -20,6 +20,8 @@ goto Destruct
 reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1 /f >nul 2>&1
 chcp 437 >nul
 chcp 65001 >nul
+title Dex Tweaks
+echo Starting Dex Tweaks, please wait...
 setlocal enabledelayedexpansion
 call :InitializeDexRuntime
 call :DetectOperatingSystem
@@ -27,11 +29,11 @@ if errorlevel 1 (
     call :SetupConsole
     chcp 65001 >nul
     echo.
-    echo %red%╔══════════════════════════════════════════════════════════════════════════════╗
-    echo ║                        UNSUPPORTED OPERATING SYSTEM                          ║
-    echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+    echo %red%+==============================================================================+
+    echo ^|                        UNSUPPORTED OPERATING SYSTEM                          ^|
+    echo +==============================================================================+%u%
     echo.
-    echo %red%  Dex Tweaks requires 64-bit Windows 10 or Windows 11 (client edition).%u%
+    echo %red%  Dex Tweaks requires 64-bit Windows 10 or Windows 11 ^(client edition^).%u%
     echo.
     echo %orange%  Every Windows 10 and Windows 11 build is supported.%u%
     echo %c%  This system was not detected as a supported edition or architecture.%u%
@@ -152,7 +154,7 @@ timeout /t 3 >nul /nobreak & cls & goto RestorePointQuestion
 
 :RestorePointQuestion
 call :SetupConsole
-echo %orange%Before we continue, would you like to make a Restore Point?%u% (Y/N)
+echo %orange%Before we continue, would you like to make a Restore Point?%u% ^(Y/N^)
 echo.
 echo.
 choice /C YN /M "Make a Restore Point"
@@ -198,7 +200,7 @@ echo - SAM hive...
 REG SAVE HKLM\SAM SAM 2>nul
 if errorlevel 1 echo %orange%Warning: Failed to backup SAM hive%u%
 
-echo - NTUSER (Current User) hive...
+echo - NTUSER ^(Current User^) hive...
 REG SAVE HKCU NTUSER 2>nul
 if errorlevel 1 echo %orange%Warning: Failed to backup NTUSER hive%u%
 popd
@@ -399,12 +401,12 @@ if not defined GPUName (
 
 :GotGPU
 echo.
-echo        %c%██████╗ ███████╗██╗  ██╗ %u%%white%████████╗ ██╗       ██╗███████╗ █████╗ ██╗  ██╗ ██████╗
-echo        %c%██╔══██╗██╔════╝╚██╗██╔╝ %u%%white%╚══██╔══╝ ██║  ██╗  ██║██╔════╝██╔══██╗██║ ██╔╝██╔════╝
-echo        %c%██║  ██║█████╗   ╚███╔╝  %u%%white%   ██║    ╚██╗████╗██╔╝█████╗  ███████║█████═╝ ╚█████╗
-echo        %c%██║  ██║██╔══╝   ██╔██╗  %u%%white%   ██║     ████╔═████║ ██╔══╝  ██╔══██║██╔═██╗  ╚═══██╗
-echo        %c%██████╔╝███████╗██╔╝╚██╗ %u%%white%   ██║     ╚██╔╝ ╚██╔╝ ███████╗██║  ██║██║ ╚██╗██████╔╝
-echo        %c%╚═════╝ ╚══════╝╚═╝  ╚═╝ %u%%white%   ╚═╝      ╚═╝   ╚═╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝
+echo        %c%######+ #######+##+  ##+ %u%%white%########+ ##+       ##+#######+ #####+ ##+  ##+ ######+
+echo        %c%##+==##+##+====++##+##++ %u%%white%+==##+==+ ##^|  ##+  ##^|##+====+##+==##+##^| ##++##+====+
+echo        %c%##^|  ##^|#####+   +###++  %u%%white%   ##^|    +##+####+##++#####+  #######^|#####=+ +#####+
+echo        %c%##^|  ##^|##+==+   ##+##+  %u%%white%   ##^|     ####+=####^| ##+==+  ##+==##^|##+=##+  +===##+
+echo        %c%######++#######+##+++##+ %u%%white%   ##^|     +##++ +##++ #######+##^|  ##^|##^| +##+######++
+echo        %c%+=====+ +======++=+  +=+ %u%%white%   +=+      +=+   +=+  +======++=+  +=++=+  +=++=====+
 echo.
 echo.
 echo                                 %c%User:%u%%white% %username%%u%     %c%Date:%u%%white% %date%%u%
@@ -506,9 +508,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                                    ABOUT                                     ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                                    ABOUT                                     ^|
+echo +==============================================================================+%u%
 echo.
 echo.
 echo      %green%▌ Creator:%u% %c%Mendes%u%
@@ -521,7 +523,7 @@ echo      %c%carefully selected to maximize performance, responsiveness, and ove
 echo      %c%system stability without compromising reliability.%u%
 echo.
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto More
 
@@ -530,9 +532,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                               IMPORTANT NOTICE                               ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                               IMPORTANT NOTICE                               ^|
+echo +==============================================================================+%u%
 echo.
 echo.
 echo %c%Dex Tweaks is a professional optimization suite designed to enhance%u% 
@@ -553,7 +555,7 @@ echo %c%   • Contact me if uncertain about any modifications%u%
 echo.
 echo %lime%   Support:%u% %c%For technical assistance, reach out via%u% %lime%Github: Mxndex7%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto More
 
@@ -563,9 +565,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                               UPDATE HISTORY                                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                               UPDATE HISTORY                                 ^|
+echo +==============================================================================+%u%
 echo.
 echo.
 echo         %c%Stay informed about the latest improvements, bug fixes, and new%u%
@@ -580,7 +582,7 @@ echo         %c%If the page doesn't open automatically, visit:%u%
 echo         %lime%https://github.com/mxndex7/Dex-Tweaks/releases%u%
 echo.
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto More
 
@@ -611,14 +613,14 @@ echo %c%Please enter a valid number!%u% & goto Backup
 cls
 call :SetupConsole
 call :DisplayBanner
-echo %c%                            ╔══════════════════════════════╦═══════════════════════════════╗ %u%
-echo                             %c%║%u% [%c%1%u%] Windows Cleaner          %c%║%u% [%c%7%u%] Mouse/Keyboard Tweaks     %c%║%u%
-echo                             %c%║%u% [%c%2%u%] BCDEdit Tweaks           %c%║%u% [%c%8%u%] Internet Refresher        %c%║%u%
-echo                             %c%║%u% [%c%3%u%] GPU Optimizations        %c%║%u% [%c%9%u%] Service Tweaks            %c%║%u%
-echo                             %c%║%u% [%c%4%u%] Network Tweaks           %c%║%u% [%c%10%u%] Debloater                %c%║%u%
-echo                             %c%║%u% [%c%5%u%] CPU Optimizations        %c%║%u% [%c%11%u%] Custom Power Plan        %c%║%u%
-echo                             %c%║%u% [%c%6%u%] Memory Optimizer         %c%║%u% [%c%12%u%] Browser Config           %c%║%u%
-echo %c%                            ╚══════════════════════════════╩═══════════════════════════════╝
+echo %c%                            +==============================+===============================+ %u%
+echo                             %c%^|%u% [%c%1%u%] Windows Cleaner          %c%^|%u% [%c%7%u%] Mouse/Keyboard Tweaks     %c%^|%u%
+echo                             %c%^|%u% [%c%2%u%] BCDEdit Tweaks           %c%^|%u% [%c%8%u%] Internet Refresher        %c%^|%u%
+echo                             %c%^|%u% [%c%3%u%] GPU Optimizations        %c%^|%u% [%c%9%u%] Service Tweaks            %c%^|%u%
+echo                             %c%^|%u% [%c%4%u%] Network Tweaks           %c%^|%u% [%c%10%u%] Debloater                %c%^|%u%
+echo                             %c%^|%u% [%c%5%u%] CPU Optimizations        %c%^|%u% [%c%11%u%] Custom Power Plan        %c%^|%u%
+echo                             %c%^|%u% [%c%6%u%] Memory Optimizer         %c%^|%u% [%c%12%u%] Browser Config           %c%^|%u%
+echo %c%                            +==============================+===============================+
 echo.
 echo                              %u%[%c%13%u%] Colour Presets   [%c%14%u%] Back to Main   [%red%X%u%] Exit Application
 echo.
@@ -651,13 +653,13 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                      BROWSER CONFIGURATION AND PRIVACY OPTIMIZER             ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                      BROWSER CONFIGURATION AND PRIVACY OPTIMIZER             ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Browser optimization includes:%u%
 echo %c%• Microsoft Edge, Chrome, Firefox, Opera GX, Brave, Vivaldi support%u%
-echo %c%• Automatic privacy extension installation (uBlock Origin, etc.)%u%
+echo %c%• Automatic privacy extension installation ^(uBlock Origin, etc.^)%u%
 echo %c%• Comprehensive telemetry and tracking protection%u%
 echo %c%• Advanced browser security hardening%u%
 echo %c%• Chromium-based browser universal configuration%u%
@@ -672,7 +674,7 @@ choice /C YN /M "%c%Apply comprehensive browser privacy optimization? (Y/N)%u%"
 if errorlevel 2 goto TweaksMenu
 
 echo.
-echo %c%Extensions (uBlock Origin, Privacy Badger, Decentraleyes) can be installed%u%
+echo %c%Extensions ^(uBlock Origin, Privacy Badger, Decentraleyes^) can be installed%u%
 echo %c%through each browser's official policy mechanism. Once installed this way,%u%
 echo %c%you cannot disable/remove them from the browser's own UI - only by running%u%
 echo %c%this tool again or editing the policy yourself.%u%
@@ -680,9 +682,9 @@ choice /C YN /M "%c%Install privacy extensions automatically? (Y/N)%u%"
 if errorlevel 2 (set "BROWSER_INSTALL_EXT=false") else (set "BROWSER_INSTALL_EXT=true")
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    BROWSER DETECTION AND CONFIGURATION                       ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                    BROWSER DETECTION AND CONFIGURATION                       ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%[DETECTION] Checking if browsers are currently running...%u%
 tasklist /fi "imagename eq chrome.exe" 2>nul | find /i "chrome.exe" >nul && echo %c%⚠ Warning: Chrome is currently running - some settings may not apply%u%
@@ -716,9 +718,9 @@ if exist "%ProgramFiles(x86)%\Chromium\Application\chrome.exe" set "CHROMIUM_FOU
 
 echo %c%Detected browsers:%BROWSERS_FOUND%%u%
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       BROWSER OPTIMIZATION IN PROGRESS                       ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       BROWSER OPTIMIZATION IN PROGRESS                       ^|
+echo +==============================================================================+%u%
 
 mkdir "%TEMP%\DexBrowserExtensions" >nul 2>&1
 cd /d "%TEMP%\DexBrowserExtensions"
@@ -1006,13 +1008,13 @@ if "%FIREFOX_FOUND%"=="true" (
 )
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        BROWSER CONFIG COMPLETED                              ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                        BROWSER CONFIG COMPLETED                              ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Browser privacy and performance settings have been applied.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
 
@@ -1302,9 +1304,9 @@ cd /d "%TEMP%"
 rmdir /s /q "DexBrowserExtensions" >nul 2>&1
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                  COMPREHENSIVE BROWSER OPTIMIZATION COMPLETED                ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                  COMPREHENSIVE BROWSER OPTIMIZATION COMPLETED                ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Browser privacy and extension optimization has been successfully completed.%u%
 echo.
@@ -1318,7 +1320,7 @@ if "%VIVALDI_FOUND%"=="true" echo %c%• Vivaldi: Privacy optimized + Extensions
 if "%CHROMIUM_FOUND%"=="true" echo %c%• Chromium: Universal configuration applied%u%
 echo.
 echo %c%System-Wide Optimizations:%u%
-echo %c%• DNS configured for ad-blocking (Cloudflare with malware protection)%u%
+echo %c%• DNS configured for ad-blocking ^(Cloudflare with malware protection^)%u%
 echo %c%• Hosts file updated with ad-blocking entries%u%
 echo %c%• Internet Explorer security hardened%u%
 echo %c%• Browser telemetry and tracking disabled across all browsers%u%
@@ -1341,7 +1343,7 @@ echo %c%• Faster page loading with ad-blocking%u%
 echo %c%• Enhanced privacy protection across all browsers%u%
 echo %c%• Automatic malware and phishing protection%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
 
@@ -1350,22 +1352,22 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           CUSTOM POWER PLAN OPTIMIZER                        ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           CUSTOM POWER PLAN OPTIMIZER                        ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Choose your power plan optimization type:%u%
 echo.
-echo %c%                           ╔════════════════════════════════╗
-echo                            ║      [1] Desktop Power Plan    ║
-echo                            ║      [2] Laptop Power Plan     ║
-echo                            ║      [3] View Current Plan     ║
-echo                            ║                                ║
-echo                            ║      [0] Return to Main Menu   ║
-echo                            ╚════════════════════════════════╝%u%
+echo %c%                           +================================+
+echo                            ^|      [1] Desktop Power Plan    ^|
+echo                            ^|      [2] Laptop Power Plan     ^|
+echo                            ^|      [3] View Current Plan     ^|
+echo                            ^|                                ^|
+echo                            ^|      [0] Return to Main Menu   ^|
+echo                            +================================+%u%
 echo.
-echo %c%Desktop Plan: Maximum performance, no power saving (recommended for gaming PCs)%u%
-echo %c%Laptop Plan: Balanced performance with battery optimization (recommended for laptops)%u%
+echo %c%Desktop Plan: Maximum performance, no power saving ^(recommended for gaming PCs^)%u%
+echo %c%Laptop Plan: Balanced performance with battery optimization ^(recommended for laptops^)%u%
 echo.
 set /p choice="%c%Select your power plan type »%u% "
 if "!choice!"=="0" goto TweaksMenu
@@ -1374,13 +1376,13 @@ if "!choice!"=="2" goto LaptopPowerPlan
 if "!choice!"=="3" goto ViewCurrentPlan
 cls
 echo.
-echo %red%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                                INVALID INPUT                                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %red%+==============================================================================+
+echo ^|                                INVALID INPUT                                 ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Please select a valid option [0-3] from the menu.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO RETRY ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO RETRY ==========================%u%
 pause >nul
 goto K
 
@@ -1389,9 +1391,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                             CURRENT POWER PLAN STATUS                        ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                             CURRENT POWER PLAN STATUS                        ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Active Power Plan:%u%
 powercfg /getactivescheme
@@ -1399,7 +1401,7 @@ echo.
 echo %c%Available Power Plans:%u%
 powercfg /list
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto K
 
@@ -1408,12 +1410,12 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         DESKTOP ULTIMATE PERFORMANCE PLAN                    ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                         DESKTOP ULTIMATE PERFORMANCE PLAN                    ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Desktop power plan features:%u%
-echo %c%• Maximum CPU performance (100%% minimum, no throttling)%u%
+echo %c%• Maximum CPU performance ^(100%% minimum, no throttling^)%u%
 echo %c%• AMD Ryzen Precision Boost and Core Performance Boost enabled%u%
 echo %c%• All power saving features disabled%u%
 echo %c%• USB and PCI power management off%u%
@@ -1438,9 +1440,9 @@ choice /C YN /M "%c%Create Desktop Ultimate Performance plan? (Y/N)%u%"
 if errorlevel 2 goto K
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    DESKTOP POWER PLAN OPTIMIZATION IN PROGRESS               ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                    DESKTOP POWER PLAN OPTIMIZATION IN PROGRESS               ^|
+echo +==============================================================================+%u%
 
 call :POWER_Step1_Initialize
 call :POWER_Step2_CreateScheme
@@ -1490,7 +1492,7 @@ echo %c%  → Configuring AMD Ryzen Precision Boost and Core Performance Boost..
 powercfg /setacvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 2 >nul 2>&1
 powercfg /setdcvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 2 >nul 2>&1
 
-echo %c%  → Setting maximum CPU performance state (100%%)...%u%
+echo %c%  → Setting maximum CPU performance state ^(100%%^)...%u%
 powercfg /setacvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec 100 >nul 2>&1
 powercfg /setdcvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec 100 >nul 2>&1
 
@@ -1502,7 +1504,7 @@ echo %c%  → Disabling CPU idle states for maximum responsiveness...%u%
 powercfg /setacvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 5d76a2ca-e8c0-402f-a133-2158492d58ad 0 >nul 2>&1
 powercfg /setdcvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 5d76a2ca-e8c0-402f-a133-2158492d58ad 0 >nul 2>&1
 
-echo %c%  → Optimizing CPU core parking (disable parking)...%u%
+echo %c%  → Optimizing CPU core parking ^(disable parking^)...%u%
 powercfg /setacvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 ea062031-0e34-4ff1-9b6d-eb1059334028 100 >nul 2>&1
 powercfg /setdcvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 ea062031-0e34-4ff1-9b6d-eb1059334028 100 >nul 2>&1
 
@@ -1575,7 +1577,7 @@ echo %c%  → Setting maximum GPU performance preference...%u%
 powercfg /setacvalueindex %CUSTOM_GUID% 5fb4938d-1ee8-4b0f-9a3c-5036b0ab995c dd848b2a-8a5d-4451-9ae2-39cd41658f6c 2 >nul 2>&1
 powercfg /setdcvalueindex %CUSTOM_GUID% 5fb4938d-1ee8-4b0f-9a3c-5036b0ab995c dd848b2a-8a5d-4451-9ae2-39cd41658f6c 2 >nul 2>&1
 
-echo %c%  → Optimizing Intel Graphics settings (if present)...%u%
+echo %c%  → Optimizing Intel Graphics settings ^(if present^)...%u%
 powercfg /attributes 44f3beca-a7c0-460e-9df2-bb8b99e0cba6 3619c3f2-afb2-4afc-b0e9-e7fef372de36 -ATTRIB_HIDE >nul 2>&1
 powercfg /setacvalueindex %CUSTOM_GUID% 44f3beca-a7c0-460e-9df2-bb8b99e0cba6 3619c3f2-afb2-4afc-b0e9-e7fef372de36 2 >nul 2>&1
 powercfg /setdcvalueindex %CUSTOM_GUID% 44f3beca-a7c0-460e-9df2-bb8b99e0cba6 3619c3f2-afb2-4afc-b0e9-e7fef372de36 2 >nul 2>&1
@@ -1710,13 +1712,13 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                          LAPTOP BALANCED PERFORMANCE PLAN                    ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                          LAPTOP BALANCED PERFORMANCE PLAN                    ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Laptop power plan features:%u%
-echo %c%• High performance when plugged in (AC power)%u%
-echo %c%• Battery conservation when on battery (DC power)%u%
+echo %c%• High performance when plugged in ^(AC power^)%u%
+echo %c%• Battery conservation when on battery ^(DC power^)%u%
 echo %c%• Smart CPU scaling based on power source%u%
 echo %c%• Optimized display and sleep timeouts for battery%u%
 echo %c%• USB power management for longer battery life%u%
@@ -1731,9 +1733,9 @@ choice /C YN /M "%c%Create Laptop Balanced Performance plan? (Y/N)%u%"
 if errorlevel 2 goto K
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                     LAPTOP POWER PLAN OPTIMIZATION IN PROGRESS               ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                     LAPTOP POWER PLAN OPTIMIZATION IN PROGRESS               ^|
+echo +==============================================================================+%u%
 
 echo.
 echo %c%[1/10] Preparing Power Scheme Slot...%u%
@@ -1807,9 +1809,9 @@ echo %c%Verifying power plan configuration...%u%
 timeout /t 2 >nul
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    CUSTOM POWER PLAN OPTIMIZATION COMPLETED                  ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                    CUSTOM POWER PLAN OPTIMIZATION COMPLETED                  ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Power plan has been successfully created and activated.%u%
 echo.
@@ -1851,7 +1853,7 @@ echo %c%• Consistent frame rates in games%u%
 echo %c%• Optimized for competitive gaming and streaming%u%
 if not exist "%temp%\desktop_plan_created" echo %c%• Extended battery life when unplugged%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
 
@@ -1860,16 +1862,16 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       PREMIUM SYSTEM CLEANUP UTILITY                         ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       PREMIUM SYSTEM CLEANUP UTILITY                         ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%This complete cleanup will remove:%u%
 echo %c%• Windows and user temporary files, system caches%u%
 echo %c%• Browser caches: Chrome, Edge, Firefox, Opera, Opera GX, Brave, Vivaldi%u%
 echo %c%• Game and app caches: Steam, Epic, Riot, Battle.net, EA, Ubisoft, GOG,%u%
 echo %c%  Discord, Slack, Teams, Zoom, Spotify, VS Code, Minecraft%u%
-echo %c%• GPU driver shader caches (NVIDIA, AMD, Intel) and DirectX shader cache%u%
+echo %c%• GPU driver shader caches ^(NVIDIA, AMD, Intel^) and DirectX shader cache%u%
 echo %c%• Explorer thumbnail/icon cache, font cache and Windows Store cache%u%
 echo %c%• Windows Error Reporting queue, DNS resolver cache and Recycle Bin%u%
 echo %c%• Registry MRU entries and history%u%
@@ -1878,7 +1880,7 @@ echo %c%This will NOT touch:%u%
 echo %c%• Your personal documents, pictures, downloads or any user files%u%
 echo %c%• Saved passwords, bookmarks or browser history%u%
 echo %c%• Prefetch, pending Windows Update files or CBS/driver crash logs%u%
-echo %c%  (kept intentionally so update and driver issues can still be diagnosed)%u%
+echo %c%  ^(kept intentionally so update and driver issues can still be diagnosed^)%u%
 echo.
 echo %red%%underline%Important Notice:%u%
 echo %c%This operation will permanently delete temporary files, caches, logs and%u%
@@ -1889,9 +1891,9 @@ choice /C YN /M "%c%Proceed with premium system cleanup? (Y/N)%u%"
 if errorlevel 2 goto TweaksMenu
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                            CLEANUP IN PROGRESS                               ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                            CLEANUP IN PROGRESS                               ^|
+echo +==============================================================================+%u%
 
 echo.
 echo %c%[1/14] Cleaning Windows System Files...%u%
@@ -2043,9 +2045,9 @@ echo %c%Running automated cleanup...%u%
 cleanmgr /sagerun:0
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                            CLEANUP COMPLETED                                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                            CLEANUP COMPLETED                                 ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Premium system cleanup has been completed successfully.%u%
 echo.
@@ -2061,7 +2063,7 @@ echo %c%• Registry history cleaned%u%
 echo %c%• Your personal files were left untouched%u%
 echo %c%• System performance optimized%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
 
@@ -2102,9 +2104,9 @@ goto TimerResolutionSetup
 
 :TimerResolutionSetup
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       TIMER RESOLUTION SETUP                                ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       TIMER RESOLUTION SETUP                                ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Timer Resolution locks the Windows timer to a fixed low interval for consistent%u%
 echo %c%frame timing and reduced input latency.%u%
@@ -2148,9 +2150,9 @@ echo %green%  !DEX_OS_NAME! build !_OS_BUILD_NUM! detected%u%
 echo.
 echo %c%[3/3] Choose Timer Resolution:%u%
 echo.
-echo %green%  [1] 0.500ms (5000)   - Lowest latency%u%
-echo %green%  [2] 0.504ms (5040)   - Slight stability gain%u%
-echo %green%  [3] 0.507ms (5070)   - Balanced%u%
+echo %green%  [1] 0.500ms ^(5000^)   - Lowest latency%u%
+echo %green%  [2] 0.504ms ^(5040^)   - Slight stability gain%u%
+echo %green%  [3] 0.507ms ^(5070^)   - Balanced%u%
 echo %orange%  [4] Custom value%u%
 echo %red%  [5] Skip%u%
 echo.
@@ -2191,19 +2193,19 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                            GPU PERFORMANCE OPTIMIZER                         ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                            GPU PERFORMANCE OPTIMIZER                         ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Select your graphics card manufacturer for optimized performance tweaks:%u%
 echo.
-echo %c%                           ╔════════════════════════════════╗
-echo                            ║    [1] %red%AMD%u%%c% Graphics Card       ║
-echo                            ║    [2] %green%NVIDIA%u%%c% Graphics Card    ║
-echo                            ║    [3] %blue%Intel%u%%c% Graphics Card     ║
-echo                            ║                                ║
-echo                            ║    [0] Return to Main Menu     ║
-echo                            ╚════════════════════════════════╝%u%
+echo %c%                           +================================+
+echo                            ^|    [1] %red%AMD%u%%c% Graphics Card       ^|
+echo                            ^|    [2] %green%NVIDIA%u%%c% Graphics Card    ^|
+echo                            ^|    [3] %blue%Intel%u%%c% Graphics Card     ^|
+echo                            ^|                                ^|
+echo                            ^|    [0] Return to Main Menu     ^|
+echo                            +================================+%u%
 echo.
 echo %c%Note: These optimizations are specifically tailored for each GPU vendor%u%
 echo %c%and will apply manufacturer-specific performance enhancements.%u%
@@ -2215,13 +2217,13 @@ if "!choice!"=="2" goto NVIDIAGPU
 if "!choice!"=="3" goto INTELGPU
 cls
 echo.
-echo %red%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                                INVALID INPUT                                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %red%+==============================================================================+
+echo ^|                                INVALID INPUT                                 ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Please select a valid option [0-3] from the menu.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO RETRY ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO RETRY ==========================%u%
 pause >nul
 goto C
 
@@ -2238,18 +2240,18 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         %green%NVIDIA%u%%c% GPU PERFORMANCE OPTIMIZER                     ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                         %green%NVIDIA%u%%c% GPU PERFORMANCE OPTIMIZER                     ^|
+echo +==============================================================================+%u%
 echo.
-echo %c%                        ╔══════════════════════════════════════════╗
-echo                         ║  [1] Standard NVIDIA Optimizations      ║
-echo                         ║  [2] Maximum Performance DWORDs         ║
-echo                         ║      %red%(Experimental - High risk)%u%%c%         ║
-echo                         ║  [3] Revert Experimental DWORDs         ║
-echo                         ║                                         ║
-echo                         ║  [0] Back to GPU Menu                   ║
-echo                         ╚══════════════════════════════════════════╝%u%
+echo %c%                        +==========================================+
+echo                         ^|  [1] Standard NVIDIA Optimizations      ^|
+echo                         ^|  [2] Maximum Performance DWORDs         ^|
+echo                         ^|      %red%^(Experimental - High risk^)%u%%c%         ^|
+echo                         ^|  [3] Revert Experimental DWORDs         ^|
+echo                         ^|                                         ^|
+echo                         ^|  [0] Back to GPU Menu                   ^|
+echo                         +==========================================+%u%
 echo.
 echo %c%Standard:%u% Profile Inspector + driver tweaks + latency optimizations
 echo %c%Experimental:%u% %red%Disables ALL NVIDIA power management. Higher heat + power draw.%u%
@@ -2280,9 +2282,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║              %green%NVIDIA%u%%c% MAXIMUM PERFORMANCE - DWORD MODE %red%(EXPERIMENTAL)%u%%c%        ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|              %green%NVIDIA%u%%c% MAXIMUM PERFORMANCE - DWORD MODE %red%^(EXPERIMENTAL^)%u%%c%        ^|
+echo +==============================================================================+%u%
 echo.
 echo %red%%underline%[!] EXPERIMENTAL CONFIGURATION - READ CAREFULLY%u%
 echo.
@@ -2324,9 +2326,9 @@ set "_ct="
 for /F "tokens=*" %%c in ('powershell -Command "(Get-CimInstance -ClassName Win32_SystemEnclosure).ChassisTypes[0]" 2^>nul') do set /A "_ct=%%c" 2>nul
 if defined _ct if %_ct% gtr 7 (
     echo.
-    echo %red%╔══════════════════════════════════════════════════════════════════════════════╗
-    echo ║                       PORTABLE DEVICE DETECTED                               ║
-    echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+    echo %red%+==============================================================================+
+    echo ^|                       PORTABLE DEVICE DETECTED                               ^|
+    echo +==============================================================================+%u%
     echo.
     echo %red%WARNING: This configuration is NOT recommended for laptops.%u%
     echo %red%  • Thermal management will be fully disabled%u%
@@ -2338,12 +2340,12 @@ if defined _ct if %_ct% gtr 7 (
 )
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    MAXIMUM PERFORMANCE DWORDs - APPLYING                     ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                    MAXIMUM PERFORMANCE DWORDs - APPLYING                     ^|
+echo +==============================================================================+%u%
 echo.
 
-echo %c%[1/5] Disabling power features (RMPowerFeature, ELCG, ELPG, BLCG, FSPG)...%u%
+echo %c%[1/5] Disabling power features ^(RMPowerFeature, ELCG, ELPG, BLCG, FSPG^)...%u%
 reg add "%_r%" /v "RMPowerFeature" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "%_r%" /v "RMElcg" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "%_r%" /v "RMElpg" /t REG_DWORD /d "0" /f >nul 2>&1
@@ -2403,16 +2405,16 @@ reg add "%_r%" /v "UseGpuTimer" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "%_r%" /v "DxgkGpuVaIommuRequired" /t REG_DWORD /d "0" /f >nul 2>&1
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║               MAXIMUM PERFORMANCE CONFIGURATION APPLIED                      ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|               MAXIMUM PERFORMANCE CONFIGURATION APPLIED                      ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%All experimental power management DWORDs applied to: ...\%_t%%u%
 echo.
 echo %red%System restart required for full effect.%u%
 echo %c%To revert these changes, select [3] from the NVIDIA GPU menu.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto NVIDIAGPU
 
@@ -2421,9 +2423,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║               REVERT NVIDIA EXPERIMENTAL DWORDs TO DEFAULT                   ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|               REVERT NVIDIA EXPERIMENTAL DWORDs TO DEFAULT                   ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%This will remove the experimental Maximum Performance DWORDs%u%
 echo %c%and restore NVIDIA driver defaults for the detected GPU.%u%
@@ -2453,14 +2455,14 @@ echo %c%[REVERT] Removing experimental registry values...%u%
 for %%k in (RMPowerFeature RMElcg RMElpg RMBlcg RMFspg RMSlcg RmFlcg RMClkSlowDown RMDisableGpuASPMFlags RMEnableASPMAtLoad RMLpwrArch RMLpwrBlcg RMLpwrBlcg1 RMLpwrSlcg RMLpwrSlcg1 RMLpwrSlcg2 RMLpwrGrIdleThresholdUs RMLpwrGrRgIdleThresholdUs RMLpwrMsIdleThresholdUs RMLpwrEiIdleThresholdUs RMWatchDogTimeOut RMEnableHybridP DisableDynamicPstate EnableMClkSlowdown RmClkPowerOffDramPllWhenUnused RMEnableASPMDT RMDidleFeatureGC5 RMGCOffFeature RmDispLowPowerFeatures RMEnableOverclockingAllPstates EnablePerformanceMode PowerSavingTweaks EnableDriverControlledPMM EnablePowerStateHandShake HWSuspendContextCompleteTimeout F1TransitionLatency F1ResidencyRequirement MuxSwitchPowerPolicy RMFailOnC2CAbsence EnableDisplayPowerGating NvDispLpwrPolicy ForceMuxOnDgpu VideoPowerControl VideoPpeControl VideoPpeModel NvEncLLEnable NvEncDisableTDR DDIBacklightControl UseGpuTimer DxgkGpuVaIommuRequired) do reg delete "%_r%" /v "%%k" /f >nul 2>&1
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                          REVERT COMPLETED                                    ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                          REVERT COMPLETED                                    ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Experimental DWORDs removed. NVIDIA driver defaults restored.%u%
 echo %red%System restart recommended.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto NVIDIAGPU
 
@@ -2469,12 +2471,12 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                          %red%AMD%u%%c% GPU PERFORMANCE OPTIMIZER                       ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                          %red%AMD%u%%c% GPU PERFORMANCE OPTIMIZER                       ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%This will apply documented, reversible AMD optimizations:%u%
-echo %c%• Enable Resizable BAR (ReBAR) if your GPU/motherboard support it%u%
+echo %c%• Enable Resizable BAR ^(ReBAR^) if your GPU/motherboard support it%u%
 echo %c%• Disable telemetry services and unnecessary background tasks%u%
 echo %c%• Enable Hardware-Accelerated GPU Scheduling and game-priority scheduling%u%
 echo.
@@ -2598,19 +2600,19 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           NETWORK PERFORMANCE OPTIMIZER                      ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           NETWORK PERFORMANCE OPTIMIZER                      ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Select your network connection type for optimized performance tweaks:%u%
 echo.
-echo %c%                         ╔════════════════════════════════╗
-echo                          ║    [1] Wi-Fi Optimization      ║
-echo                          ║    [2] Ethernet Optimization   ║
-echo                          ║    [3] Universal Tweaks        ║
-echo                          ║                                ║
-echo                          ║    [0] Return to Main Menu     ║
-echo                          ╚════════════════════════════════╝%u%
+echo %c%                         +================================+
+echo                          ^|    [1] Wi-Fi Optimization      ^|
+echo                          ^|    [2] Ethernet Optimization   ^|
+echo                          ^|    [3] Universal Tweaks        ^|
+echo                          ^|                                ^|
+echo                          ^|    [0] Return to Main Menu     ^|
+echo                          +================================+%u%
 echo.
 echo %c%Note: Each option applies connection-specific optimizations%u%
 echo %c%for maximum performance on your preferred network type.%u%
@@ -2622,13 +2624,13 @@ if "!choice!"=="2" goto EthernetOptimization
 if "!choice!"=="3" goto UniversalTweaks
 cls
 echo.
-echo %red%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                                INVALID INPUT                                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %red%+==============================================================================+
+echo ^|                                INVALID INPUT                                 ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Please select a valid option [0-3] from the menu.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO RETRY ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO RETRY ==========================%u%
 pause >nul
 goto D
 
@@ -2638,9 +2640,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           WI-FI NETWORK OPTIMIZATION                         ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           WI-FI NETWORK OPTIMIZATION                         ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Wi-Fi optimization includes:%u%
 echo %c%• Core TCP/IP settings optimized for wireless networks%u%
@@ -2666,9 +2668,9 @@ choice /C YN /M "%c%Apply comprehensive Wi-Fi optimizations? (Y/N)%u%"
 if errorlevel 2 goto D
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                      WI-FI OPTIMIZATION IN PROGRESS                          ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                      WI-FI OPTIMIZATION IN PROGRESS                          ^|
+echo +==============================================================================+%u%
 
 echo.
 echo %c%[1/20] Configuring Core TCP/IP Settings...%u%
@@ -2879,21 +2881,21 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings" /v "M
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings" /v "MaxConnectionsPer1_0Server" /t REG_DWORD /d 16 /f >nul 2>&1
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        WI-FI OPTIMIZATION COMPLETED                          ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                        WI-FI OPTIMIZATION COMPLETED                          ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Wi-Fi network optimization has been successfully completed.%u%
 echo.
 echo %c%Original Dex Wi-Fi Optimizations Applied:%u%
 echo %c%• Core TCP/IP settings optimized for wireless performance%u%
-echo %c%• Wi-Fi interface detected (MTU left on automatic/PMTU discovery)%u%
+echo %c%• Wi-Fi interface detected ^(MTU left on automatic/PMTU discovery^)%u%
 echo %c%• Comprehensive wireless adapter power management disabled%u%
-echo %c%• 802.11 wireless protocol settings optimized (MIMO, beamforming, etc.)%u%
+echo %c%• 802.11 wireless protocol settings optimized ^(MIMO, beamforming, etc.^)%u%
 echo %c%• Wi-Fi Sense and hotspot features disabled for security%u%
 echo %c%• Advanced wireless network configuration applied%u%
 echo %c%• Gaming and performance optimizations specifically for Wi-Fi%u%
-echo %c%• DNS cache flushed (IPv6 kept enabled, no Winsock/IP stack reset)%u%
+echo %c%• DNS cache flushed ^(IPv6 kept enabled, no Winsock/IP stack reset^)%u%
 echo.
 echo %c%Network-Enhance.bat Advanced Optimizations Applied:%u%
 echo %c%• Advanced TCP/IP stack optimized specifically for wireless network conditions%u%
@@ -2920,7 +2922,7 @@ echo %c%• Faster wireless roaming and connection establishment%u%
 echo %c%• Comprehensive wireless security hardening while maintaining performance%u%
 echo %c%• Professional-grade wireless optimization combining multiple methodologies%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto D
 
@@ -2930,9 +2932,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         ETHERNET NETWORK OPTIMIZATION                        ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                         ETHERNET NETWORK OPTIMIZATION                        ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Ethernet optimization includes:%u%
 echo %c%• Advanced TCP/IP stack optimization for wired networks%u%
@@ -2956,9 +2958,9 @@ choice /C YN /M "%c%Apply comprehensive Ethernet optimizations? (Y/N)%u%"
 if errorlevel 2 goto D
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    ETHERNET OPTIMIZATION IN PROGRESS                         ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                    ETHERNET OPTIMIZATION IN PROGRESS                         ^|
+echo +==============================================================================+%u%
 
 echo.
 echo %c%[1/16] Detecting Ethernet interfaces and speed...%u%
@@ -3179,9 +3181,9 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "IRPStackSi
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "NumForwardPackets" /t REG_DWORD /d 598 /f >nul 2>&1
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                      ETHERNET OPTIMIZATION COMPLETED                         ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                      ETHERNET OPTIMIZATION COMPLETED                         ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Ethernet network optimization has been successfully completed.%u%
 echo.
@@ -3212,7 +3214,7 @@ echo %c%• Optimized file transfer speeds on local networks%u%
 echo %c%• Advanced hardware acceleration for maximum performance%u%
 echo %c%• Jumbo frame support for high-bandwidth applications%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto D
 
@@ -3222,9 +3224,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         UNIVERSAL NETWORK OPTIMIZATION                       ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                         UNIVERSAL NETWORK OPTIMIZATION                       ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Universal network optimization includes:%u%
 echo %c%• Advanced TCP/IP stack optimization for all connection types%u%
@@ -3250,9 +3252,9 @@ choice /C YN /M "%c%Apply comprehensive universal network optimizations? (Y/N)%u
 if errorlevel 2 goto D
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    UNIVERSAL OPTIMIZATION IN PROGRESS                        ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                    UNIVERSAL OPTIMIZATION IN PROGRESS                        ^|
+echo +==============================================================================+%u%
 
 echo.
 echo %c%[1/18] Detecting network interfaces and connection types...%u%
@@ -3618,10 +3620,10 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "MaxForward
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "NumForwardPackets" /t REG_DWORD /d 598 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "MaxNumForwardPackets" /t REG_DWORD /d 598 /f >nul 2>&1
 
-echo %c%[19/19] Disabling LLMNR and LMHOSTS (legacy broadcast name resolution)...%u%
+echo %c%[19/19] Disabling LLMNR and LMHOSTS ^(legacy broadcast name resolution^)...%u%
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" /v "EnableMulticast" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\NetBT\Parameters" /v "EnableLMHOSTS" /t REG_DWORD /d "0" /f >nul 2>&1
-echo %c%✓ LLMNR disabled (anti-poisoning); LMHOSTS lookup disabled (legacy NetBIOS)%u%
+echo %c%✓ LLMNR disabled ^(anti-poisoning^); LMHOSTS lookup disabled ^(legacy NetBIOS^)%u%
 
 echo %c%[20/20] Setting NTP time server to pool.ntp.org...%u%
 w32tm /config /syncfromflags:manual /manualpeerlist:"0.pool.ntp.org 1.pool.ntp.org 2.pool.ntp.org 3.pool.ntp.org" >nul 2>&1
@@ -3629,15 +3631,15 @@ net stop w32time >nul 2>&1
 net start w32time >nul 2>&1
 w32tm /config /update >nul 2>&1
 w32tm /resync >nul 2>&1
-echo %c%✓ NTP server set to pool.ntp.org (pools 0-3); time synced%u%
+echo %c%✓ NTP server set to pool.ntp.org ^(pools 0-3^); time synced%u%
 
 del "%CONN_DETECT_FILE%" >nul 2>&1
 del "%NETSH_OUTPUT%" >nul 2>&1
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    UNIVERSAL NETWORK OPTIMIZATION COMPLETED                  ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                    UNIVERSAL NETWORK OPTIMIZATION COMPLETED                  ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Universal network optimization has been successfully completed.%u%
 echo.
@@ -3663,8 +3665,8 @@ echo %c%• Safe network maintenance performed without affecting registry optimi
 echo %c%• Enterprise-level network parameters tuned for professional-grade performance%u%
 echo %c%• Universal compatibility ensured for all major network connection types%u%
 echo %c%• LLMNR disabled to prevent local network poisoning/spoofing attacks%u%
-echo %c%• LMHOSTS lookup disabled (legacy NetBIOS file-based name resolution)%u%
-echo %c%• NTP server set to pool.ntp.org (accurate, redundant global time sync)%u%
+echo %c%• LMHOSTS lookup disabled ^(legacy NetBIOS file-based name resolution^)%u%
+echo %c%• NTP server set to pool.ntp.org ^(accurate, redundant global time sync^)%u%
 echo.
 echo %red%Universal Performance Benefits:%u%
 echo %c%• Dramatically reduced network latency across all connection types%u%
@@ -3686,7 +3688,7 @@ echo %c%• Security configurations include comprehensive firewall rules and pro
 echo %c%• Hardware acceleration features have been enabled for all supported network adapters%u%
 echo %c%• Universal optimizations provide maximum performance across all network scenarios%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto D
 
@@ -3695,19 +3697,19 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           CPU PERFORMANCE OPTIMIZER                          ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           CPU PERFORMANCE OPTIMIZER                          ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Select your CPU manufacturer for processor-specific optimizations:%u%
 echo.
-echo %c%                           ╔════════════════════════════════╗
-echo                            ║    [1] %blue%Intel%c% Processor         ║
-echo                            ║    [2] %red%AMD%c% Ryzen Processor     ║
-echo                            ║    [3] Universal CPU Tweaks    ║
-echo                            ║                                ║
-echo                            ║    [0] Return to Main Menu     ║
-echo                            ╚════════════════════════════════╝%u%
+echo %c%                           +================================+
+echo                            ^|    [1] %blue%Intel%c% Processor         ^|
+echo                            ^|    [2] %red%AMD%c% Ryzen Processor     ^|
+echo                            ^|    [3] Universal CPU Tweaks    ^|
+echo                            ^|                                ^|
+echo                            ^|    [0] Return to Main Menu     ^|
+echo                            +================================+%u%
 echo.
 echo %c%Note: Processor-specific optimizations provide better performance%u%
 echo %c%by targeting your CPU's unique architecture and features.%u%
@@ -3719,13 +3721,13 @@ if "!choice!"=="2" goto RyzenOptimization
 if "!choice!"=="3" goto UniversalCPU
 cls
 echo.
-echo %red%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                                INVALID INPUT                                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %red%+==============================================================================+
+echo ^|                                INVALID INPUT                                 ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Please select a valid option [0-3] from the menu.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO RETRY ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO RETRY ==========================%u%
 pause >nul
 goto E
 
@@ -3734,9 +3736,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         %blue%INTEL%c% CPU PERFORMANCE OPTIMIZER                      ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                         %blue%INTEL%c% CPU PERFORMANCE OPTIMIZER                      ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Intel-specific optimizations include:%u%
 echo %c%• Intel Turbo Boost and SpeedStep configuration%u%
@@ -3755,9 +3757,9 @@ choice /C YN /M "%c%Apply Intel CPU optimizations? (Y/N)%u%"
 if errorlevel 2 goto E
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       %blue%INTEL%c% OPTIMIZATION IN PROGRESS                         ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       %blue%INTEL%c% OPTIMIZATION IN PROGRESS                         ^|
+echo +==============================================================================+%u%
 
 echo.
 echo %c%[1/12] Detecting CPU Specifications...%u%
@@ -3788,7 +3790,7 @@ if defined temp_speed (
 set /a "CPU_SCORE=%NumberOfCores% * %MaxClockSpeed%" 2>nul
 if %CPU_SCORE% LEQ 0 set "CPU_SCORE=18000"
 
-echo %c%CPU detected   %NumberOfCores% cores at %MaxClockSpeed% MHz (Score   %CPU_SCORE%)%u%
+echo %c%CPU detected   %NumberOfCores% cores at %MaxClockSpeed% MHz ^(Score   %CPU_SCORE%^)%u%
 
 echo %c%[2/12] Configuring Intel Power Management...%u%
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c" /v "ValueMax" /t REG_DWORD /d "100" /f >nul 2>&1
@@ -3886,26 +3888,26 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProf
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Background Only" /t REG_SZ /d "False" /f >nul 2>&1
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       %blue%INTEL%c% OPTIMIZATION COMPLETED                           ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       %blue%INTEL%c% OPTIMIZATION COMPLETED                           ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Intel CPU optimizations have been successfully applied.%u%
 echo.
 echo %c%Applied Optimizations:%u%
-echo %c%• CPU detected   %NumberOfCores% cores at %MaxClockSpeed% MHz (Score   %CPU_SCORE%)%u%
+echo %c%• CPU detected   %NumberOfCores% cores at %MaxClockSpeed% MHz ^(Score   %CPU_SCORE%^)%u%
 echo %c%• Intel power management configured for performance%u%
 echo %c%• C-States disabled to prevent CPU parking%u%
 echo %c%• Turbo Boost and SpeedStep optimized%u%
 echo %c%• Spectre/Meltdown mitigations adjusted for Intel%u%
-echo %c%• System responsiveness improved (10%% reserve)%u%
+echo %c%• System responsiveness improved ^(10%% reserve^)%u%
 echo %c%• Timer resolution optimized for CPU performance%u%
 echo %c%• Power throttling disabled%u%
 echo %c%• CSRSS priority and CPU affinity optimized%u%
 echo %c%• Cache and memory management enhanced%u%
 echo %c%• Gaming task priorities configured%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
 
@@ -3914,9 +3916,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         %red%AMD%c% RYZEN PERFORMANCE OPTIMIZER                      ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                         %red%AMD%c% RYZEN PERFORMANCE OPTIMIZER                      ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%AMD Ryzen-specific optimizations include:%u%
 echo %c%• AMD Precision Boost and Core Performance Boost registry settings%u%
@@ -3935,9 +3937,9 @@ choice /C YN /M "%c%Apply AMD Ryzen registry optimizations? (Y/N)%u%"
 if errorlevel 2 goto E
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       %red%RYZEN%c% OPTIMIZATION IN PROGRESS                         ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       %red%RYZEN%c% OPTIMIZATION IN PROGRESS                         ^|
+echo +==============================================================================+%u%
 
 echo.
 echo %c%[1/12] Detecting CPU Specifications...%u%
@@ -4018,9 +4020,9 @@ reg add "HKLM\SOFTWARE\AMD\CN" /v "CorePerformanceBoost" /t REG_DWORD /d "1" /f 
 reg add "HKLM\SOFTWARE\AMD\CN" /v "ThermalLimit" /t REG_DWORD /d "90" /f >nul 2>&1
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       %red%RYZEN%c% OPTIMIZATION COMPLETED                           ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       %red%RYZEN%c% OPTIMIZATION COMPLETED                           ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%AMD Ryzen registry optimizations have been successfully applied.%u%
 echo.
@@ -4039,7 +4041,7 @@ echo %c%• Use Desktop Ultimate Performance power plan for CPU boost%u%
 echo %c%• Enable PBO in BIOS for additional boost capability%u%
 echo %c%• Monitor with HWiNFO64 or Ryzen Master%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
 
@@ -4048,9 +4050,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        UNIVERSAL CPU PERFORMANCE OPTIMIZER                   ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                        UNIVERSAL CPU PERFORMANCE OPTIMIZER                   ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Universal CPU optimizations include:%u%
 echo %c%• Generic power management improvements%u%
@@ -4064,9 +4066,9 @@ choice /C YN /M "%c%Apply universal CPU optimizations? (Y/N)%u%"
 if errorlevel 2 goto E
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                     UNIVERSAL OPTIMIZATION IN PROGRESS                       ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                     UNIVERSAL OPTIMIZATION IN PROGRESS                       ^|
+echo +==============================================================================+%u%
 
 echo.
 echo %c%[1/6] Detecting CPU Specifications...%u%
@@ -4109,9 +4111,9 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProf
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Scheduling Category" /t REG_SZ /d "High" /f >nul 2>&1
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    UNIVERSAL OPTIMIZATION COMPLETED                          ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                    UNIVERSAL OPTIMIZATION COMPLETED                          ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Universal CPU optimizations have been successfully applied.%u%
 echo.
@@ -4123,7 +4125,7 @@ echo %c%• Dynamic timer resolution configured%u%
 echo %c%• Memory management improved%u%
 echo %c%• Gaming task priorities optimized%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
 
@@ -4133,9 +4135,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           MEMORY PERFORMANCE OPTIMIZER                       ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           MEMORY PERFORMANCE OPTIMIZER                       ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Memory optimization includes:%u%
 echo %c%• System service priority optimization for performance%u%
@@ -4155,9 +4157,9 @@ choice /C YN /M "%c%Apply memory performance optimizations? (Y/N)%u%"
 if errorlevel 2 goto TweaksMenu
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       MEMORY OPTIMIZATION IN PROGRESS                        ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       MEMORY OPTIMIZATION IN PROGRESS                        ^|
+echo +==============================================================================+%u%
 chcp 437 >nul
 echo %c%[1/6] Detecting System Memory Configuration...%u%
 set RAM_GB=
@@ -4198,7 +4200,7 @@ if "!RAM_GB_IS_VALID!"=="1" (
     set TotalRAM=8192 
     set RAM_PROFILE=MEDIUM 
 )
-echo %c%System Total RAM (for display): !TotalRAM! MB. RAM Profile set to: !RAM_PROFILE!%u%
+echo %c%System Total RAM ^(for display^): !TotalRAM! MB. RAM Profile set to: !RAM_PROFILE!%u%
 
 echo %c%[2/6] Optimizing Critical System Service Priorities...%u%
 rem "Realtime" priority is intentionally NOT used here. It can starve the
@@ -4265,14 +4267,14 @@ if "!RAM_PROFILE!"=="MAXIMUM" (
 
 chcp 65001 >nul
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       MEMORY OPTIMIZATION COMPLETED                          ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       MEMORY OPTIMIZATION COMPLETED                          ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Memory performance optimizations have been successfully applied.%u%
 echo.
 echo %c%System Configuration:%u%
-echo %c%• Total RAM detected: !TotalRAM! MB (approx. !RAM_GB! GB)%u%
+echo %c%• Total RAM detected: !TotalRAM! MB ^(approx. !RAM_GB! GB^)%u%
 echo %c%• Memory profile: !RAM_PROFILE! performance configuration%u%
 echo.
 echo %c%Applied Optimizations:%u%
@@ -4287,11 +4289,11 @@ echo.
 echo %red%Performance Notes:%u%
 echo %c%• Page file is NOT cleared at shutdown, for a faster shutdown/reboot%u%
 echo %c%• Executive code locked in memory for performance%u%
-echo %c%• Service priorities optimized for gaming/performance (no Realtime hacks)%u%
+echo %c%• Service priorities optimized for gaming/performance ^(no Realtime hacks^)%u%
 if "!RAM_PROFILE!"=="MAXIMUM" echo %c%• Large system cache enabled for high-RAM systems%u%
 if "!RAM_PROFILE!"=="LOW" echo %c%• Conservative settings applied for low-RAM systems%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
 
@@ -4301,9 +4303,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        MOUSE/KEYBOARD PERFORMANCE OPTIMIZER                  ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                        MOUSE/KEYBOARD PERFORMANCE OPTIMIZER                  ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Input device optimizations include:%u%
 echo %c%• Mouse acceleration and smoothing removal%u%
@@ -4322,9 +4324,9 @@ choice /C YN /M "%c%Apply mouse and keyboard optimizations? Press Y or N to cont
 if errorlevel 2 goto TweaksMenu
 cls
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    MOUSE/KEYBOARD OPTIMIZATION IN PROGRESS                   ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                    MOUSE/KEYBOARD OPTIMIZATION IN PROGRESS                   ^|
+echo +==============================================================================+%u%
 
 echo.
 echo %c%[1/8] Select your mouse type:%u%
@@ -4408,9 +4410,9 @@ reg add "HKU\.DEFAULT\Control Panel\Mouse" /v "MouseThreshold1"    /t REG_SZ /d 
 reg add "HKU\.DEFAULT\Control Panel\Mouse" /v "MouseThreshold2"    /t REG_SZ /d "0"   /f >nul 2>&1
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                   MOUSE/KEYBOARD OPTIMIZATION COMPLETED                      ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                   MOUSE/KEYBOARD OPTIMIZATION COMPLETED                      ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Mouse and keyboard optimizations have been successfully applied.%u%
 echo.
@@ -4419,7 +4421,7 @@ echo %c%• Mouse profile: %MOUSE_PROFILE% optimization mode%u%
 echo %c%• Hardware type: %MouseTypeDesc%%u%
 echo.
 echo %c%Applied Optimizations:%u%
-echo %c%• Keyboard response time minimized (0ms delay)%u%
+echo %c%• Keyboard response time minimized ^(0ms delay^)%u%
 echo %c%• Key repeat rate maximized for responsiveness%u%
 echo %c%• Mouse acceleration completely disabled%u%
 echo %c%• Raw input precision enabled%u%
@@ -4430,7 +4432,7 @@ if "%MOUSE_PROFILE%"=="GAMING" (
 )
 echo %c%• Input data queue sizes increased%u%
 echo %c%• Thread priorities elevated for input devices%u%
-echo %c%• Accessibility features (StickyKeys/FilterKeys/etc.) left untouched%u%
+echo %c%• Accessibility features ^(StickyKeys/FilterKeys/etc.^) left untouched%u%
 echo.
 echo %red%Performance Notes:%u%
 echo %c%• Mouse acceleration disabled for 1:1 movement precision%u%
@@ -4438,7 +4440,7 @@ echo %c%• Keyboard repeat delay eliminated for faster response%u%
 echo %c%• Input lag reduced through hardware optimizations%u%
 echo %c%• Gaming applications will benefit from raw input%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
 
@@ -4447,9 +4449,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       NETWORK CONNECTIVITY AND DNS OPTIMIZER                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       NETWORK CONNECTIVITY AND DNS OPTIMIZER                 ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Network connectivity optimization includes:%u%
 echo %c%• DNS cache flush and optimization%u%
@@ -4471,15 +4473,15 @@ echo.
 echo %c%Current DNS configuration:%u%
 ipconfig /all | findstr /i "DNS Servers"
 echo.
-echo %c%Switching DNS overwrites the above (router/ISP/VPN/Pi-hole, etc.) with%u%
+echo %c%Switching DNS overwrites the above ^(router/ISP/VPN/Pi-hole, etc.^) with%u%
 echo %c%static Cloudflare servers on every connected adapter.%u%
 choice /C YN /M "%c%Switch to Cloudflare DNS (1.1.1.1)? (Y/N)%u%"
 if errorlevel 2 (set "NET_SWITCH_DNS=false") else (set "NET_SWITCH_DNS=true")
 cls
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    NETWORK OPTIMIZATION IN PROGRESS                          ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                    NETWORK OPTIMIZATION IN PROGRESS                          ^|
+echo +==============================================================================+%u%
 
 echo.
 echo %c%[1/10] Analyzing Current Network Configuration...%u%
@@ -4498,7 +4500,7 @@ timeout /t 2        >nul
 ipconfig /renew     >nul 2>&1
 ipconfig /registerdns >nul 2>&1
 chcp 437 >nul
-echo %c%[4/10] Resetting Network Components (Winsock/IP/TCP/UDP)...%u%
+echo %c%[4/10] Resetting Network Components ^(Winsock/IP/TCP/UDP^)...%u%
 netsh winsock reset >nul 2>&1
 netsh int ip reset  >nul 2>&1
 netsh int tcp reset >nul 2>&1
@@ -4563,9 +4565,9 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched"                       
 timeout /t 5 >nul
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                  NETWORK CONNECTIVITY OPTIMIZATION COMPLETED                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                  NETWORK CONNECTIVITY OPTIMIZATION COMPLETED                 ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Network connectivity and DNS optimizations have been successfully applied.%u%
 echo.
@@ -4574,7 +4576,7 @@ echo %c%• DNS cache flushed and refreshed%u%
 if "!NET_SWITCH_DNS!"=="true" (echo %c%• Cloudflare IPv4/IPv6 DNS set on all connected adapters%u%) else (echo %c%• Your existing DNS configuration was kept%u%)
 echo %c%• Winsock/IP/TCP/UDP stack reset and reconfigured%u%
 echo %c%• Network throttling disabled for gaming%u%
-echo %c%• Advanced registry settings optimized (PMTU, TTL)%u%
+echo %c%• Advanced registry settings optimized ^(PMTU, TTL^)%u%
 echo %c%• Network adapter settings restarted and optimized%u%
 echo %c%• TCP/IP stack autotuning and RSS enabled%u%
 echo %c%• Connection stability and speed improved%u%
@@ -4592,7 +4594,7 @@ if "!NET_SWITCH_DNS!"=="true" (
     echo %c%• Secondary IPv6 DNS: 2606:4700:4700::1001%u%
     echo.
 )
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
 
@@ -4602,17 +4604,17 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           WINDOWS SERVICE OPTIMIZER                          ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           WINDOWS SERVICE OPTIMIZER                          ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%This comprehensive service optimizer includes:%u%
 echo %c%• Telemetry and data collection service management%u%
-echo %c%• OEM manufacturer service optimization (HP, Intel, NVIDIA, etc.)%u%
+echo %c%• OEM manufacturer service optimization ^(HP, Intel, NVIDIA, etc.^)%u%
 echo %c%• Network and sharing service configuration%u%
 echo %c%• Xbox service management%u%
 echo %c%• Third-party application telemetry control%u%
-echo %c%• Gaming peripheral service management (Razer, Logitech, Corsair, etc.)%u%
+echo %c%• Gaming peripheral service management ^(Razer, Logitech, Corsair, etc.^)%u%
 echo %c%• Performance-impacting service optimization%u%
 echo %c%• Automatic update service control%u%
 echo %c%• Useless bloat services Windows enables by default%u%
@@ -4633,11 +4635,11 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                          SELECT OPTIMIZATION MODE                            ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                          SELECT OPTIMIZATION MODE                            ^|
+echo +==============================================================================+%u%
 echo.
-echo %c%   [1] Quick Mode    - 10 category prompts (fast, group-based)%u%
+echo %c%   [1] Quick Mode    - 10 category prompts ^(fast, group-based^)%u%
 echo %c%   [2] Advanced Mode - Individual per-service control%u%
 echo %c%   [0] Return to Menu%u%
 echo.
@@ -4654,9 +4656,9 @@ goto ISelectMode
 :IQuickMode
 cls
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       SERVICE OPTIMIZATION CONFIGURATION                     ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       SERVICE OPTIMIZATION CONFIGURATION                     ^|
+echo +==============================================================================+%u%
 echo.
 
 echo %c%[1/10] Windows Telemetry and Data Collection%u%
@@ -4707,8 +4709,8 @@ echo.
 echo %c%[4/10] Xbox Services%u%
 echo.
 echo %c%This controls Xbox Live, Game Bar, and Minecraft online functionality only.%u%
-echo %c%(Microsoft Store app-licensing services are left untouched to avoid breaking%u%
-echo %c%unrelated Store apps.) Recommended: ENABLE if you use the Xbox App, Game Bar,%u%
+echo %c%^(Microsoft Store app-licensing services are left untouched to avoid breaking%u%
+echo %c%unrelated Store apps.^) Recommended: ENABLE if you use the Xbox App, Game Bar,%u%
 echo %c%or play Minecraft.%u%
 echo.
 choice /C YN /M "%c%Enable Xbox services? (Y/N)%u%"
@@ -4784,7 +4786,7 @@ if errorlevel 2 (
 echo.
 echo %c%[9/10] Hyper-V and Virtual Machine Services%u%
 echo.
-echo %c%This disables Hyper-V guest integration services (vmicXxx, HvHost).%u%
+echo %c%This disables Hyper-V guest integration services ^(vmicXxx, HvHost^).%u%
 echo %c%Safe to disable if you are NOT running inside a Hyper-V virtual machine.%u%
 echo.
 choice /C YN /M "%c%Disable Hyper-V and VM services? (Y/N)%u%"
@@ -4801,7 +4803,7 @@ echo %c%[10/10] Useless Bloat Services%u%
 echo.
 echo %c%This disables services almost nobody actually uses: Fax, Windows Wallet,%u%
 echo %c%legacy Telephony API, Offline Files sync, Shared PC Account Manager,%u%
-echo %c%Storage Tiers Management and AllJoyn Router (IoT discovery).%u%
+echo %c%Storage Tiers Management and AllJoyn Router ^(IoT discovery^).%u%
 echo %c%Recommended: DISABLE - safe for virtually every home/gaming PC.%u%
 echo.
 choice /C YN /M "%c%Disable useless bloat services? (Y/N)%u%"
@@ -4814,9 +4816,9 @@ if errorlevel 2 (
 )
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       SERVICE OPTIMIZATION IN PROGRESS                       ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       SERVICE OPTIMIZATION IN PROGRESS                       ^|
+echo +==============================================================================+%u%
 echo.
 
 if "%DISABLE_TELEMETRY%"=="true" (
@@ -4897,9 +4899,9 @@ echo %c%[12/12] Applying Final Configurations...%u%
 call :ApplyFinalServiceConfigurations
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       SERVICE OPTIMIZATION COMPLETED                         ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       SERVICE OPTIMIZATION COMPLETED                         ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Service optimizations have been applied based on your preferences.%u%
 echo.
@@ -4964,13 +4966,13 @@ echo.
 echo %green%Total Services Optimized: Over 250+ background services managed%u%
 echo %red%Note: Changes will take effect after restart.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                     DEVICE MANAGER TWEAKS                                   ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                     DEVICE MANAGER TWEAKS                                   ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Disables unnecessary Device Manager devices to reduce interrupt overhead and%u%
 echo %c%background activity. Devices can be re-enabled in Device Manager at any time.%u%
@@ -4979,7 +4981,7 @@ choice /C YN /M "%c%Disable unnecessary Device Manager devices? (Y/N)%u%"
 if errorlevel 2 goto TweaksMenu
 
 echo.
-echo %c%Scanning and disabling devices... (this may take a moment)%u%
+echo %c%Scanning and disabling devices... ^(this may take a moment^)%u%
 echo.
 setlocal enabledelayedexpansion
 set "DM_DEVICES=ACPI Processor Aggregator|ACPI Thermal Zone|ACPI Wake Alarm|AMD Controller Emulation|AMD Crash Defender|AMD PSP|Composite Bus Enumerator|Direct memory access controller|High Precision Event Timer|Intel Management Engine|Intel(R) Dynamic Application Loader Host Interface|Intel(R) Management Engine Interface #1|Intel(R) Management Engine WMI Provider|Intel(R) Platform Monitoring Technology Device|Intel(R) SMBus - 7AA3|Intel(R) SPI (Flash) Controller - 7AA4|Microsoft Device Association Root Enumerator|Microsoft GS Wavetable Synth|Microsoft Hyper-V Virtualization Infrastructure Driver|Microsoft Hypervisor Service|Microsoft Kernel Debug Network Adapter|Microsoft Print to PDF|Microsoft Radio Device Enumeration Bus|Microsoft RRAS Root Enumerator|Microsoft Virtual Drive Enumerator|Microsoft Windows Management Interface for ACPI|NDIS Virtual Network Adapter Enumerator|NVIDIA High Definition Audio|Numeric Data Processor|Programmable interrupt controller|Remote Desktop Device Redirector Bus|Resource Hub proxy device|Root Print Queue|System Timer|UMBus Root Bus Enumerator|WAN Miniport (IKEv2)|WAN Miniport (IP)|WAN Miniport (IPv6)|WAN Miniport (L2TP)|WAN Miniport (Network Monitor)|WAN Miniport (PPPOE)|WAN Miniport (PPTP)|WAN Miniport (SSTP)"
@@ -4995,7 +4997,7 @@ echo.
 echo %green%Device Manager tweaks applied.%u%
 echo %c%Note: Re-enable devices in Device Manager if issues occur.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
 
@@ -5032,13 +5034,13 @@ exit /b
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        ADVANCED SERVICE CONTROL                               ║
-echo ║                                                                               ║
-echo ║    [1]  Category Mode    Configure each service group  (11 quick choices)     ║
-echo ║    [2]  Disable All      Disable all optional services  (no prompts)          ║
-echo ║    [0]  Back                                                                  ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                        ADVANCED SERVICE CONTROL                               ^|
+echo ^|                                                                               ^|
+echo ^|    [1]  Category Mode    Configure each service group  ^(11 quick choices^)     ^|
+echo ^|    [2]  Disable All      Disable all optional services  ^(no prompts^)          ^|
+echo ^|    [0]  Back                                                                  ^|
+echo +==============================================================================+%u%
 echo.
 :IAdvMenu
 set "IA_MODE="
@@ -5056,9 +5058,9 @@ if errorlevel 1 goto IAdvanced
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    DISABLING ALL OPTIONAL SERVICES                            ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                    DISABLING ALL OPTIONAL SERVICES                            ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%  [ 1/13]  Telemetry ^& Data Collection...%u%
 call :DisableTelemetryServices
@@ -5096,32 +5098,32 @@ goto IAdv_Complete
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║              ADVANCED SERVICE CONTROL  —  CATEGORY MODE                      ║
-echo ║                                                                               ║
-echo ║    For each category choose one option:                                       ║
-echo ║      D  =  Disable All    (recommended for most categories)                  ║
-echo ║      M  =  Manual         (on-demand — starts only when something needs it)  ║
-echo ║      K  =  Keep / Skip    (leave this category untouched)                    ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|              ADVANCED SERVICE CONTROL  —  CATEGORY MODE                      ^|
+echo ^|                                                                               ^|
+echo ^|    For each category choose one option:                                       ^|
+echo ^|      D  =  Disable All    ^(recommended for most categories^)                  ^|
+echo ^|      M  =  Manual         ^(on-demand — starts only when something needs it^)  ^|
+echo ^|      K  =  Keep / Skip    ^(leave this category untouched^)                    ^|
+echo +==============================================================================+%u%
 echo.
-echo %c%  Tip: press Enter without typing anything to skip a category (same as K).%u%
+echo %c%  Tip: press Enter without typing anything to skip a category ^(same as K^).%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO BEGIN ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO BEGIN ==========================%u%
 pause >nul
 
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║  [1/11]  TELEMETRY ^& DATA COLLECTION                                         ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|  [1/11]  TELEMETRY ^& DATA COLLECTION                                         ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%  DiagTrack, dmwappushservice, DPS, WerSvc, PcaSvc, MapsBroker, lfsvc,%u%
 echo %c%  RetailDemo, wisvc, WdiServiceHost, diagsvc, Sense, SensorService,%u%
 echo %c%  DisplayEnhancementService, GraphicsPerfSvc, and more.%u%
 echo.
-echo %green%  Recommended: K (keep security updates automatic)%u%
+echo %green%  Recommended: K ^(keep security updates automatic^)%u%
 echo.
 set "G1="
 set /p "G1=%c%D / M / K »%u% "
@@ -5135,9 +5137,9 @@ if /i "!G1!"=="M" (
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║  [2/11]  OEM MANUFACTURER SERVICES                                            ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|  [2/11]  OEM MANUFACTURER SERVICES                                            ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%  HP, Dell, Intel, Lenovo, Acer, ASUS diagnostic and background services.%u%
 echo %c%  Safe to disable if you don't use your OEM's companion software.%u%
@@ -5155,12 +5157,12 @@ if /i "!G2!"=="M" (
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║  [3/11]  NETWORK ^& SHARING SERVICES                                          ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|  [3/11]  NETWORK ^& SHARING SERVICES                                          ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%  RemoteRegistry, WinRM, UPnP, SSDP, WebClient, RAS/VPN, SNMP, 802.1X,%u%
-echo %c%  Wi-Fi Direct, P2P networking, IPsec, NetBIOS helper  (39 services total).%u%
+echo %c%  Wi-Fi Direct, P2P networking, IPsec, NetBIOS helper  ^(39 services total^).%u%
 echo.
 echo %red%  Recommended: D%u%
 echo.
@@ -5175,9 +5177,9 @@ if /i "!G3!"=="M" (
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║  [4/11]  XBOX ^& MICROSOFT STORE SERVICES                                     ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|  [4/11]  XBOX ^& MICROSOFT STORE SERVICES                                     ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%  XblAuthManager, XblGameSave, XboxGipSvc, XboxNetApiSvc, GamingServices,%u%
 echo %c%  GamingServicesNet, GameInputSvc, InstallService, ClipSVC, LicenseManager%u%
@@ -5196,14 +5198,14 @@ if /i "!G4!"=="M" (
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║  [5/11]  GAMING HARDWARE SERVICES                                             ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|  [5/11]  GAMING HARDWARE SERVICES                                             ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%  Razer, Logitech, Corsair, MSI Center, and ASUS peripheral services.%u%
 echo %c%  Disable if you don't use these brands' companion software / RGB lighting.%u%
 echo.
-echo %red%  Recommended: D  (if you don't use their software)%u%
+echo %red%  Recommended: D  ^(if you don't use their software^)%u%
 echo.
 set "G5="
 set /p "G5=%c%D / M / K »%u% "
@@ -5217,9 +5219,9 @@ if /i "!G5!"=="M" (
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║  [6/11]  AUTOMATIC UPDATE SERVICES                                            ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|  [6/11]  AUTOMATIC UPDATE SERVICES                                            ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%  Google, Adobe, Dropbox, Mozilla, and Microsoft Edge auto-update services.%u%
 echo.
@@ -5236,13 +5238,13 @@ if /i "!G6!"=="M" (
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║  [7/11]  PERFORMANCE SERVICES                                                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|  [7/11]  PERFORMANCE SERVICES                                                 ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%  Optional caching, indexing, maps, location and graphics telemetry services.%u%
 echo.
-echo %red%  Recommended: D  (SysMain ^& WSearch are the biggest resource hogs)%u%
+echo %red%  Recommended: D  ^(SysMain ^& WSearch are the biggest resource hogs^)%u%
 echo.
 set "G7="
 set /p "G7=%c%D / M / K »%u% "
@@ -5255,9 +5257,9 @@ if /i "!G7!"=="M" (
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║  [8/11]  SECURITY, BACKUP ^& BLUETOOTH                                        ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|  [8/11]  SECURITY, BACKUP ^& BLUETOOTH                                        ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%  Security:  Biometrics, Smart Card, Windows Hello, Parental Controls%u%
 echo %c%  Backup:    Windows Backup, File History, Block Backup, Work Folders%u%
@@ -5279,9 +5281,9 @@ if /i "!G8!"=="M" (
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║  [9/11]  PRINT ^& IMAGING SERVICES                                            ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|  [9/11]  PRINT ^& IMAGING SERVICES                                            ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%  Spooler, PrintNotify, stisvc, WiaRpc, FrameServer, FrameServerMonitor,%u%
 echo %c%  PrintDeviceConfigurationService, PrintScanBrokerService%u%
@@ -5301,9 +5303,9 @@ if /i "!G9!"=="M" (
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║  [10/11]  HYPER-V ^& VIRTUAL MACHINE SERVICES                                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|  [10/11]  HYPER-V ^& VIRTUAL MACHINE SERVICES                                 ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%  HvHost and all vmicXxx Hyper-V guest integration services.%u%
 echo.
@@ -5320,9 +5322,9 @@ if /i "!G10!"=="M" (
 cls
 call :SetupConsole
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║  [11/11]  WINDOWS FEATURES ^& APP SERVICES                                    ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|  [11/11]  WINDOWS FEATURES ^& APP SERVICES                                    ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%  Phone Link, CDP/Sync, Push Notifications, Maps, Wallet, Themes, RDP,%u%
 echo %c%  Pen/Touch, BitLocker, Windows Update, Telephony, and 50+ more services.%u%
@@ -5351,16 +5353,16 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                  ADVANCED SERVICE CONTROL COMPLETED                           ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                  ADVANCED SERVICE CONTROL COMPLETED                           ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Service configurations have been applied.%u%
 echo %c%All critical system services remain protected and enabled.%u%
 echo.
 echo %red%Note: Changes will take full effect after a system restart.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
 
@@ -5539,7 +5541,7 @@ call :DisableService "NvTelemetryContainer"
 
 reg add "HKCU\Software\Microsoft\VisualStudio\Telemetry" /v TurnOffSwitch /t REG_DWORD /d 1 /f >nul 2>&1
 
-echo %green%    → Third-party telemetry disabled (privacy.sexy integrated)%u%
+echo %green%    → Third-party telemetry disabled ^(privacy.sexy integrated^)%u%
 exit /b
 
 
@@ -5708,27 +5710,27 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         COMPREHENSIVE WINDOWS DEBLOATER                      ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                         COMPREHENSIVE WINDOWS DEBLOATER                      ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%This comprehensive debloater will remove or disable:%u%
-echo %c%• Third-party bloatware apps and games (Netflix, Candy Crush, etc.)%u%
-echo %c%• Microsoft Edge browser (optional)%u%
-echo %c%• OneDrive cloud storage (optional)%u%
+echo %c%• Third-party bloatware apps and games ^(Netflix, Candy Crush, etc.^)%u%
+echo %c%• Microsoft Edge browser ^(optional^)%u%
+echo %c%• OneDrive cloud storage ^(optional^)%u%
 echo %c%• Microsoft Copilot AI assistant%u%
 echo %c%• Widgets / Meet Now / Chat / Task View / Search icon%u%
-echo %c%• Xbox services and apps (optional - affects Minecraft, Game Bar)%u%
-echo %c%• Microsoft Store (optional - affects UWP app installations)%u%
-echo %c%• Cortana and Search integration (optional)%u%
-echo %c%• Skype and Teams (optional)%u%
-echo %c%• OEM manufacturer bloatware (HP, Dell, ASUS, MSI, etc.)%u%
-echo %c%• System apps (Wallet, Web Extensions, People Experience, etc.)%u%
-echo %c%• Windows WebView2 Runtime (optional)%u%
-echo %c%• Windows Security Center notifications (optional)%u%
-echo %c%• Unnecessary Windows "Optional Features" (legacy media, IE, etc.)%u%
-echo %c%• Outdated Windows features (WordPad, Steps Recorder, etc.)%u%
-echo %c%• Advanced system apps (Print3D, Holographic, Parental Controls)%u%
+echo %c%• Xbox services and apps ^(optional - affects Minecraft, Game Bar^)%u%
+echo %c%• Microsoft Store ^(optional - affects UWP app installations^)%u%
+echo %c%• Cortana and Search integration ^(optional^)%u%
+echo %c%• Skype and Teams ^(optional^)%u%
+echo %c%• OEM manufacturer bloatware ^(HP, Dell, ASUS, MSI, etc.^)%u%
+echo %c%• System apps ^(Wallet, Web Extensions, People Experience, etc.^)%u%
+echo %c%• Windows WebView2 Runtime ^(optional^)%u%
+echo %c%• Windows Security Center notifications ^(optional^)%u%
+echo %c%• Unnecessary Windows "Optional Features" ^(legacy media, IE, etc.^)%u%
+echo %c%• Outdated Windows features ^(WordPad, Steps Recorder, etc.^)%u%
+echo %c%• Advanced system apps ^(Print3D, Holographic, Parental Controls^)%u%
 echo.
 echo %red%%underline%IMPORTANT WARNING:%u%
 echo %c%This process is largely irreversible without a full system reset.%u%
@@ -5741,9 +5743,9 @@ if errorlevel 2 goto TweaksMenu
 
 cls
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       DEBLOATING CONFIGURATION PROMPTS                       ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       DEBLOATING CONFIGURATION PROMPTS                       ^|
+echo +==============================================================================+%u%
 echo.
 
 echo %c%[1/12] Microsoft Store and Gaming%u%
@@ -5861,7 +5863,7 @@ echo.
 echo %c%[8/12] Windows WebView2 Runtime%u%
 echo.
 echo %c%WebView2 is required for many UWP/Win32 apps to render HTML content.%u%
-echo %c%Removing it may break apps (e.g., Teams, Edge-based apps).%u%
+echo %c%Removing it may break apps ^(e.g., Teams, Edge-based apps^).%u%
 echo %c%Recommended: REMOVE only if you don't use any WebView2-dependent apps.%u%
 echo.
 choice /C YN /M "%c%Remove WebView2 Runtime? (Y/N)%u%"
@@ -5876,7 +5878,7 @@ if errorlevel 2 (
 echo.
 echo %c%[9/12] Windows Security Center Notifications%u%
 echo.
-echo %c%Windows Security Center (Defender alerts, update alerts) can be noisy.%u%
+echo %c%Windows Security Center ^(Defender alerts, update alerts^) can be noisy.%u%
 echo %c%Disabling notifications prevents pop-ups but does NOT disable Defender itself.%u%
 echo %c%Recommended: REMOVE if you don't want Defender pop-ups but still want AV protection.%u%
 echo.
@@ -5901,7 +5903,7 @@ if errorlevel 2 (
 )
 
 echo.
-echo %c%[11/12] System Apps (Wallet, Web Extensions…)%u%
+echo %c%[11/12] System Apps ^(Wallet, Web Extensions…^)%u%
 choice /C YN /M "%c%Remove System apps? (Y/N)%u%"
 if errorlevel 2 (
     set "REMOVE_SYSTEM=false" 
@@ -5923,11 +5925,11 @@ if errorlevel 2 (
 )
 
 echo.
-echo %c%[13/16] Microsoft Photos (Default Image Viewer)%u%
+echo %c%[13/16] Microsoft Photos ^(Default Image Viewer^)%u%
 echo.
 echo %c%Microsoft Photos is the default app for viewing images and videos.%u%
 echo %c%Removing it means image files will have no default viewer until another app is installed.%u%
-echo %c%Recommended: KEEP unless you already use a different image viewer (e.g. IrfanView).%u%
+echo %c%Recommended: KEEP unless you already use a different image viewer ^(e.g. IrfanView^).%u%
 echo.
 choice /C YN /M "%c%Remove Microsoft Photos? (Y/N)%u%"
 if errorlevel 2 (
@@ -5941,7 +5943,7 @@ if errorlevel 2 (
 echo.
 echo %c%[14/16] Microsoft Paint and Windows Camera%u%
 echo.
-echo %c%Microsoft Paint is the classic built-in image editor (commonly used for quick edits).%u%
+echo %c%Microsoft Paint is the classic built-in image editor ^(commonly used for quick edits^).%u%
 echo %c%Windows Camera is the built-in webcam app — required if no other camera app is installed.%u%
 echo %c%Recommended: KEEP if you use your webcam for video calls or edit images occasionally.%u%
 echo.
@@ -5957,9 +5959,9 @@ if errorlevel 2 (
 echo.
 echo %c%[15/16] Snipping Tool and PrintScreen Hotkey%u%
 echo.
-echo %c%Snipping Tool is the built-in screenshot utility (Win+Shift+S / PrintScreen).%u%
+echo %c%Snipping Tool is the built-in screenshot utility ^(Win+Shift+S / PrintScreen^).%u%
 echo %c%Removing it also disables the PrintScreen key shortcut for Snipping.%u%
-echo %c%Recommended: KEEP unless you use a third-party screenshot tool (e.g. ShareX).%u%
+echo %c%Recommended: KEEP unless you use a third-party screenshot tool ^(e.g. ShareX^).%u%
 echo.
 choice /C YN /M "%c%Remove Snipping Tool and disable PrintScreen hotkey? (Y/N)%u%"
 if errorlevel 2 (
@@ -5971,7 +5973,7 @@ if errorlevel 2 (
 )
 
 echo.
-echo %c%[16/16] App Installer (winget) and OpenSSH Client%u%
+echo %c%[16/16] App Installer ^(winget^) and OpenSSH Client%u%
 echo.
 echo %c%App Installer provides the "winget" package manager for command-line installs.%u%
 echo %c%OpenSSH Client enables the "ssh" command from PowerShell/CMD.%u%
@@ -5987,9 +5989,9 @@ if errorlevel 2 (
 )
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         DEBLOATING IN PROGRESS                               ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                         DEBLOATING IN PROGRESS                               ^|
+echo +==============================================================================+%u%
 echo.
 
 echo %c%[1/18] Removing Third-Party Bloatware and Games…%u%
@@ -6089,9 +6091,9 @@ timeout /t 2 >nul
 start explorer.exe
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        COMPREHENSIVE DEBLOATING COMPLETED                    ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                        COMPREHENSIVE DEBLOATING COMPLETED                    ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Windows debloating has been completed successfully.%u%
 echo.
@@ -6159,14 +6161,14 @@ if "%DISABLE_SERVICES%"=="true" (
 echo.
 echo %c%Successfully Removed:%u%
 echo %c%• Third-party bloatware and games%u%
-echo %c%• Unnecessary Microsoft UWP apps (News, Weather, Paint, etc.)%u%
-echo %c%• Communication and social apps (based on selection)%u%
-echo %c%• Media and creative apps (Zune, Paint, 3D Viewer, Print 3D, Clipchamp)%u%
-echo %c%• Advanced system apps (Mixed Reality, Network Speed Test, Feedback Hub)%u%
+echo %c%• Unnecessary Microsoft UWP apps ^(News, Weather, Paint, etc.^)%u%
+echo %c%• Communication and social apps ^(based on selection^)%u%
+echo %c%• Media and creative apps ^(Zune, Paint, 3D Viewer, Print 3D, Clipchamp^)%u%
+echo %c%• Advanced system apps ^(Mixed Reality, Network Speed Test, Feedback Hub^)%u%
 echo %c%• Widgets, Meet Now, Chat, Search, Task View from taskbar%u%
 echo %c%• Windows Spotlight and consumer features%u%
-echo %c%• Legacy features (IE11, WMP, WordPad, etc.)%u%
-echo %c%• Cortana (549981C3F5F10) if selected%u%
+echo %c%• Legacy features ^(IE11, WMP, WordPad, etc.^)%u%
+echo %c%• Cortana ^(549981C3F5F10^) if selected%u%
 echo %c%• Parental Controls and Holographic FirstRun%u%
 echo.
 echo %red%Important Notes:%u%
@@ -6175,9 +6177,9 @@ echo %c%• Some features may require Windows reset to restore%u%
 if "%REMOVE_XBOX%"=="true" echo %c%• Xbox Live and Minecraft online functionality disabled%u%
 if "%REMOVE_STORE%"=="true" echo %c%• Microsoft Store app installations disabled%u%
 echo %c%• All apps were properly deprovisioned to prevent reinstallation%u%
-echo %c%• System files were safely renamed (not deleted) for recovery%u%
+echo %c%• System files were safely renamed ^(not deleted^) for recovery%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
 
@@ -6604,16 +6606,16 @@ exit /b
 cls
 call :SetupConsole
 call :DisplayBanner
-echo %c%                                 ╔═══════════════════════════════════════════════════╗ %u%
-echo                                  %c%║%u%            [%c%1%u%] Hardware Information               %c%║%u%
-echo                                  %c%║%u%            [%c%2%u%] GPU Driver ^& Performance           %c%║%u%
-echo                                  %c%║%u%            [%c%3%u%] Storage Acceleration               %c%║%u%
-echo                                  %c%║%u%            [%c%4%u%] Memory (XMP/EXPO Check)            %c%║%u%
-echo                                  %c%║%u%            [%c%5%u%] Audio Optimization                 %c%║%u%
-echo                                  %c%║%u%            [%c%6%u%] USB Optimization                   %c%║%u%
-echo                                  %c%║%u%            [%c%7%u%] Monitor / Display Optimization     %c%║%u%
-echo                                  %c%║%u%            [%c%8%u%] Hardware Security Center           %c%║%u%
-echo %c%                                 ╚═══════════════════════════════════════════════════╝
+echo %c%                                 +===================================================+ %u%
+echo                                  %c%^|%u%            [%c%1%u%] Hardware Information               %c%^|%u%
+echo                                  %c%^|%u%            [%c%2%u%] GPU Driver ^& Performance           %c%^|%u%
+echo                                  %c%^|%u%            [%c%3%u%] Storage Acceleration               %c%^|%u%
+echo                                  %c%^|%u%            [%c%4%u%] Memory ^(XMP/EXPO Check^)            %c%^|%u%
+echo                                  %c%^|%u%            [%c%5%u%] Audio Optimization                 %c%^|%u%
+echo                                  %c%^|%u%            [%c%6%u%] USB Optimization                   %c%^|%u%
+echo                                  %c%^|%u%            [%c%7%u%] Monitor / Display Optimization     %c%^|%u%
+echo                                  %c%^|%u%            [%c%8%u%] Hardware Security Center           %c%^|%u%
+echo %c%                                 +===================================================+
 echo.
 echo                          %u%[%c%9%u%] Colour Presets    [%c%10%u%] Back to Main   [%red%X%u%] Exit Application
 echo.
@@ -6639,16 +6641,16 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                      MONITOR / DISPLAY OPTIMIZATION                         ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                      MONITOR / DISPLAY OPTIMIZATION                         ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Monitor optimization includes:%u%
-echo %c%  ^• Disable Display Enhancement Service (adaptive brightness / Night Light)%u%
+echo %c%  ^• Disable Display Enhancement Service ^(adaptive brightness / Night Light^)%u%
 echo %c%  ^• Optional: disable monitor DPMS power-off timeout%u%
-echo %c%  ^• Optional: disable HDR for gaming (removes processing overhead)%u%
-echo %c%  ^• Zero GPU monitor latency tolerance (documented display pipeline setting)%u%
-echo %c%  ^• Disable VSync idle timeout (GPU stays active between frames)%u%
+echo %c%  ^• Optional: disable HDR for gaming ^(removes processing overhead^)%u%
+echo %c%  ^• Zero GPU monitor latency tolerance ^(documented display pipeline setting^)%u%
+echo %c%  ^• Disable VSync idle timeout ^(GPU stays active between frames^)%u%
 echo %c%  ^• Prioritize display pipeline in MMCSS scheduler%u%
 echo %c%  ^• Disable color calibration auto-update overhead%u%
 echo.
@@ -6677,9 +6679,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                      MONITOR / DISPLAY OPTIMIZATION                         ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                      MONITOR / DISPLAY OPTIMIZATION                         ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Applying monitor and display optimizations...%u%
 echo.
@@ -6690,7 +6692,7 @@ sc config DisplayEnhancementService start= disabled >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DisplayEnhancementService" /v "Start" /t REG_DWORD /d "4" /f >nul 2>&1
 if !errorlevel!==0 (echo %green%  [+] Done%u%) else (echo %orange%  [!] Failed%u%)
 
-echo %white%[2/7]%u% Monitor power-off timeout (DPMS)...
+echo %white%[2/7]%u% Monitor power-off timeout ^(DPMS^)...
 if "!MON_DISABLE_DPMS!"=="true" (
     powercfg /setacvalueindex SCHEME_CURRENT 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e 0 >nul 2>&1
     powercfg /setdcvalueindex SCHEME_CURRENT 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e 0 >nul 2>&1
@@ -6741,18 +6743,18 @@ reg add "HKCU\Software\Microsoft\Windows NT\CurrentVersion\ICM\Calibration" /v "
 if !errorlevel!==0 (echo %green%  [+] Done%u%) else (echo %orange%  [!] Failed%u%)
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                  MONITOR / DISPLAY OPTIMIZATION COMPLETE!                   ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                  MONITOR / DISPLAY OPTIMIZATION COMPLETE!                   ^|
+echo +==============================================================================+%u%
 echo.
 echo %green%Monitor and display optimizations applied successfully!%u%
 echo.
 echo %c%Changes applied:%u%
-echo %c%  [+]%u% Display Enhancement Service disabled (adaptive brightness off)
+echo %c%  [+]%u% Display Enhancement Service disabled ^(adaptive brightness off^)
 if "!MON_DISABLE_DPMS!"=="true" (echo %c%  [+]%u% Monitor DPMS timeout set to Never) else (echo %c%  [-]%u% Monitor DPMS timeout kept ^(OLED-safe^))
 if "!MON_DISABLE_HDR!"=="true" (echo %c%  [+]%u% Windows HDR for gaming disabled) else (echo %c%  [-]%u% Windows HDR kept enabled)
 echo %c%  [+]%u% GPU monitor latency tolerance set to zero
-echo %c%  [+]%u% VSync idle timeout disabled (GPU stays at full speed)
+echo %c%  [+]%u% VSync idle timeout disabled ^(GPU stays at full speed^)
 echo %c%  [+]%u% MMCSS display pipeline set to High / Latency Sensitive
 echo %c%  [+]%u% Color calibration auto-update disabled
 echo.
@@ -6767,9 +6769,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           AUDIO OPTIMIZATION                                ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           AUDIO OPTIMIZATION                                ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Audio optimization includes:%u%
 echo %c%  ^• Disable Windows volume auto-ducking%u%
@@ -6799,9 +6801,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           AUDIO OPTIMIZATION                                ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           AUDIO OPTIMIZATION                                ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Applying audio optimizations...%u%
 echo.
@@ -6815,7 +6817,7 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution 
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\audiodg.exe\PerfOptions" /v "IoPriority" /t REG_DWORD /d "3" /f >nul 2>&1
 if !errorlevel!==0 (echo %green%  [+] Done%u%) else (echo %orange%  [!] Failed%u%)
 
-echo %white%[3/6]%u% Disabling multimedia system lazy mode (lower audio latency)...
+echo %white%[3/6]%u% Disabling multimedia system lazy mode ^(lower audio latency^)...
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "NoLazyMode" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "AlwaysOn" /t REG_DWORD /d "1" /f >nul 2>&1
 if !errorlevel!==0 (echo %green%  [+] Done%u%) else (echo %orange%  [!] Failed%u%)
@@ -6824,7 +6826,7 @@ echo %white%[4/6]%u% Setting Windows sound scheme to None...
 reg add "HKCU\AppEvents\Schemes" /ve /t REG_SZ /d ".None" /f >nul 2>&1
 if !errorlevel!==0 (echo %green%  [+] Done%u%) else (echo %orange%  [!] Failed%u%)
 
-echo %white%[5/6]%u% Disabling GS Wavetable Synth (unused MIDI overhead)...
+echo %white%[5/6]%u% Disabling GS Wavetable Synth ^(unused MIDI overhead^)...
 chcp 437 >nul
 powershell -NoProfile -Command "Get-PnpDevice | Where-Object {$_.FriendlyName -like '*GS Wavetable*'} | Disable-PnpDevice -Confirm:$false -ErrorAction SilentlyContinue" >nul 2>&1
 chcp 65001 >nul
@@ -6853,9 +6855,9 @@ if "!AUDIO_DISABLE_FX!"=="true" (
 )
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                      AUDIO OPTIMIZATION COMPLETE!                           ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                      AUDIO OPTIMIZATION COMPLETE!                           ^|
+echo +==============================================================================+%u%
 echo.
 echo %green%Audio optimizations applied successfully!%u%
 echo.
@@ -6868,7 +6870,7 @@ echo %c%  [+]%u% GS Wavetable Synth disabled
 if "!AUDIO_DISABLE_FX!"=="true" (
     echo %c%  [+]%u% Audio/video AI enhancements and DSP effects disabled
 ) else (
-    echo %c%  [-]%u% Audio/video AI enhancements kept enabled (mic quality preserved)
+    echo %c%  [-]%u% Audio/video AI enhancements kept enabled ^(mic quality preserved^)
 )
 echo.
 echo %orange%A restart is recommended for all changes to take full effect.%u%
@@ -6882,15 +6884,15 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           USB OPTIMIZATION                                  ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           USB OPTIMIZATION                                  ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%USB optimization includes:%u%
 echo %c%  ^• Disable selective suspend, but only for input/audio/capture devices%u%
-echo %c%    (mouse, keyboard, controllers, headsets, webcams, capture cards)%u%
+echo %c%    ^(mouse, keyboard, controllers, headsets, webcams, capture cards^)%u%
 echo %c%  ^• Storage, printers and other USB devices keep their power saving%u%
-echo %c%    (no reason to stop a pendrive or external HDD from sleeping)%u%
+echo %c%    ^(no reason to stop a pendrive or external HDD from sleeping^)%u%
 echo.
 echo %orange%%underline%USB Notice:%u%
 echo %c%Only latency-sensitive peripherals are targeted, not every USB device.%u%
@@ -6903,9 +6905,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           USB OPTIMIZATION                                  ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           USB OPTIMIZATION                                  ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Applying USB power management optimizations...%u%
 echo.
@@ -6917,7 +6919,7 @@ chcp 65001 >nul
 set "USB_TOUCHED=0"
 for /f "usebackq tokens=2 delims=|" %%C in ("%temp%\dex_usb.txt") do set "USB_TOUCHED=%%C"
 del "%temp%\dex_usb.txt" 2>nul
-echo %green%  [+] Selective suspend disabled on !USB_TOUCHED! input/audio/capture device(s)%u%
+echo %green%  [+] Selective suspend disabled on !USB_TOUCHED! input/audio/capture device^(s^)%u%
 
 echo %white%[2/2]%u% Disabling USB selective suspend in the active power plan...
 powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0 >nul 2>&1
@@ -6926,9 +6928,9 @@ powercfg /setactive SCHEME_CURRENT >nul 2>&1
 if !errorlevel!==0 (echo %green%  [+] Done%u%) else (echo %orange%  [!] Failed%u%)
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       USB OPTIMIZATION COMPLETE!                            ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       USB OPTIMIZATION COMPLETE!                            ^|
+echo +==============================================================================+%u%
 echo.
 echo %green%USB optimizations applied successfully!%u%
 echo.
@@ -6948,9 +6950,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           HARDWARE SECURITY CENTER                            ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                           HARDWARE SECURITY CENTER                            ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Analyzing hardware security configuration...%u%
 echo.
@@ -6987,22 +6989,22 @@ chcp 65001 >nul
 cls
 call :SetupConsole
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           HARDWARE SECURITY STATUS                            ║
-echo ╠═══════════════════════════════════════════════════════════════════════════════╣%u%
-echo %c%║ Motherboard   %mobo_manufacturer% %mobo_model%
-echo ║ BIOS Version   %bios_version%
-echo ║ CPU   %cpu_name%
-echo %c%║                                                                               ║%u%
+echo %c%+===============================================================================+
+echo ^|                           HARDWARE SECURITY STATUS                            ^|
+echo +===============================================================================+%u%
+echo %c%^| Motherboard   %mobo_manufacturer% %mobo_model%
+echo ^| BIOS Version   %bios_version%
+echo ^| CPU   %cpu_name%
+echo %c%^|                                                                               ^|%u%
 
 set "line="
 if /i "%tpm_status%"=="TPM_PRESENT" (
-    set "line=%c%║ TPM Status   2.0 Enabled %green%✓%c%        │ "
+    set "line=%c%| TPM Status   2.0 Enabled %green%✓%c%        │ "
 ) else (
     if /i "%tpm_status%"=="TPM_ABSENT" (
-        set "line=%c%║ TPM Status   Not Found %red%✗%c%          │ "
+        set "line=%c%| TPM Status   Not Found %red%✗%c%          │ "
     ) else (
-        set "line=%c%║ TPM Status   Unknown %yellow%?%c%            │ "
+        set "line=%c%| TPM Status   Unknown %yellow%?%c%            │ "
     )
 )
 
@@ -7017,13 +7019,13 @@ if /i "%secureboot_status%"=="SECUREBOOT_ENABLED" (
 )
 echo %line%
 
-echo %c%║                                                                               ║%u%
+echo %c%^|                                                                               ^|%u%
 
 set "line="
 if /i "%bitlocker_status%"=="BITLOCKER_AVAILABLE" (
-    set "line=%c%║ Hardware Encryption   Available %green%✓%c%  │ "
+    set "line=%c%| Hardware Encryption   Available %green%✓%c%  │ "
 ) else (
-    set "line=%c%║ Hardware Encryption   Unavailable %red%✗%c% │ "
+    set "line=%c%| Hardware Encryption   Unavailable %red%✗%c% │ "
 )
 if /i "%virt_status%"=="VIRT_ENABLED" (
     set "line=%line%Virtualization   Enabled %green%✓%u%"
@@ -7032,85 +7034,85 @@ if /i "%virt_status%"=="VIRT_ENABLED" (
 )
 echo %line%
 
-echo %c%║                                                                               ║
-echo ║ Memory Protection   Checking...     │ Intel TXT/AMD SVM   Checking...          ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%^|                                                                               ^|
+echo ^| Memory Protection   Checking...     │ Intel TXT/AMD SVM   Checking...          ^|
+echo +===============================================================================+%u%
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        ANTI-CHEAT COMPATIBILITY ANALYSIS                     ║
-echo ╠═══════════════════════════════════════════════════════════════════════════════╣%u%
+echo %c%+===============================================================================+
+echo ^|                        ANTI-CHEAT COMPATIBILITY ANALYSIS                     ^|
+echo +===============================================================================+%u%
 
 set "valorant_status="
 if /i "%tpm_status%"=="TPM_PRESENT" (
     if /i "%secureboot_status%"=="SECUREBOOT_ENABLED" (
-        set "valorant_status=%c%║ • Valorant (Vanguard)   Compatible %green%✓%c%                                       ║%u%"
+        set "valorant_status=%c%| • Valorant (Vanguard)   Compatible %green%✓%c%                                       |%u%"
     ) else (
-        set "valorant_status=%c%║ • Valorant (Vanguard)   TPM %green%✓%c% Secure Boot %red%⚠️ NEEDS ENABLING%c%        ║%u%"
+        set "valorant_status=%c%| • Valorant (Vanguard)   TPM %green%✓%c% Secure Boot %red%⚠️ NEEDS ENABLING%c%        |%u%"
     )
 ) else (
-    set "valorant_status=%c%║ • Valorant (Vanguard)   TPM %red%✗%c% Secure Boot %red%✗%c% HARDWARE SETUP REQUIRED%c% ║%u%"
+    set "valorant_status=%c%| • Valorant (Vanguard)   TPM %red%✗%c% Secure Boot %red%✗%c% HARDWARE SETUP REQUIRED%c% |%u%"
 )
 echo %valorant_status%
 
 set "cod_status="
 if /i "%tpm_status%"=="TPM_PRESENT" (
     if /i "%secureboot_status%"=="SECUREBOOT_ENABLED" (
-        set "cod_status=%c%║ • Call of Duty (Ricochet)   Compatible %green%✓%c%                                   ║%u%"
+        set "cod_status=%c%| • Call of Duty (Ricochet)   Compatible %green%✓%c%                                   |%u%"
     ) else (
-        set "cod_status=%c%║ • Call of Duty (Ricochet)   TPM %green%✓%c% Secure Boot %red%⚠️ NEEDS ENABLING%c%    ║%u%"
+        set "cod_status=%c%| • Call of Duty (Ricochet)   TPM %green%✓%c% Secure Boot %red%⚠️ NEEDS ENABLING%c%    |%u%"
     )
 ) else (
-    set "cod_status=%c%║ • Call of Duty (Ricochet)   TPM %red%✗%c% Secure Boot %red%✗%c% SETUP REQUIRED%c%    ║%u%"
+    set "cod_status=%c%| • Call of Duty (Ricochet)   TPM %red%✗%c% Secure Boot %red%✗%c% SETUP REQUIRED%c%    |%u%"
 )
 echo %cod_status%
 
 set "faceit_status="
 if /i "%tpm_status%"=="TPM_PRESENT" (
     if /i "%secureboot_status%"=="SECUREBOOT_ENABLED" (
-        set "faceit_status=%c%║ • FACEIT Anti-Cheat   Compatible %green%✓%c%                                         ║%u%"
+        set "faceit_status=%c%| • FACEIT Anti-Cheat   Compatible %green%✓%c%                                         |%u%"
     ) else (
-        set "faceit_status=%c%║ • FACEIT Anti-Cheat   TPM %green%✓%c% Secure Boot %red%⚠️ NEEDS ENABLING%c%          ║%u%"
+        set "faceit_status=%c%| • FACEIT Anti-Cheat   TPM %green%✓%c% Secure Boot %red%⚠️ NEEDS ENABLING%c%          |%u%"
     )
 ) else (
-    set "faceit_status=%c%║ • FACEIT Anti-Cheat   TPM %red%✗%c% Secure Boot %red%✗%c% HARDWARE SETUP REQUIRED%c% ║%u%"
+    set "faceit_status=%c%| • FACEIT Anti-Cheat   TPM %red%✗%c% Secure Boot %red%✗%c% HARDWARE SETUP REQUIRED%c% |%u%"
 )
 echo %faceit_status%
 
-echo %c%║ • Easy Anti-Cheat   Compatible %green%✓%c%                                           ║%u%
+echo %c%^| • Easy Anti-Cheat   Compatible %green%✓%c%                                           ^|%u%
 
-echo %c%║ • BattlEye   Compatible %green%✓%c%                                                  ║%u%
+echo %c%^| • BattlEye   Compatible %green%✓%c%                                                  ^|%u%
 
-echo %c%╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+%u%
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗%u%
+echo %c%+===============================================================================+%u%
 
 if /i "%mobo_manufacturer%"=="ASUSTeK COMPUTER INC." (
-    echo %c%║                        ASUS BIOS CONFIGURATION GUIDE                         ║%u%
+    echo %c%^|                        ASUS BIOS CONFIGURATION GUIDE                         ^|%u%
     call :ShowASUSGuide
 ) else if /i "%mobo_manufacturer%"=="MSI" (
-    echo %c%║                          MSI BIOS CONFIGURATION GUIDE                         ║%u%
+    echo %c%^|                          MSI BIOS CONFIGURATION GUIDE                         ^|%u%
     call :ShowMSIGuide
 ) else if /i "%mobo_manufacturer%"=="Gigabyte Technology Co., Ltd." (
-    echo %c%║                      GIGABYTE BIOS CONFIGURATION GUIDE                       ║%u%
+    echo %c%^|                      GIGABYTE BIOS CONFIGURATION GUIDE                       ^|%u%
     call :ShowGigabyteGuide
 ) else if /i "%mobo_manufacturer%"=="ASRock" (
-    echo %c%║                       ASROCK BIOS CONFIGURATION GUIDE                       ║%u%
+    echo %c%^|                       ASROCK BIOS CONFIGURATION GUIDE                       ^|%u%
     call :ShowASRockGuide
 ) else (
-    echo %c%║                       GENERIC BIOS CONFIGURATION GUIDE                       ║%u%
+    echo %c%^|                       GENERIC BIOS CONFIGURATION GUIDE                       ^|%u%
     call :ShowGenericGuide
 )
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         ADVANCED SECURITY OPTIONS                            ║
-echo ╠═══════════════════════════════════════════════════════════════════════════════╣
-echo ║ [1] Enable Windows Hello PIN/Biometrics    [2] Configure BitLocker Encryption║
-echo ║ [3] Enable Windows Credential Guard        [4] Configure Device Guard        ║
-echo ║ [5] Enable Core Isolation Memory Integrity [6] Windows Defender System Guard ║
-echo ║ [7] Enable Hypervisor Code Integrity       [8] Smart Card Authentication     ║
-echo ║ [9] Security Compliance Report             [0] Automated Security Setup      ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                         ADVANCED SECURITY OPTIONS                            ^|
+echo +===============================================================================+
+echo ^| [1] Enable Windows Hello PIN/Biometrics    [2] Configure BitLocker Encryption^|
+echo ^| [3] Enable Windows Credential Guard        [4] Configure Device Guard        ^|
+echo ^| [5] Enable Core Isolation Memory Integrity [6] Windows Defender System Guard ^|
+echo ^| [7] Enable Hypervisor Code Integrity       [8] Smart Card Authentication     ^|
+echo ^| [9] Security Compliance Report             [0] Automated Security Setup      ^|
+echo +===============================================================================+%u%
 echo.
 echo %orange%%underline%Performance trade-off:%u%
 echo %c%Options 3, 4, 5, 6, 7 and 0 turn on Virtualization-Based Security/HVCI. This%u%
@@ -7145,9 +7147,9 @@ goto HardwareSecurityCenter
 cls
 call :SetupConsole
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           BITLOCKER CONFIGURATION                            ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                           BITLOCKER CONFIGURATION                            ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Analyzing BitLocker readiness...%u%
 echo.
@@ -7194,10 +7196,10 @@ if /i "%tpm_status%"=="TPM_PRESENT" (
         echo %c%BitLocker status%u%
         manage-bde -status
     ) else if "!bl_choice!"=="5" (
-        echo %c%Backing up recovery key (displaying protector info)...%u%
+        echo %c%Backing up recovery key ^(displaying protector info^)...%u%
         manage-bde -protectors -get C:
     ) else (
-        echo %yellow%Invalid choice (BitLocker menu).%u%
+        echo %yellow%Invalid choice ^(BitLocker menu^).%u%
     )
 ) else (
     echo %red%✗ TPM not detected - BitLocker requires TPM 2.0%u%
@@ -7213,9 +7215,9 @@ goto HardwareSecurityCenter
 cls
 call :SetupConsole
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                            WINDOWS HELLO SETUP                               ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                            WINDOWS HELLO SETUP                               ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Configuring Windows Hello PIN and biometric authentication...%u%
 echo.
@@ -7249,9 +7251,9 @@ goto HardwareSecurityCenter
 cls
 call :SetupConsole
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         WINDOWS CREDENTIAL GUARD                             ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                         WINDOWS CREDENTIAL GUARD                             ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Enabling Windows Credential Guard...%u%
 echo.
@@ -7275,9 +7277,9 @@ goto HardwareSecurityCenter
 cls
 call :SetupConsole
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           WINDOWS DEVICE GUARD                               ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                           WINDOWS DEVICE GUARD                               ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Configuring Windows Device Guard / Application Control...%u%
 echo.
@@ -7304,9 +7306,9 @@ goto HardwareSecurityCenter
 cls
 call :SetupConsole
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         CORE ISOLATION MEMORY INTEGRITY                      ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                         CORE ISOLATION MEMORY INTEGRITY                      ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Enabling Core Isolation Memory Integrity...%u%
 echo.
@@ -7315,7 +7317,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorE
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard" /v "EnableVirtualizationBasedSecurity" /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\KernelShadowStacks" /v "Enabled" /t REG_DWORD /d 1 /f >nul 2>&1
 
-echo %c%✓ Memory Integrity (HVCI) enabled%u%
+echo %c%✓ Memory Integrity ^(HVCI^) enabled%u%
 echo %c%✓ Virtualization-based security configured%u%
 echo %c%✓ Kernel DMA Protection configured%u%
 echo.
@@ -7334,53 +7336,53 @@ goto HardwareSecurityCenter
 cls
 call :SetupConsole
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         SECURITY COMPLIANCE REPORT                           ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                         SECURITY COMPLIANCE REPORT                           ^|
+echo +===============================================================================+%u%
 echo.
 
 echo %c%Generating security compliance report...%u%
 echo.
 
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║ Security Compliance Summary                                                   ║
-echo ╠═══════════════════════════════════════════════════════════════════════════════╣%u%
+echo %c%+===============================================================================+
+echo ^| Security Compliance Summary                                                   ^|
+echo +===============================================================================+%u%
 
 if /i "%tpm_status%"=="TPM_PRESENT" (
     if /i "%secureboot_status%"=="SECUREBOOT_ENABLED" (
-        echo %c%║ • Windows 11 Ready %green%✓%c% (TPM 2.0 + Secure Boot + UEFI)                       ║%u%
+        echo %c%^| • Windows 11 Ready %green%✓%c% ^(TPM 2.0 + Secure Boot + UEFI^)                       ^|%u%
     ) else (
-        echo %c%║ • Windows 11 Ready %yellow%⚠️%c% (TPM ✓, Secure Boot needed)                        ║%u%
+        echo %c%^| • Windows 11 Ready %yellow%⚠️%c% ^(TPM ✓, Secure Boot needed^)                        ^|%u%
     )
 ) else (
-    echo %c%║ • Windows 11 Ready %red%✗%c% (TPM and Secure Boot needed)                         ║%u%
+    echo %c%^| • Windows 11 Ready %red%✗%c% ^(TPM and Secure Boot needed^)                         ^|%u%
 )
 
-echo %c%║ • Enterprise Ready %yellow%⚠️%c% (Additional configuration recommended)               ║%u%
+echo %c%^| • Enterprise Ready %yellow%⚠️%c% ^(Additional configuration recommended^)               ^|%u%
 
 if /i "%tpm_status%"=="TPM_PRESENT" (
     if /i "%secureboot_status%"=="SECUREBOOT_ENABLED" (
-        echo %c%║ • Gaming Anti-Cheat Ready %green%✓%c% (Modern anti-cheat compatible)              ║%u%
+        echo %c%^| • Gaming Anti-Cheat Ready %green%✓%c% ^(Modern anti-cheat compatible^)              ^|%u%
     ) else (
-        echo %c%║ • Gaming Anti-Cheat Ready %yellow%⚠️%c% (Secure Boot needed for some games)       ║%u%
+        echo %c%^| • Gaming Anti-Cheat Ready %yellow%⚠️%c% ^(Secure Boot needed for some games^)       ^|%u%
     )
 ) else (
-    echo %c%║ • Gaming Anti-Cheat Ready %red%✗%c% (TPM and Secure Boot required)               ║%u%
+    echo %c%^| • Gaming Anti-Cheat Ready %red%✗%c% ^(TPM and Secure Boot required^)               ^|%u%
 )
 
 if /i "%tpm_status%"=="TPM_PRESENT" (
-    echo %c%║ • BitLocker Ready %green%✓%c% (TPM 2.0 available)                                    ║%u%
+    echo %c%^| • BitLocker Ready %green%✓%c% ^(TPM 2.0 available^)                                    ^|%u%
 ) else (
-    echo %c%║ • BitLocker Ready %red%✗%c% (TPM 2.0 required)                                   ║%u%
+    echo %c%^| • BitLocker Ready %red%✗%c% ^(TPM 2.0 required^)                                   ^|%u%
 )
 
 if /i "%virt_status%"=="VIRT_ENABLED" (
-    echo %c%║ • VBS Ready %green%✓%c% (Virtualization enabled)                                     ║%u%
+    echo %c%^| • VBS Ready %green%✓%c% ^(Virtualization enabled^)                                     ^|%u%
 ) else (
-    echo %c%║ • VBS Ready %red%✗%c% (Virtualization support needed)                            ║%u%
+    echo %c%^| • VBS Ready %red%✗%c% ^(Virtualization support needed^)                            ^|%u%
 )
 
-echo %c%╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+%u%
 echo.
 
 echo Security Compliance Report - Generated on %date% %time% > "%USERPROFILE%\Desktop\Security_Report.txt"
@@ -7401,88 +7403,88 @@ goto HardwareSecurityCenter
 
 
 :ShowASUSGuide
-echo %c%╠═══════════════════════════════════════════════════════════════════════════════╣
-echo ║ To Enable TPM 2.0                                                            ║
-echo ║ 1. Restart and press DEL/F2 to enter BIOS                                   ║
-echo ║ 2. Go to Advanced → PCH-FW Configuration                                     ║
-echo ║ 3. Set "TPM Device Selection" to "Firmware TPM"                             ║
-echo ║ 4. Set "Security Device Support" to "Enable"                                ║
-echo ║                                                                               ║
-echo ║ To Enable Secure Boot                                                        ║
-echo ║ 1. Go to Boot → Secure Boot                                                  ║
-echo ║ 2. Set "OS Type" to "Windows UEFI mode"                                     ║
-echo ║ 3. Set "Secure Boot state" to "Enabled"                                     ║
-echo ║ 4. Clear Secure Boot keys if prompted                                        ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^| To Enable TPM 2.0                                                            ^|
+echo ^| 1. Restart and press DEL/F2 to enter BIOS                                   ^|
+echo ^| 2. Go to Advanced → PCH-FW Configuration                                     ^|
+echo ^| 3. Set "TPM Device Selection" to "Firmware TPM"                             ^|
+echo ^| 4. Set "Security Device Support" to "Enable"                                ^|
+echo ^|                                                                               ^|
+echo ^| To Enable Secure Boot                                                        ^|
+echo ^| 1. Go to Boot → Secure Boot                                                  ^|
+echo ^| 2. Set "OS Type" to "Windows UEFI mode"                                     ^|
+echo ^| 3. Set "Secure Boot state" to "Enabled"                                     ^|
+echo ^| 4. Clear Secure Boot keys if prompted                                        ^|
+echo +===============================================================================+%u%
 goto :eof
 
 :ShowMSIGuide
-echo %c%╠═══════════════════════════════════════════════════════════════════════════════╣
-echo ║ To Enable TPM 2.0                                                            ║
-echo ║ 1. Restart and press DEL to enter BIOS                                      ║
-echo ║ 2. Go to Settings → Security → Trusted Computing                            ║
-echo ║ 3. Set "Security Device Support" to "Enabled"                               ║
-echo ║ 4. Set "TPM Device Selection" to "Firmware TPM" or "dTPM"                   ║
-echo ║                                                                               ║
-echo ║ To Enable Secure Boot                                                        ║
-echo ║ 1. Go to Settings → Security → Secure Boot                                  ║
-echo ║ 2. Set "Secure Boot" to "Enabled"                                           ║
-echo ║ 3. Select "UEFI" boot mode if not already selected                          ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^| To Enable TPM 2.0                                                            ^|
+echo ^| 1. Restart and press DEL to enter BIOS                                      ^|
+echo ^| 2. Go to Settings → Security → Trusted Computing                            ^|
+echo ^| 3. Set "Security Device Support" to "Enabled"                               ^|
+echo ^| 4. Set "TPM Device Selection" to "Firmware TPM" or "dTPM"                   ^|
+echo ^|                                                                               ^|
+echo ^| To Enable Secure Boot                                                        ^|
+echo ^| 1. Go to Settings → Security → Secure Boot                                  ^|
+echo ^| 2. Set "Secure Boot" to "Enabled"                                           ^|
+echo ^| 3. Select "UEFI" boot mode if not already selected                          ^|
+echo +===============================================================================+%u%
 goto :eof
 
 :ShowGigabyteGuide
-echo %c%╠═══════════════════════════════════════════════════════════════════════════════╣
-echo ║ To Enable TPM 2.0                                                            ║
-echo ║ 1. Restart and press DEL to enter BIOS                                      ║
-echo ║ 2. Go to Peripherals → Trusted Computing                                    ║
-echo ║ 3. Set "Security Device Support" to "Enabled"                               ║
-echo ║ 4. Set "TPM Device Selection" to "Firmware TPM"                             ║
-echo ║                                                                               ║
-echo ║ To Enable Secure Boot                                                        ║
-echo ║ 1. Go to BIOS → Boot Option #1                                              ║
-echo ║ 2. Set "Secure Boot" to "Enabled"                                           ║
-echo ║ 3. Set "Platform Key (PK)" management if needed                             ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^| To Enable TPM 2.0                                                            ^|
+echo ^| 1. Restart and press DEL to enter BIOS                                      ^|
+echo ^| 2. Go to Peripherals → Trusted Computing                                    ^|
+echo ^| 3. Set "Security Device Support" to "Enabled"                               ^|
+echo ^| 4. Set "TPM Device Selection" to "Firmware TPM"                             ^|
+echo ^|                                                                               ^|
+echo ^| To Enable Secure Boot                                                        ^|
+echo ^| 1. Go to BIOS → Boot Option #1                                              ^|
+echo ^| 2. Set "Secure Boot" to "Enabled"                                           ^|
+echo ^| 3. Set "Platform Key (PK)" management if needed                             ^|
+echo +===============================================================================+%u%
 goto :eof
 
 :ShowASRockGuide
-echo %c%╠═══════════════════════════════════════════════════════════════════════════════╣
-echo ║ To Enable TPM 2.0                                                            ║
-echo ║ 1. Restart and press DEL/F2 to enter BIOS                                   ║
-echo ║ 2. Go to Security → Trusted Computing                                       ║
-echo ║ 3. Set "Security Device Support" to "Enabled"                               ║
-echo ║ 4. Set "TPM Device Selection" to "Firmware TPM"                             ║
-echo ║                                                                               ║
-echo ║ To Enable Secure Boot                                                        ║
-echo ║ 1. Go to Security → Secure Boot                                             ║
-echo ║ 2. Set "Secure Boot" to "Enabled"                                           ║
-echo ║ 3. Install default Secure Boot keys                                         ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^| To Enable TPM 2.0                                                            ^|
+echo ^| 1. Restart and press DEL/F2 to enter BIOS                                   ^|
+echo ^| 2. Go to Security → Trusted Computing                                       ^|
+echo ^| 3. Set "Security Device Support" to "Enabled"                               ^|
+echo ^| 4. Set "TPM Device Selection" to "Firmware TPM"                             ^|
+echo ^|                                                                               ^|
+echo ^| To Enable Secure Boot                                                        ^|
+echo ^| 1. Go to Security → Secure Boot                                             ^|
+echo ^| 2. Set "Secure Boot" to "Enabled"                                           ^|
+echo ^| 3. Install default Secure Boot keys                                         ^|
+echo +===============================================================================+%u%
 goto :eof
 
 :ShowGenericGuide
-echo %c%╠═══════════════════════════════════════════════════════════════════════════════╣
-echo ║ To Enable TPM 2.0 (Generic)                                                  ║
-echo ║ 1. Restart and press DEL/F2/F12 to enter BIOS                              ║
-echo ║ 2. Look for Security, Advanced, or Trusted Computing sections              ║
-echo ║ 3. Find "TPM", "Security Device", or "Trusted Computing" options           ║
-echo ║ 4. Enable TPM/Security Device Support                                       ║
-echo ║                                                                               ║
-echo ║ To Enable Secure Boot (Generic)                                             ║
-echo ║ 1. Look for Boot, Security, or Authentication sections                      ║
-echo ║ 2. Find "Secure Boot" option                                                ║
-echo ║ 3. Set to "Enabled" and ensure UEFI boot mode                              ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^| To Enable TPM 2.0 ^(Generic^)                                                  ^|
+echo ^| 1. Restart and press DEL/F2/F12 to enter BIOS                              ^|
+echo ^| 2. Look for Security, Advanced, or Trusted Computing sections              ^|
+echo ^| 3. Find "TPM", "Security Device", or "Trusted Computing" options           ^|
+echo ^| 4. Enable TPM/Security Device Support                                       ^|
+echo ^|                                                                               ^|
+echo ^| To Enable Secure Boot ^(Generic^)                                             ^|
+echo ^| 1. Look for Boot, Security, or Authentication sections                      ^|
+echo ^| 2. Find "Secure Boot" option                                                ^|
+echo ^| 3. Set to "Enabled" and ensure UEFI boot mode                              ^|
+echo +===============================================================================+%u%
 goto :eof
 
 :EnableSystemGuard
 cls
 call :SetupConsole
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       WINDOWS DEFENDER SYSTEM GUARD                          ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                       WINDOWS DEFENDER SYSTEM GUARD                          ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Configuring Windows Defender System Guard...%u%
 echo.
@@ -7536,13 +7538,13 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v "LsaCfgFlags" /t REG_DWOR
 echo %c%✓ Secure Boot integration configured%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                      SYSTEM GUARD CONFIGURATION COMPLETED                    ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                      SYSTEM GUARD CONFIGURATION COMPLETED                    ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully configured:%u%
 echo %c%• System Guard Secure Launch%u%
-echo %c%• SMM (System Management Mode) Protection%u%
+echo %c%• SMM ^(System Management Mode^) Protection%u%
 echo %c%• Runtime Attestation%u%
 echo %c%• Kernel DMA Protection%u%
 echo %c%• Secure Boot Integration%u%
@@ -7565,11 +7567,11 @@ goto HardwareSecurityCenter
 cls
 call :SetupConsole
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    HYPERVISOR-PROTECTED CODE INTEGRITY                       ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                    HYPERVISOR-PROTECTED CODE INTEGRITY                       ^|
+echo +===============================================================================+%u%
 echo.
-echo %c%Configuring Hypervisor-protected Code Integrity (HVCI)...%u%
+echo %c%Configuring Hypervisor-protected Code Integrity ^(HVCI^)...%u%
 echo.
 
 echo %c%[1/8] Checking HVCI compatibility...%u%
@@ -7632,14 +7634,14 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard" /v "EnableVirtual
 echo %c%✓ HVCI policy configuration completed%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        HVCI CONFIGURATION COMPLETED                          ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                        HVCI CONFIGURATION COMPLETED                          ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully configured:%u%
-echo %c%• Hypervisor-protected Code Integrity (HVCI)%u%
-echo %c%• Kernel Control Flow Guard (Kernel CFG)%u%
-echo %c%• Hardware Stack Protection (CET/PAC)%u%
+echo %c%• Hypervisor-protected Code Integrity ^(HVCI^)%u%
+echo %c%• Kernel Control Flow Guard ^(Kernel CFG^)%u%
+echo %c%• Hardware Stack Protection ^(CET/PAC^)%u%
 echo %c%• Strict Kernel Isolation%u%
 echo %c%• Driver Compatibility Enforcement%u%
 echo %c%• Vulnerable Driver Blocklist%u%
@@ -7665,9 +7667,9 @@ goto HardwareSecurityCenter
 cls
 call :SetupConsole
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       SMART CARD AUTHENTICATION SETUP                        ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                       SMART CARD AUTHENTICATION SETUP                        ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Configuring Smart Card and Certificate Authentication...%u%
 echo.
@@ -7737,14 +7739,14 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\EFS" /v "KeyLength" /
 echo %c%✓ Advanced Smart Card features configured%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                   SMART CARD AUTHENTICATION CONFIGURATION                    ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                   SMART CARD AUTHENTICATION CONFIGURATION                    ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Smart Card Authentication Setup Options:%u%
 echo.
-echo %c%[1] Launch Certificate Manager (certmgr.msc)%u%
-echo %c%[2] Launch Smart Card Management (certlm.msc)%u%
+echo %c%[1] Launch Certificate Manager ^(certmgr.msc^)%u%
+echo %c%[2] Launch Smart Card Management ^(certlm.msc^)%u%
 echo %c%[3] Configure Certificate Templates%u%
 echo %c%[4] Test Smart Card Authentication%u%
 echo %c%[5] Enable Smart Card Required Logon%u%
@@ -7806,9 +7808,9 @@ if "!sc_choice!"=="7" (
     cls
     call :SetupConsole
     echo.
-    echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-    echo ║                           SMART CARD STATUS REPORT                           ║
-    echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+    echo %c%+===============================================================================+
+    echo ^|                           SMART CARD STATUS REPORT                           ^|
+    echo +===============================================================================+%u%
     echo.
     echo %c%Smart Card Services Status:%u%
     sc query "SCardSvr" | findstr "STATE" 
@@ -7842,9 +7844,9 @@ timeout /t 2 >nul
 goto ConfigureSmartCard
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                     SMART CARD CONFIGURATION COMPLETED                       ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                     SMART CARD CONFIGURATION COMPLETED                       ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully configured:%u%
 echo %c%• Smart Card services and drivers%u%
@@ -7882,9 +7884,9 @@ del /q "%temp%\bio_status.txt" 2>nul
 cls
 call :SetupConsole
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                          AUTOMATED SECURITY SETUP                            ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                          AUTOMATED SECURITY SETUP                            ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will automatically configure recommended security settings...%u%
 echo.
@@ -7927,9 +7929,9 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" /v "Kerne
 echo %c%✓ Kernel protection features enabled%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       AUTOMATED SETUP COMPLETED                              ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                       AUTOMATED SETUP COMPLETED                              ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully configured:%u%
 echo %c%• Virtualization-Based Security%u%
@@ -7957,9 +7959,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         GPU DRIVER & PERFORMANCE                             ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                         GPU DRIVER ^& PERFORMANCE                             ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Detecting GPU vendor...%u%
 chcp 437 >nul
@@ -7981,14 +7983,14 @@ echo.
 
 echo %c%This will apply only documented, reversible optimizations:%u%
 echo %c%• Disable vendor telemetry services and scheduled tasks%u%
-echo %c%• Enable Hardware-Accelerated GPU Scheduling (official Windows feature)%u%
+echo %c%• Enable Hardware-Accelerated GPU Scheduling ^(official Windows feature^)%u%
 echo %c%• Prioritize the foreground game in the Windows multimedia scheduler%u%
 echo %c%• Block known telemetry domains for your GPU vendor%u%
 echo.
 echo %orange%%underline%What this will NOT do:%u%
 echo %c%• Will not download or install any driver from a third party%u%
 echo %c%• Will not force the GPU to run at maximum clock 24/7%u%
-echo %c%• Will not disable driver crash recovery (TDR) or PCIe protections%u%
+echo %c%• Will not disable driver crash recovery ^(TDR^) or PCIe protections%u%
 echo.
 choice /C YN /M "%c%Apply GPU optimizations? (Y/N)%u%"
 if errorlevel 2 (
@@ -8002,9 +8004,9 @@ choice /C YN /M "%c%Also disable the companion app overlay/ShadowPlay and its au
 if errorlevel 2 (set "GPU_DISABLE_APP=false") else (set "GPU_DISABLE_APP=true")
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        GPU OPTIMIZATION IN PROGRESS                          ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                        GPU OPTIMIZATION IN PROGRESS                          ^|
+echo +==============================================================================+%u%
 echo.
 
 echo %c%[1/5] Checking installed driver...%u%
@@ -8049,7 +8051,7 @@ if "!GPU_VENDOR!"=="AMD" (
 echo %c%  ✓ Telemetry services and tasks disabled%u%
 
 echo.
-echo %c%[3/5] Managing companion app (GeForce Experience / AMD Software)...%u%
+echo %c%[3/5] Managing companion app ^(GeForce Experience / AMD Software^)...%u%
 if "!GPU_DISABLE_APP!"=="true" (
     if "!GPU_VENDOR!"=="NVIDIA" (
         for %%S in (GfExperienceService NVIDIAAppService) do (
@@ -8102,11 +8104,11 @@ if defined gpu_domains (
 )
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        GPU OPTIMIZATION COMPLETED                            ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                        GPU OPTIMIZATION COMPLETED                            ^|
+echo +==============================================================================+%u%
 echo.
-echo %c%Applied (documented and reversible):%u%
+echo %c%Applied ^(documented and reversible^):%u%
 echo %c%• Telemetry services and scheduled tasks disabled%u%
 echo %c%• Hardware-Accelerated GPU Scheduling enabled%u%
 echo %c%• Foreground game prioritized in the Windows scheduler%u%
@@ -8114,14 +8116,14 @@ echo %c%• Vendor telemetry domains blocked%u%
 if "!GPU_DISABLE_APP!"=="true" echo %c%• Companion app overlay and auto-start disabled%u%
 echo.
 echo %c%Not touched, by design:%u%
-echo %c%• Driver crash recovery (TDR) and PCIe protections%u%
+echo %c%• Driver crash recovery ^(TDR^) and PCIe protections%u%
 echo %c%• GPU clock/power state management — use MSI Afterburner or the vendor%u%
 echo %c%  app for that, where the change is visible and reversible%u%
 echo %c%• No third-party driver was downloaded or installed%u%
 echo.
 echo %orange%A restart is recommended for HAGS to take full effect.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 set "GPU_JUMP=!GPU_RETURN!"
 set "GPU_RETURN="
@@ -8132,9 +8134,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           STORAGE ACCELERATION OPTIMIZER                     ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           STORAGE ACCELERATION OPTIMIZER                     ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Storage optimization includes:%u%
 echo %c%• SSD/NVMe performance tweaks and TRIM optimization%u%
@@ -8152,9 +8154,9 @@ choice /C YN /M "%c%Apply storage acceleration optimizations? (Y/N)%u%"
 if errorlevel 2 goto HardwareMenu
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                      STORAGE OPTIMIZATION IN PROGRESS                        ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                      STORAGE OPTIMIZATION IN PROGRESS                        ^|
+echo +==============================================================================+%u%
 
 echo.
 echo %c%[1/8] Detecting Storage Devices...%u%
@@ -8267,7 +8269,7 @@ if /i "!_is_laptop!"=="true" (
 ) else (
     reg add "HKLM\SYSTEM\CurrentControlSet\Services\storahci\Parameters" /v "EnableDipm" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SYSTEM\CurrentControlSet\Services\storahci\Parameters" /v "EnableHipm" /t REG_DWORD /d "0" /f >nul 2>&1
-    echo %c%  ✓ AHCI link power management disabled (desktop, no battery to drain)%u%
+    echo %c%  ✓ AHCI link power management disabled ^(desktop, no battery to drain^)%u%
 )
 
 echo %c%[7/8] Configuring Storage Power Management...%u%
@@ -8279,7 +8281,7 @@ if /i "!_is_laptop!"=="true" (
 ) else (
     powercfg -setacvalueindex SCHEME_CURRENT 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e 0 >nul 2>&1
     powercfg -setactive SCHEME_CURRENT >nul 2>&1
-    echo %c%  ✓ Disk idle timeout disabled (desktop)%u%
+    echo %c%  ✓ Disk idle timeout disabled ^(desktop^)%u%
 )
 
 echo %c%[8/8] Running Storage Maintenance...%u%
@@ -8300,9 +8302,9 @@ rem Reserved storage prevents cumulative updates from failing when disk space is
 echo %c%  ✓ Reserved storage preserved for reliable Windows updates%u%
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                     STORAGE ACCELERATION COMPLETED                           ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                     STORAGE ACCELERATION COMPLETED                           ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Storage optimizations have been successfully applied.%u%
 echo.
@@ -8329,7 +8331,7 @@ echo %c%• Reduced storage latency and seek times%u%
 echo %c%• Optimized caching for your storage type%u%
 echo %c%• Enhanced overall system responsiveness%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto HardwareMenu
 
@@ -8338,11 +8340,11 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        MEMORY - XMP / EXPO CHECK                             ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                        MEMORY - XMP / EXPO CHECK                             ^|
+echo +==============================================================================+%u%
 echo.
-echo %c%This is a read-only check. XMP (Intel) / EXPO or DOCP (AMD) can only be turned%u%
+echo %c%This is a read-only check. XMP ^(Intel^) / EXPO or DOCP ^(AMD^) can only be turned%u%
 echo %c%on in the BIOS/UEFI - no software can safely enable it from inside Windows.%u%
 echo %c%Without it, most kits run at a slow JEDEC default instead of their rated speed.%u%
 echo.
@@ -8394,7 +8396,7 @@ if "!MEM_VERDICT!"=="LOW" (
 
 :MemoryDiagnosticsEnd
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto HardwareMenu
 
@@ -8404,9 +8406,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         HARDWARE INFORMATION SCANNER                         ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                         HARDWARE INFORMATION SCANNER                         ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Hardware scanning includes:%u%
 echo %c%• Complete system specifications detection%u%
@@ -8425,9 +8427,9 @@ choice /C YN /M "%c%Run comprehensive hardware information scan? (Y/N)%u%"
 if errorlevel 2 goto HardwareMenu
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           HARDWARE SCAN IN PROGRESS                          ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           HARDWARE SCAN IN PROGRESS                          ^|
+echo +==============================================================================+%u%
 
 echo.
 echo %c%[1/8] Initializing Hardware Detection...%u%
@@ -8440,7 +8442,7 @@ echo.
 echo %c%[2/8] Scanning System Overview...%u%
 echo %c%• Detecting computer model and manufacturer...%u%
 echo.
-echo %c%════════════════════════ SYSTEM OVERVIEW ═══════════════════════%u%
+echo %c%======================== SYSTEM OVERVIEW =======================%u%
 
 set "comp_model=Unknown"
 set "comp_manufacturer=Unknown"
@@ -8498,7 +8500,7 @@ echo %c%[3/8] Analyzing Motherboard and BIOS...%u%
 echo %c%• Reading motherboard specifications...%u%
 echo %c%• Checking BIOS/UEFI information...%u%
 echo.
-echo %c%═══════════════════════ MOTHERBOARD ^& BIOS ════════════════════════%u%
+echo %c%======================= MOTHERBOARD ^& BIOS ========================%u%
 
 set "mb_manufacturer=Unknown"
 set "mb_product=Unknown"
@@ -8564,7 +8566,7 @@ echo %c%• Analyzing processor specifications...%u%
 echo %c%• Checking CPU cores and threads...%u%
 echo %c%• Reading CPU frequency and cache...%u%
 echo.
-echo %c%═══════════════════════════ CPU DETAILS ══════════════════════════%u%
+echo %c%=========================== CPU DETAILS ==========================%u%
 
 set "cpu_name=Unknown"
 set "cpu_manufacturer=Unknown"
@@ -8603,7 +8605,7 @@ echo %c%[5/8] Scanning Memory Configuration...%u%
 echo %c%• Detecting RAM modules and specifications...%u%
 echo %c%• Analyzing memory speed and timings...%u%
 echo.
-echo %c%══════════════════════════ MEMORY INFO ══════════════════════════%u%
+echo %c%========================== MEMORY INFO ==========================%u%
 
 echo %c%• Reading total memory...%u%
 set "totalmem=0"
@@ -8678,7 +8680,7 @@ echo %c%[6/8] Analyzing Graphics Hardware...%u%
 echo %c%• Detecting GPU specifications...%u%
 echo %c%• Reading graphics memory information...%u%
 echo.
-echo %c%═══════════════════════════ GPU DETAILS ══════════════════════════%u%
+echo %c%=========================== GPU DETAILS ==========================%u%
 
 set "gpucount=0"
 echo %c%• Reading graphics cards...%u%
@@ -8735,7 +8737,7 @@ echo %c%[7/8] Scanning Storage Devices...%u%
 echo %c%• Detecting hard drives and SSDs...%u%
 echo %c%• Analyzing disk health and capacity...%u%
 echo.
-echo %c%═══════════════════════════ STORAGE INFO ═════════════════════════%u%
+echo %c%=========================== STORAGE INFO =========================%u%
 
 set "drivecount=0"
 set "drive1_name="
@@ -8873,7 +8875,7 @@ echo %c%• Checking system temperatures...%u%
 echo %c%• Analyzing hardware status...%u%
 echo %c%• Generating health recommendations...%u%
 echo.
-echo %c%═══════════════════════ HARDWARE HEALTH STATUS ═══════════════════%u%
+echo %c%======================= HARDWARE HEALTH STATUS ===================%u%
 
 echo %c%• Checking thermal status...%u%
 chcp 437>nul
@@ -8921,7 +8923,7 @@ echo %c%✓ Storage: Status check completed%u%
 :disk_done
 
 echo.
-echo %c%═══════════════════════ PERFORMANCE ANALYSIS ════════════════════%u%
+echo %c%======================= PERFORMANCE ANALYSIS ====================%u%
 set /a "perfscore=0"
 
 echo %c%• Calculating performance score...%u%
@@ -8955,81 +8957,81 @@ set "cpu_rating=Unknown"
 set "detected_cores=%NUMBER_OF_PROCESSORS%"
 
 
-echo "!CPUName!" | find /i "i9-14" >nul && (set /a "cpu_score=38" & set "cpu_rating=Flagship")
-echo "!CPUName!" | find /i "i7-14" >nul && (set /a "cpu_score=34" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-14" >nul && (set /a "cpu_score=29" & set "cpu_rating=Upper Mid-Range")
-echo "!CPUName!" | find /i "i3-14" >nul && (set /a "cpu_score=23" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i9-14" >nul && ^(set /a "cpu_score=38" & set "cpu_rating=Flagship"^)
+echo "!CPUName!" | find /i "i7-14" >nul && ^(set /a "cpu_score=34" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-14" >nul && ^(set /a "cpu_score=29" & set "cpu_rating=Upper Mid-Range"^)
+echo "!CPUName!" | find /i "i3-14" >nul && ^(set /a "cpu_score=23" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "i9-13" >nul && (set /a "cpu_score=35" & set "cpu_rating=Flagship")
-echo "!CPUName!" | find /i "i7-13" >nul && (set /a "cpu_score=31" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-13" >nul && (set /a "cpu_score=26" & set "cpu_rating=Upper Mid-Range")
-echo "!CPUName!" | find /i "i3-13" >nul && (set /a "cpu_score=21" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i9-13" >nul && ^(set /a "cpu_score=35" & set "cpu_rating=Flagship"^)
+echo "!CPUName!" | find /i "i7-13" >nul && ^(set /a "cpu_score=31" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-13" >nul && ^(set /a "cpu_score=26" & set "cpu_rating=Upper Mid-Range"^)
+echo "!CPUName!" | find /i "i3-13" >nul && ^(set /a "cpu_score=21" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "i9-12" >nul && (set /a "cpu_score=32" & set "cpu_rating=Flagship")
-echo "!CPUName!" | find /i "i7-12" >nul && (set /a "cpu_score=28" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-12" >nul && (set /a "cpu_score=24" & set "cpu_rating=Upper Mid-Range")
-echo "!CPUName!" | find /i "i3-12" >nul && (set /a "cpu_score=19" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i9-12" >nul && ^(set /a "cpu_score=32" & set "cpu_rating=Flagship"^)
+echo "!CPUName!" | find /i "i7-12" >nul && ^(set /a "cpu_score=28" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-12" >nul && ^(set /a "cpu_score=24" & set "cpu_rating=Upper Mid-Range"^)
+echo "!CPUName!" | find /i "i3-12" >nul && ^(set /a "cpu_score=19" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "i9-11" >nul && (set /a "cpu_score=29" & set "cpu_rating=Flagship")
-echo "!CPUName!" | find /i "i7-11" >nul && (set /a "cpu_score=25" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-11" >nul && (set /a "cpu_score=21" & set "cpu_rating=Upper Mid-Range")
-echo "!CPUName!" | find /i "i3-11" >nul && (set /a "cpu_score=17" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i9-11" >nul && ^(set /a "cpu_score=29" & set "cpu_rating=Flagship"^)
+echo "!CPUName!" | find /i "i7-11" >nul && ^(set /a "cpu_score=25" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-11" >nul && ^(set /a "cpu_score=21" & set "cpu_rating=Upper Mid-Range"^)
+echo "!CPUName!" | find /i "i3-11" >nul && ^(set /a "cpu_score=17" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "i9-10" >nul && (set /a "cpu_score=27" & set "cpu_rating=Flagship")
-echo "!CPUName!" | find /i "i7-10" >nul && (set /a "cpu_score=23" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-10" >nul && (set /a "cpu_score=19" & set "cpu_rating=Upper Mid-Range")
-echo "!CPUName!" | find /i "i3-10" >nul && (set /a "cpu_score=15" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i9-10" >nul && ^(set /a "cpu_score=27" & set "cpu_rating=Flagship"^)
+echo "!CPUName!" | find /i "i7-10" >nul && ^(set /a "cpu_score=23" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-10" >nul && ^(set /a "cpu_score=19" & set "cpu_rating=Upper Mid-Range"^)
+echo "!CPUName!" | find /i "i3-10" >nul && ^(set /a "cpu_score=15" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "i9-9" >nul && (set /a "cpu_score=25" & set "cpu_rating=Flagship")
-echo "!CPUName!" | find /i "i7-9" >nul && (set /a "cpu_score=21" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-9" >nul && (set /a "cpu_score=17" & set "cpu_rating=Upper Mid-Range")
-echo "!CPUName!" | find /i "i3-9" >nul && (set /a "cpu_score=13" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i9-9" >nul && ^(set /a "cpu_score=25" & set "cpu_rating=Flagship"^)
+echo "!CPUName!" | find /i "i7-9" >nul && ^(set /a "cpu_score=21" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-9" >nul && ^(set /a "cpu_score=17" & set "cpu_rating=Upper Mid-Range"^)
+echo "!CPUName!" | find /i "i3-9" >nul && ^(set /a "cpu_score=13" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "i9-8" >nul && (set /a "cpu_score=23" & set "cpu_rating=Flagship")
-echo "!CPUName!" | find /i "i7-8" >nul && (set /a "cpu_score=19" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-8" >nul && (set /a "cpu_score=15" & set "cpu_rating=Upper Mid-Range")
-echo "!CPUName!" | find /i "i3-8" >nul && (set /a "cpu_score=12" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i9-8" >nul && ^(set /a "cpu_score=23" & set "cpu_rating=Flagship"^)
+echo "!CPUName!" | find /i "i7-8" >nul && ^(set /a "cpu_score=19" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-8" >nul && ^(set /a "cpu_score=15" & set "cpu_rating=Upper Mid-Range"^)
+echo "!CPUName!" | find /i "i3-8" >nul && ^(set /a "cpu_score=12" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "i7-7" >nul && (set /a "cpu_score=17" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-7" >nul && (set /a "cpu_score=13" & set "cpu_rating=Mid-Range")
-echo "!CPUName!" | find /i "i3-7" >nul && (set /a "cpu_score=11" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i7-7" >nul && ^(set /a "cpu_score=17" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-7" >nul && ^(set /a "cpu_score=13" & set "cpu_rating=Mid-Range"^)
+echo "!CPUName!" | find /i "i3-7" >nul && ^(set /a "cpu_score=11" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "i7-6" >nul && (set /a "cpu_score=15" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-6" >nul && (set /a "cpu_score=12" & set "cpu_rating=Mid-Range")
-echo "!CPUName!" | find /i "i3-6" >nul && (set /a "cpu_score=10" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i7-6" >nul && ^(set /a "cpu_score=15" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-6" >nul && ^(set /a "cpu_score=12" & set "cpu_rating=Mid-Range"^)
+echo "!CPUName!" | find /i "i3-6" >nul && ^(set /a "cpu_score=10" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "i7-5" >nul && (set /a "cpu_score=13" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-5" >nul && (set /a "cpu_score=11" & set "cpu_rating=Mid-Range")
-echo "!CPUName!" | find /i "i3-5" >nul && (set /a "cpu_score=9" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i7-5" >nul && ^(set /a "cpu_score=13" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-5" >nul && ^(set /a "cpu_score=11" & set "cpu_rating=Mid-Range"^)
+echo "!CPUName!" | find /i "i3-5" >nul && ^(set /a "cpu_score=9" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "i7-4" >nul && (set /a "cpu_score=12" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-4" >nul && (set /a "cpu_score=10" & set "cpu_rating=Mid-Range")
-echo "!CPUName!" | find /i "i3-4" >nul && (set /a "cpu_score=8" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i7-4" >nul && ^(set /a "cpu_score=12" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-4" >nul && ^(set /a "cpu_score=10" & set "cpu_rating=Mid-Range"^)
+echo "!CPUName!" | find /i "i3-4" >nul && ^(set /a "cpu_score=8" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "i7-3" >nul && (set /a "cpu_score=10" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-3" >nul && (set /a "cpu_score=8" & set "cpu_rating=Mid-Range")
-echo "!CPUName!" | find /i "i3-3" >nul && (set /a "cpu_score=7" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i7-3" >nul && ^(set /a "cpu_score=10" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-3" >nul && ^(set /a "cpu_score=8" & set "cpu_rating=Mid-Range"^)
+echo "!CPUName!" | find /i "i3-3" >nul && ^(set /a "cpu_score=7" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "i7-2" >nul && (set /a "cpu_score=8" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-2" >nul && (set /a "cpu_score=7" & set "cpu_rating=Mid-Range")
-echo "!CPUName!" | find /i "i3-2" >nul && (set /a "cpu_score=6" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i7-2" >nul && ^(set /a "cpu_score=8" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-2" >nul && ^(set /a "cpu_score=7" & set "cpu_rating=Mid-Range"^)
+echo "!CPUName!" | find /i "i3-2" >nul && ^(set /a "cpu_score=6" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "i7-9" >nul && (set /a "cpu_score=7" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i7-8" >nul && (set /a "cpu_score=6" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i7-7" >nul && (set /a "cpu_score=5" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i7-6" >nul && (set /a "cpu_score=4" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i7-1" >nul && (set /a "cpu_score=4" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "i5-7" >nul && (set /a "cpu_score=4" & set "cpu_rating=Mid-Range")
-echo "!CPUName!" | find /i "i5-6" >nul && (set /a "cpu_score=3" & set "cpu_rating=Mid-Range")
-echo "!CPUName!" | find /i "i5-1" >nul && (set /a "cpu_score=3" & set "cpu_rating=Mid-Range")
-echo "!CPUName!" | find /i "i3-7" >nul && (set /a "cpu_score=3" & set "cpu_rating=Entry Level")
-echo "!CPUName!" | find /i "i3-6" >nul && (set /a "cpu_score=2" & set "cpu_rating=Entry Level")
-echo "!CPUName!" | find /i "i3-1" >nul && (set /a "cpu_score=2" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "i7-9" >nul && ^(set /a "cpu_score=7" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i7-8" >nul && ^(set /a "cpu_score=6" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i7-7" >nul && ^(set /a "cpu_score=5" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i7-6" >nul && ^(set /a "cpu_score=4" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i7-1" >nul && ^(set /a "cpu_score=4" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "i5-7" >nul && ^(set /a "cpu_score=4" & set "cpu_rating=Mid-Range"^)
+echo "!CPUName!" | find /i "i5-6" >nul && ^(set /a "cpu_score=3" & set "cpu_rating=Mid-Range"^)
+echo "!CPUName!" | find /i "i5-1" >nul && ^(set /a "cpu_score=3" & set "cpu_rating=Mid-Range"^)
+echo "!CPUName!" | find /i "i3-7" >nul && ^(set /a "cpu_score=3" & set "cpu_rating=Entry Level"^)
+echo "!CPUName!" | find /i "i3-6" >nul && ^(set /a "cpu_score=2" & set "cpu_rating=Entry Level"^)
+echo "!CPUName!" | find /i "i3-1" >nul && ^(set /a "cpu_score=2" & set "cpu_rating=Entry Level"^)
 
-echo "!CPUName!" | find /i "Ryzen 9" >nul && (set /a "cpu_score=34" & set "cpu_rating=Flagship")
-echo "!CPUName!" | find /i "Ryzen 7" >nul && (set /a "cpu_score=29" & set "cpu_rating=High-End")
-echo "!CPUName!" | find /i "Ryzen 5" >nul && (set /a "cpu_score=23" & set "cpu_rating=Mid-Range")
-echo "!CPUName!" | find /i "Ryzen 3" >nul && (set /a "cpu_score=16" & set "cpu_rating=Entry Level")
+echo "!CPUName!" | find /i "Ryzen 9" >nul && ^(set /a "cpu_score=34" & set "cpu_rating=Flagship"^)
+echo "!CPUName!" | find /i "Ryzen 7" >nul && ^(set /a "cpu_score=29" & set "cpu_rating=High-End"^)
+echo "!CPUName!" | find /i "Ryzen 5" >nul && ^(set /a "cpu_score=23" & set "cpu_rating=Mid-Range"^)
+echo "!CPUName!" | find /i "Ryzen 3" >nul && ^(set /a "cpu_score=16" & set "cpu_rating=Entry Level"^)
 
 if !NUMBER_OF_PROCESSORS! geq 16 set /a "cpu_score+=3"
 if !NUMBER_OF_PROCESSORS! geq 12 if !NUMBER_OF_PROCESSORS! lss 16 set /a "cpu_score+=2"
@@ -9175,92 +9177,92 @@ if !detected_vram! geq 24 (
     set "vram_rating=Insufficient"
 )
 
-echo "!GPUName!" | find /i "RTX 5090" >nul && (set /a "gpu_score=45" & set "gpu_rating=Flagship Next-Gen")
-echo "!GPUName!" | find /i "RTX 5080" >nul && (set /a "gpu_score=43" & set "gpu_rating=High-End Next-Gen")
+echo "!GPUName!" | find /i "RTX 5090" >nul && ^(set /a "gpu_score=45" & set "gpu_rating=Flagship Next-Gen"^)
+echo "!GPUName!" | find /i "RTX 5080" >nul && ^(set /a "gpu_score=43" & set "gpu_rating=High-End Next-Gen"^)
 
-echo "!GPUName!" | find /i "RTX 4090" >nul && (set /a "gpu_score=40" & set "gpu_rating=Flagship")
-echo "!GPUName!" | find /i "RTX 4080" >nul && (set /a "gpu_score=37" & set "gpu_rating=High-End")
-echo "!GPUName!" | find /i "RTX 4070 Ti" >nul && (set /a "gpu_score=33" & set "gpu_rating=High-End")
-echo "!GPUName!" | find /i "RTX 4070" >nul && (set /a "gpu_score=30" & set "gpu_rating=Upper Mid-Range")
-echo "!GPUName!" | find /i "RTX 4060 Ti" >nul && (set /a "gpu_score=26" & set "gpu_rating=Mid-Range")
-echo "!GPUName!" | find /i "RTX 4060" >nul && (set /a "gpu_score=23" & set "gpu_rating=Mid-Range")
+echo "!GPUName!" | find /i "RTX 4090" >nul && ^(set /a "gpu_score=40" & set "gpu_rating=Flagship"^)
+echo "!GPUName!" | find /i "RTX 4080" >nul && ^(set /a "gpu_score=37" & set "gpu_rating=High-End"^)
+echo "!GPUName!" | find /i "RTX 4070 Ti" >nul && ^(set /a "gpu_score=33" & set "gpu_rating=High-End"^)
+echo "!GPUName!" | find /i "RTX 4070" >nul && ^(set /a "gpu_score=30" & set "gpu_rating=Upper Mid-Range"^)
+echo "!GPUName!" | find /i "RTX 4060 Ti" >nul && ^(set /a "gpu_score=26" & set "gpu_rating=Mid-Range"^)
+echo "!GPUName!" | find /i "RTX 4060" >nul && ^(set /a "gpu_score=23" & set "gpu_rating=Mid-Range"^)
 
-echo "!GPUName!" | find /i "RTX 3090 Ti" >nul && (set /a "gpu_score=39" & set "gpu_rating=Flagship (Prev Gen)")
-echo "!GPUName!" | find /i "RTX 3090" >nul && (set /a "gpu_score=35" & set "gpu_rating=High-End")
-echo "!GPUName!" | find /i "RTX 3080 Ti" >nul && (set /a "gpu_score=34" & set "gpu_rating=High-End")
-echo "!GPUName!" | find /i "RTX 3080" >nul && (set /a "gpu_score=32" & set "gpu_rating=High-End")
-echo "!GPUName!" | find /i "RTX 3070 Ti" >nul && (set /a "gpu_score=30" & set "gpu_rating=Upper Mid-Range")
-echo "!GPUName!" | find /i "RTX 3070" >nul && (set /a "gpu_score=28" & set "gpu_rating=Upper Mid-Range")
-echo "!GPUName!" | find /i "RTX 3060 Ti" >nul && (set /a "gpu_score=24" & set "gpu_rating=Mid-Range")
-echo "!GPUName!" | find /i "RTX 3060" >nul && (set /a "gpu_score=20" & set "gpu_rating=Entry Gaming")
-echo "!GPUName!" | find /i "RTX 3050 Ti" >nul && (set /a "gpu_score=16" & set "gpu_rating=Basic Gaming")
-echo "!GPUName!" | find /i "RTX 3050" >nul && (set /a "gpu_score=14" & set "gpu_rating=Basic Gaming")
+echo "!GPUName!" | find /i "RTX 3090 Ti" >nul && ^(set /a "gpu_score=39" & set "gpu_rating=Flagship (Prev Gen)"^)
+echo "!GPUName!" | find /i "RTX 3090" >nul && ^(set /a "gpu_score=35" & set "gpu_rating=High-End"^)
+echo "!GPUName!" | find /i "RTX 3080 Ti" >nul && ^(set /a "gpu_score=34" & set "gpu_rating=High-End"^)
+echo "!GPUName!" | find /i "RTX 3080" >nul && ^(set /a "gpu_score=32" & set "gpu_rating=High-End"^)
+echo "!GPUName!" | find /i "RTX 3070 Ti" >nul && ^(set /a "gpu_score=30" & set "gpu_rating=Upper Mid-Range"^)
+echo "!GPUName!" | find /i "RTX 3070" >nul && ^(set /a "gpu_score=28" & set "gpu_rating=Upper Mid-Range"^)
+echo "!GPUName!" | find /i "RTX 3060 Ti" >nul && ^(set /a "gpu_score=24" & set "gpu_rating=Mid-Range"^)
+echo "!GPUName!" | find /i "RTX 3060" >nul && ^(set /a "gpu_score=20" & set "gpu_rating=Entry Gaming"^)
+echo "!GPUName!" | find /i "RTX 3050 Ti" >nul && ^(set /a "gpu_score=16" & set "gpu_rating=Basic Gaming"^)
+echo "!GPUName!" | find /i "RTX 3050" >nul && ^(set /a "gpu_score=14" & set "gpu_rating=Basic Gaming"^)
 
-echo "!GPUName!" | find /i "RTX 2080 Ti" >nul && (set /a "gpu_score=28" & set "gpu_rating=High-End (Old Gen)")
-echo "!GPUName!" | find /i "RTX 2080 Super" >nul && (set /a "gpu_score=26" & set "gpu_rating=Upper Mid-Range")
-echo "!GPUName!" | find /i "RTX 2080" >nul && (set /a "gpu_score=24" & set "gpu_rating=Upper Mid-Range")
-echo "!GPUName!" | find /i "RTX 2070 Super" >nul && (set /a "gpu_score=23" & set "gpu_rating=Mid-Range")
-echo "!GPUName!" | find /i "RTX 2070" >nul && (set /a "gpu_score=21" & set "gpu_rating=Mid-Range")
-echo "!GPUName!" | find /i "RTX 2060 Super" >nul && (set /a "gpu_score=19" & set "gpu_rating=Entry Gaming")
-echo "!GPUName!" | find /i "RTX 2060" >nul && (set /a "gpu_score=17" & set "gpu_rating=Entry Gaming")
+echo "!GPUName!" | find /i "RTX 2080 Ti" >nul && ^(set /a "gpu_score=28" & set "gpu_rating=High-End (Old Gen)"^)
+echo "!GPUName!" | find /i "RTX 2080 Super" >nul && ^(set /a "gpu_score=26" & set "gpu_rating=Upper Mid-Range"^)
+echo "!GPUName!" | find /i "RTX 2080" >nul && ^(set /a "gpu_score=24" & set "gpu_rating=Upper Mid-Range"^)
+echo "!GPUName!" | find /i "RTX 2070 Super" >nul && ^(set /a "gpu_score=23" & set "gpu_rating=Mid-Range"^)
+echo "!GPUName!" | find /i "RTX 2070" >nul && ^(set /a "gpu_score=21" & set "gpu_rating=Mid-Range"^)
+echo "!GPUName!" | find /i "RTX 2060 Super" >nul && ^(set /a "gpu_score=19" & set "gpu_rating=Entry Gaming"^)
+echo "!GPUName!" | find /i "RTX 2060" >nul && ^(set /a "gpu_score=17" & set "gpu_rating=Entry Gaming"^)
 
-echo "!GPUName!" | find /i "GTX 1660 Ti" >nul && (set /a "gpu_score=15" & set "gpu_rating=Budget Gaming")
-echo "!GPUName!" | find /i "GTX 1660 Super" >nul && (set /a "gpu_score=13" & set "gpu_rating=Budget Gaming")
-echo "!GPUName!" | find /i "GTX 1660" >nul && (set /a "gpu_score=12" & set "gpu_rating=Budget Gaming")
-echo "!GPUName!" | find /i "GTX 1650 Super" >nul && (set /a "gpu_score=11" & set "gpu_rating=Entry Level")
-echo "!GPUName!" | find /i "GTX 1650 Ti" >nul && (set /a "gpu_score=10" & set "gpu_rating=Entry Level")
-echo "!GPUName!" | find /i "GTX 1650" >nul && (set /a "gpu_score=9" & set "gpu_rating=Entry Level")
+echo "!GPUName!" | find /i "GTX 1660 Ti" >nul && ^(set /a "gpu_score=15" & set "gpu_rating=Budget Gaming"^)
+echo "!GPUName!" | find /i "GTX 1660 Super" >nul && ^(set /a "gpu_score=13" & set "gpu_rating=Budget Gaming"^)
+echo "!GPUName!" | find /i "GTX 1660" >nul && ^(set /a "gpu_score=12" & set "gpu_rating=Budget Gaming"^)
+echo "!GPUName!" | find /i "GTX 1650 Super" >nul && ^(set /a "gpu_score=11" & set "gpu_rating=Entry Level"^)
+echo "!GPUName!" | find /i "GTX 1650 Ti" >nul && ^(set /a "gpu_score=10" & set "gpu_rating=Entry Level"^)
+echo "!GPUName!" | find /i "GTX 1650" >nul && ^(set /a "gpu_score=9" & set "gpu_rating=Entry Level"^)
 
-echo "!GPUName!" | find /i "GTX 1080 Ti" >nul && (set /a "gpu_score=19" & set "gpu_rating=High-End (Old Gen)")
-echo "!GPUName!" | find /i "GTX 1080" >nul && (set /a "gpu_score=16" & set "gpu_rating=Upper Mid-Range")
-echo "!GPUName!" | find /i "GTX 1070 Ti" >nul && (set /a "gpu_score=15" & set "gpu_rating=Upper Mid-Range")
-echo "!GPUName!" | find /i "GTX 1070" >nul && (set /a "gpu_score=14" & set "gpu_rating=Mid-Range")
-echo "!GPUName!" | find /i "GTX 1060" >nul && (set /a "gpu_score=12" & set "gpu_rating=Budget Gaming")
-echo "!GPUName!" | find /i "GTX 1050 Ti" >nul && (set /a "gpu_score=9" & set "gpu_rating=Entry Level")
-echo "!GPUName!" | find /i "GTX 1050" >nul && (set /a "gpu_score=8" & set "gpu_rating=Entry Level")
+echo "!GPUName!" | find /i "GTX 1080 Ti" >nul && ^(set /a "gpu_score=19" & set "gpu_rating=High-End (Old Gen)"^)
+echo "!GPUName!" | find /i "GTX 1080" >nul && ^(set /a "gpu_score=16" & set "gpu_rating=Upper Mid-Range"^)
+echo "!GPUName!" | find /i "GTX 1070 Ti" >nul && ^(set /a "gpu_score=15" & set "gpu_rating=Upper Mid-Range"^)
+echo "!GPUName!" | find /i "GTX 1070" >nul && ^(set /a "gpu_score=14" & set "gpu_rating=Mid-Range"^)
+echo "!GPUName!" | find /i "GTX 1060" >nul && ^(set /a "gpu_score=12" & set "gpu_rating=Budget Gaming"^)
+echo "!GPUName!" | find /i "GTX 1050 Ti" >nul && ^(set /a "gpu_score=9" & set "gpu_rating=Entry Level"^)
+echo "!GPUName!" | find /i "GTX 1050" >nul && ^(set /a "gpu_score=8" & set "gpu_rating=Entry Level"^)
 
-echo "!GPUName!" | find /i "RX 9070 XT" >nul && (set /a "gpu_score=44" & set "gpu_rating=Flagship Next-Gen")
+echo "!GPUName!" | find /i "RX 9070 XT" >nul && ^(set /a "gpu_score=44" & set "gpu_rating=Flagship Next-Gen"^)
 
-echo "!GPUName!" | find /i "RX 7900 XTX" >nul && (set /a "gpu_score=41" & set "gpu_rating=Flagship")
-echo "!GPUName!" | find /i "RX 7900 XT" >nul && (set /a "gpu_score=39" & set "gpu_rating=High-End")
-echo "!GPUName!" | find /i "RX 7800 XT" >nul && (set /a "gpu_score=36" & set "gpu_rating=High-End")
-echo "!GPUName!" | find /i "RX 7700 XT" >nul && (set /a "gpu_score=34" & set "gpu_rating=Upper Mid-Range")
-echo "!GPUName!" | find /i "RX 7600 XT" >nul && (set /a "gpu_score=30" & set "gpu_rating=Mid-Range")
-echo "!GPUName!" | find /i "RX 7600" >nul && (set /a "gpu_score=29" & set "gpu_rating=Mid-Range")
+echo "!GPUName!" | find /i "RX 7900 XTX" >nul && ^(set /a "gpu_score=41" & set "gpu_rating=Flagship"^)
+echo "!GPUName!" | find /i "RX 7900 XT" >nul && ^(set /a "gpu_score=39" & set "gpu_rating=High-End"^)
+echo "!GPUName!" | find /i "RX 7800 XT" >nul && ^(set /a "gpu_score=36" & set "gpu_rating=High-End"^)
+echo "!GPUName!" | find /i "RX 7700 XT" >nul && ^(set /a "gpu_score=34" & set "gpu_rating=Upper Mid-Range"^)
+echo "!GPUName!" | find /i "RX 7600 XT" >nul && ^(set /a "gpu_score=30" & set "gpu_rating=Mid-Range"^)
+echo "!GPUName!" | find /i "RX 7600" >nul && ^(set /a "gpu_score=29" & set "gpu_rating=Mid-Range"^)
 
-echo "!GPUName!" | find /i "RX 6950 XT" >nul && (set /a "gpu_score=38" & set "gpu_rating=Flagship (Prev Gen)")
-echo "!GPUName!" | find /i "RX 6900 XT" >nul && (set /a "gpu_score=37" & set "gpu_rating=High-End")
-echo "!GPUName!" | find /i "RX 6800 XT" >nul && (set /a "gpu_score=34" & set "gpu_rating=Upper Mid-Range")
-echo "!GPUName!" | find /i "RX 6800" >nul && (set /a "gpu_score=32" & set "gpu_rating=Mid-Range")
-echo "!GPUName!" | find /i "RX 6700 XT" >nul && (set /a "gpu_score=29" & set "gpu_rating=Mid-Range")
-echo "!GPUName!" | find /i "RX 6600 XT" >nul && (set /a "gpu_score=26" & set "gpu_rating=Budget Gaming")
-echo "!GPUName!" | find /i "RX 6600" >nul && (set /a "gpu_score=24" & set "gpu_rating=Budget Gaming")
+echo "!GPUName!" | find /i "RX 6950 XT" >nul && ^(set /a "gpu_score=38" & set "gpu_rating=Flagship (Prev Gen)"^)
+echo "!GPUName!" | find /i "RX 6900 XT" >nul && ^(set /a "gpu_score=37" & set "gpu_rating=High-End"^)
+echo "!GPUName!" | find /i "RX 6800 XT" >nul && ^(set /a "gpu_score=34" & set "gpu_rating=Upper Mid-Range"^)
+echo "!GPUName!" | find /i "RX 6800" >nul && ^(set /a "gpu_score=32" & set "gpu_rating=Mid-Range"^)
+echo "!GPUName!" | find /i "RX 6700 XT" >nul && ^(set /a "gpu_score=29" & set "gpu_rating=Mid-Range"^)
+echo "!GPUName!" | find /i "RX 6600 XT" >nul && ^(set /a "gpu_score=26" & set "gpu_rating=Budget Gaming"^)
+echo "!GPUName!" | find /i "RX 6600" >nul && ^(set /a "gpu_score=24" & set "gpu_rating=Budget Gaming"^)
 
-echo "!GPUName!" | find /i "RX 5700 XT" >nul && (set /a "gpu_score=21" & set "gpu_rating=Mid-Range (Old Gen)")
-echo "!GPUName!" | find /i "RX 5700" >nul && (set /a "gpu_score=20" & set "gpu_rating=Mid-Range (Old Gen)")
-echo "!GPUName!" | find /i "RX 5600 XT" >nul && (set /a "gpu_score=17" & set "gpu_rating=Budget Gaming")
-echo "!GPUName!" | find /i "RX 5500 XT" >nul && (set /a "gpu_score=14" & set "gpu_rating=Budget Gaming")
+echo "!GPUName!" | find /i "RX 5700 XT" >nul && ^(set /a "gpu_score=21" & set "gpu_rating=Mid-Range (Old Gen)"^)
+echo "!GPUName!" | find /i "RX 5700" >nul && ^(set /a "gpu_score=20" & set "gpu_rating=Mid-Range (Old Gen)"^)
+echo "!GPUName!" | find /i "RX 5600 XT" >nul && ^(set /a "gpu_score=17" & set "gpu_rating=Budget Gaming"^)
+echo "!GPUName!" | find /i "RX 5500 XT" >nul && ^(set /a "gpu_score=14" & set "gpu_rating=Budget Gaming"^)
 
-echo "!GPUName!" | find /i "RX 590" >nul && (set /a "gpu_score=12" & set "gpu_rating=Budget Gaming")
-echo "!GPUName!" | find /i "RX 580" >nul && (set /a "gpu_score=11" & set "gpu_rating=Budget Gaming")
-echo "!GPUName!" | find /i "RX 570" >nul && (set /a "gpu_score=10" & set "gpu_rating=Entry Gaming")
-echo "!GPUName!" | find /i "RX 560" >nul && (set /a "gpu_score=8" & set "gpu_rating=Entry Level")
+echo "!GPUName!" | find /i "RX 590" >nul && ^(set /a "gpu_score=12" & set "gpu_rating=Budget Gaming"^)
+echo "!GPUName!" | find /i "RX 580" >nul && ^(set /a "gpu_score=11" & set "gpu_rating=Budget Gaming"^)
+echo "!GPUName!" | find /i "RX 570" >nul && ^(set /a "gpu_score=10" & set "gpu_rating=Entry Gaming"^)
+echo "!GPUName!" | find /i "RX 560" >nul && ^(set /a "gpu_score=8" & set "gpu_rating=Entry Level"^)
 
-echo "!GPUName!" | find /i "R9 Fury X" >nul && (set /a "gpu_score=18" & set "gpu_rating=High-End (Old Gen)")
-echo "!GPUName!" | find /i "R9 Fury" >nul && (set /a "gpu_score=16" & set "gpu_rating=High-End (Old Gen)")
-echo "!GPUName!" | find /i "R9 390X" >nul && (set /a "gpu_score=13" & set "gpu_rating=Upper Mid-Range")
-echo "!GPUName!" | find /i "R9 380X" >nul && (set /a "gpu_score=10" & set "gpu_rating=Budget Gaming")
-echo "!GPUName!" | find /i "R9 380" >nul && (set /a "gpu_score=9" & set "gpu_rating=Budget Gaming")
+echo "!GPUName!" | find /i "R9 Fury X" >nul && ^(set /a "gpu_score=18" & set "gpu_rating=High-End (Old Gen)"^)
+echo "!GPUName!" | find /i "R9 Fury" >nul && ^(set /a "gpu_score=16" & set "gpu_rating=High-End (Old Gen)"^)
+echo "!GPUName!" | find /i "R9 390X" >nul && ^(set /a "gpu_score=13" & set "gpu_rating=Upper Mid-Range"^)
+echo "!GPUName!" | find /i "R9 380X" >nul && ^(set /a "gpu_score=10" & set "gpu_rating=Budget Gaming"^)
+echo "!GPUName!" | find /i "R9 380" >nul && ^(set /a "gpu_score=9" & set "gpu_rating=Budget Gaming"^)
 
-echo "!GPUName!" | find /i "Arc A770" >nul && (set /a "gpu_score=20" & set "gpu_rating=Mid-Range")
-echo "!GPUName!" | find /i "Arc A750" >nul && (set /a "gpu_score=18" & set "gpu_rating=Entry Gaming")
-echo "!GPUName!" | find /i "Arc A580" >nul && (set /a "gpu_score=15" & set "gpu_rating=Budget Gaming")
-echo "!GPUName!" | find /i "Arc A380" >nul && (set /a "gpu_score=9" & set "gpu_rating=Entry Level")
+echo "!GPUName!" | find /i "Arc A770" >nul && ^(set /a "gpu_score=20" & set "gpu_rating=Mid-Range"^)
+echo "!GPUName!" | find /i "Arc A750" >nul && ^(set /a "gpu_score=18" & set "gpu_rating=Entry Gaming"^)
+echo "!GPUName!" | find /i "Arc A580" >nul && ^(set /a "gpu_score=15" & set "gpu_rating=Budget Gaming"^)
+echo "!GPUName!" | find /i "Arc A380" >nul && ^(set /a "gpu_score=9" & set "gpu_rating=Entry Level"^)
 
-echo "!GPUName!" | find /i "Iris Xe" >nul && (set /a "gpu_score=7" & set "gpu_rating=Integrated High-End")
-echo "!GPUName!" | find /i "UHD" >nul && (set /a "gpu_score=5" & set "gpu_rating=Integrated")
-echo "!GPUName!" | find /i "HD Graphics" >nul && (set /a "gpu_score=3" & set "gpu_rating=Integrated")
-echo "!GPUName!" | find /i "Intel" >nul && (set /a "gpu_score=2" & set "gpu_rating=Integrated")
+echo "!GPUName!" | find /i "Iris Xe" >nul && ^(set /a "gpu_score=7" & set "gpu_rating=Integrated High-End"^)
+echo "!GPUName!" | find /i "UHD" >nul && ^(set /a "gpu_score=5" & set "gpu_rating=Integrated"^)
+echo "!GPUName!" | find /i "HD Graphics" >nul && ^(set /a "gpu_score=3" & set "gpu_rating=Integrated"^)
+echo "!GPUName!" | find /i "Intel" >nul && ^(set /a "gpu_score=2" & set "gpu_rating=Integrated"^)
 
 set /a "gpu_score+=!vram_score!"
 set /a "perfscore+=!gpu_score!"
@@ -9318,9 +9320,9 @@ if !perfscore! geq 55 (
 )
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                      HARDWARE SCAN COMPLETED SUCCESSFULLY                    ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                      HARDWARE SCAN COMPLETED SUCCESSFULLY                    ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Hardware information scan completed successfully!%u%
 echo.
@@ -9344,18 +9346,18 @@ echo %c%• Generating hardware report...%u%
 set "report_file=%USERPROFILE%\Desktop\Hardware_Report_%COMPUTERNAME%_%date:~10,4%%date:~4,2%%date:~7,2%.txt"
 
 (
-echo ╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         HARDWARE INFORMATION REPORT                          ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝
+echo +==============================================================================+
+echo ^|                         HARDWARE INFORMATION REPORT                          ^|
+echo +==============================================================================+
 echo.
 echo Report Generated: %date% %time%
 echo Computer Name: %COMPUTERNAME%
 echo Current User: %USERNAME%
 echo Scanner Version: Dex Tweaks
 echo.
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo                                 SYSTEM OVERVIEW
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo.
 echo Computer Model: !comp_model!
 echo Manufacturer: !comp_manufacturer!
@@ -9365,9 +9367,9 @@ echo Windows Version: !win_version!
 echo Build Number: !build_number!
 echo System Architecture: 64-bit
 echo.
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo                              MOTHERBOARD AND BIOS
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo.
 echo Motherboard: !mb_manufacturer! !mb_model!
 echo Motherboard Version: !mb_version!
@@ -9375,9 +9377,9 @@ echo BIOS Manufacturer: !bios_manufacturer!
 echo BIOS Version: !bios_version!
 echo BIOS Date: !bios_date!
 echo.
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo                                 PROCESSOR DETAILS
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo.
 echo Processor: !CPUName!
 echo Logical Processors: !NUMBER_OF_PROCESSORS! threads
@@ -9385,9 +9387,9 @@ echo Base Clock Speed: !cpughz!.!cpumhz! GHz
 echo Performance Rating: !cpu_rating! ^(!cpu_score! points^)
 echo CPU Score Breakdown: Base !cpu_score! + Thread Bonus + Clock Bonus
 echo.
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo                                 MEMORY CONFIGURATION
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo.
 echo Total Physical Memory: !totalmem! GB
 echo Available Memory: !freemem! GB
@@ -9395,9 +9397,9 @@ echo Memory Speed: !mem_speed! MHz
 echo Memory Manufacturer: !mem_manufacturer!
 echo Memory Rating: !ram_rating!
 echo.
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo                                GRAPHICS HARDWARE
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo.
 echo Primary Graphics: !GPUName!
 echo Video Memory: !detected_vram! GB
@@ -9405,9 +9407,9 @@ echo Performance Rating: !gpu_rating! ^(!gpu_score! points^)
 echo VRAM Rating: !vram_rating!
 echo GPU Count: !gpucount! graphics adapters detected
 echo.
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo                                 STORAGE DEVICES
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo.
 echo Primary Drive: !drive1_name!
 echo Drive Capacity: !drive1_size! GB
@@ -9434,9 +9436,9 @@ if not "!c_drive_info!"=="" (
 echo Storage Type: High-speed storage detected
 echo Total Storage Devices: !drivecount! physical drive^(s^)
 echo.
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo                               SYSTEM PERFORMANCE
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo.
 echo Overall Performance Score: !perfscore!/100
 echo Performance Category: !perf_category!
@@ -9490,9 +9492,9 @@ echo • Video Streaming: Excellent
 echo • Programming/Development: Good to Excellent
 echo • Content Creation: Depends on workload complexity
 echo.
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo                               UPGRADE RECOMMENDATIONS
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo.
 )
 
@@ -9518,9 +9520,9 @@ if !perfscore! lss 50 (
 
 >> "%report_file%" (
 echo.
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo                                 SYSTEM HEALTH
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo.
 echo Overall Health Status: System operational
 echo Driver Status: !driver_count! active drivers detected
@@ -9528,9 +9530,9 @@ echo Storage Health: Primary drive accessible
 echo System Stability: Stable operation detected
 echo Thermal Status: Monitoring available
 echo.
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo                              TECHNICAL SUMMARY
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo.
 )
 
@@ -9560,9 +9562,9 @@ echo • Scan Time: %time%
 echo • Computer Scanned: !comp_model!
 echo • Report Generated For: %USERNAME%
 echo.
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 echo Report End - Generated by Dex Tweaks 
-echo ════════════════════════════════════════════════════════════════════════════════
+echo ================================================================================
 )
 
 echo %c%  Hardware report saved successfully!%u%
@@ -9572,7 +9574,7 @@ echo %c%  Location: %USERPROFILE%\Desktop%u%
 :skip_save
 
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto HardwareMenu
 
@@ -9580,14 +9582,14 @@ goto HardwareMenu
 cls
 call :SetupConsole
 call :DisplayBanner
-echo %c%                                 ╔═══════════════════════════════════════════════════╗ %u%
-echo                                  %c%║%u%          [%c%1%u%] Search Index Optimizer               %c%║%u% 
-echo                                  %c%║%u%          [%c%2%u%] Windows Defender Optimizer           %c%║%u% 
-echo                                  %c%║%u%          [%c%3%u%] Windows Explorer Fixes               %c%║%u%
-echo                                  %c%║%u%          [%c%4%u%] System File Checker                  %c%║%u%
-echo                                  %c%║%u%          [%c%5%u%] Registry Fixes                       %c%║%u%
-echo                                  %c%║%u%          [%c%6%u%] Windows Features Manager             %c%║%u%
-echo %c%                                 ╚═══════════════════════════════════════════════════╝
+echo %c%                                 +===================================================+ %u%
+echo                                  %c%^|%u%          [%c%1%u%] Search Index Optimizer               %c%^|%u% 
+echo                                  %c%^|%u%          [%c%2%u%] Windows Defender Optimizer           %c%^|%u% 
+echo                                  %c%^|%u%          [%c%3%u%] Windows Explorer Fixes               %c%^|%u%
+echo                                  %c%^|%u%          [%c%4%u%] System File Checker                  %c%^|%u%
+echo                                  %c%^|%u%          [%c%5%u%] Registry Fixes                       %c%^|%u%
+echo                                  %c%^|%u%          [%c%6%u%] Windows Features Manager             %c%^|%u%
+echo %c%                                 +===================================================+
 echo.
 echo                             %u%[%c%7%u%] Colour Presets   [%c%8%u%] Back to Main   [%red%X%u%] Exit Application       
 echo.                                      
@@ -9615,22 +9617,22 @@ echo.
 echo %c%Detected: !DEX_OS_NAME! build !_OS_BUILD_NUM!. Feature availability varies by edition.%u%
 echo %c%Unavailable optional features are left unchanged.%u%
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           WINDOWS FEATURES MANAGER                           ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                           WINDOWS FEATURES MANAGER                           ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Choose your Windows Features management option:%u%
 echo.
-echo %c%                           ╔════════════════════════════════╗
-echo                            ║  [1] Gaming Optimization       ║
-echo                            ║  [2] Performance Optimization  ║
-echo                            ║  [3] Privacy Optimization      ║
-echo                            ║  [4] Developer Features        ║
-echo                            ║  [5] View Current Features     ║
-echo                            ║  [6] Custom Feature Manager    ║
-echo                            ║                                ║
-echo                            ║  [0] Return to Windows Menu    ║
-echo                            ╚════════════════════════════════╝%u%
+echo %c%                           +================================+
+echo                            ^|  [1] Gaming Optimization       ^|
+echo                            ^|  [2] Performance Optimization  ^|
+echo                            ^|  [3] Privacy Optimization      ^|
+echo                            ^|  [4] Developer Features        ^|
+echo                            ^|  [5] View Current Features     ^|
+echo                            ^|  [6] Custom Feature Manager    ^|
+echo                            ^|                                ^|
+echo                            ^|  [0] Return to Windows Menu    ^|
+echo                            +================================+%u%
 echo.
 echo %c%[1] Gaming: Enable gaming features, disable bloat%u%
 echo %c%[2] Performance: Disable resource-heavy features%u%
@@ -9657,18 +9659,18 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                            GAMING OPTIMIZATION MODE                          ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                            GAMING OPTIMIZATION MODE                          ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Gaming optimization will:%u%
 echo %c%• Enable DirectPlay for older games compatibility%u%
 echo %c%• Enable .NET Framework versions for game compatibility%u%
 echo %c%• Disable Windows Media Player and Media Features%u%
 echo %c%• Disable Internet Explorer and legacy browser features%u%
-echo %c%• Disable Work Folders Client (business feature)%u%
+echo %c%• Disable Work Folders Client ^(business feature^)%u%
 echo %c%• Disable Windows Fax and Scan%u%
-echo %c%• Enable Windows Subsystem for Linux (WSL) for game development%u%
+echo %c%• Enable Windows Subsystem for Linux ^(WSL^) for game development%u%
 echo %c%• Optimize Hyper-V settings for performance%u%
 echo.
 choice /C YN /M "%c%Apply gaming feature optimization? (Y/N)%u%"
@@ -9714,7 +9716,7 @@ echo %c%✓ Business/Enterprise features disabled%u%
 
 echo.
 echo %c%[5/8] Enabling Development Features for Gaming...%u%
-echo %c%• Enabling Windows Subsystem for Linux (WSL)...%u%
+echo %c%• Enabling Windows Subsystem for Linux ^(WSL^)...%u%
 dism /online /enable-feature /featurename:"Microsoft-Windows-Subsystem-Linux" /all /norestart >nul 2>&1
 echo %c%• Enabling Virtual Machine Platform...%u%
 dism /online /enable-feature /featurename:"VirtualMachinePlatform" /all /norestart >nul 2>&1
@@ -9744,7 +9746,7 @@ echo %c%✓ Print features optimized%u%
 
 echo.
 echo %c%[8/8] Configuring Windows Optional Features for Gaming...%u%
-echo %c%• Disabling Windows PowerShell ISE (use modern PowerShell)...%u%
+echo %c%• Disabling Windows PowerShell ISE ^(use modern PowerShell^)...%u%
 dism /online /disable-feature /featurename:"MicrosoftWindowsPowerShellISE" /norestart >nul 2>&1
 echo %c%• Disabling Telnet Client...%u%
 dism /online /disable-feature /featurename:"TelnetClient" /norestart >nul 2>&1
@@ -9756,9 +9758,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                          PERFORMANCE OPTIMIZATION MODE                       ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                          PERFORMANCE OPTIMIZATION MODE                       ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Performance optimization will:%u%
 echo %c%• Disable ALL resource-heavy Windows features%u%
@@ -9839,7 +9841,7 @@ echo %c%• Disabling DirectPlay...%u%
 dism /online /disable-feature /featurename:"DirectPlay" /norestart >nul 2>&1
 echo %c%• Disabling Legacy Components...%u%
 dism /online /disable-feature /featurename:"LegacyComponents" /norestart >nul 2>&1
-echo %c%• Disabling NTVDM (16-bit support)...%u%
+echo %c%• Disabling NTVDM ^(16-bit support^)...%u%
 dism /online /disable-feature /featurename:"NTVDM" /norestart >nul 2>&1
 echo %c%✓ Legacy components removed%u%
 
@@ -9869,14 +9871,14 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                            PRIVACY OPTIMIZATION MODE                         ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                            PRIVACY OPTIMIZATION MODE                         ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Privacy optimization will:%u%
-echo %c%• Remove Internet Explorer (tracking vector)%u%
-echo %c%• Disable Windows Media Player (telemetry)%u%
-echo %c%• Remove Work Folders (business tracking)%u%
+echo %c%• Remove Internet Explorer ^(tracking vector^)%u%
+echo %c%• Disable Windows Media Player ^(telemetry^)%u%
+echo %c%• Remove Work Folders ^(business tracking^)%u%
 echo %c%• Disable location services%u%
 echo %c%• Remove contact and calendar sync features%u%
 echo %c%• Disable biometric features%u%
@@ -9930,9 +9932,9 @@ echo %c%✓ Biometric tracking removed%u%
 
 echo.
 echo %c%[6/7] Final Privacy Hardening...%u%
-echo %c%• Disabling Telnet (security risk)...%u%
+echo %c%• Disabling Telnet ^(security risk^)...%u%
 dism /online /disable-feature /featurename:"TelnetClient" /norestart >nul 2>&1
-echo %c%• Disabling TFTP (security risk)...%u%
+echo %c%• Disabling TFTP ^(security risk^)...%u%
 dism /online /disable-feature /featurename:"TFTP" /norestart >nul 2>&1
 echo %c%• Disabling Simple TCP/IP Services...%u%
 dism /online /disable-feature /featurename:"SimpleTCP" /norestart >nul 2>&1
@@ -9948,12 +9950,12 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                            DEVELOPER FEATURES MODE                           ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                            DEVELOPER FEATURES MODE                           ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Developer optimization will:%u%
-echo %c%• Enable Windows Subsystem for Linux (WSL)%u%
+echo %c%• Enable Windows Subsystem for Linux ^(WSL^)%u%
 echo %c%• Enable Virtual Machine Platform%u%
 echo %c%• Enable Windows Hypervisor Platform%u%
 echo %c%• Enable Developer Mode features%u%
@@ -10042,23 +10044,23 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           CURRENT WINDOWS FEATURES STATUS                   ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                           CURRENT WINDOWS FEATURES STATUS                   ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Scanning current Windows features status...%u%
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                                ENABLED FEATURES                              ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                                ENABLED FEATURES                              ^|
+echo +===============================================================================+%u%
 dism /online /get-features /format:table | findstr /i "Enabled"
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                               DISABLED FEATURES                              ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                               DISABLED FEATURES                              ^|
+echo +===============================================================================+%u%
 dism /online /get-features /format:table | findstr /i "Disabled"
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto WindowsFeaturesManager
 
@@ -10067,24 +10069,24 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                            CUSTOM FEATURE MANAGER                            ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                            CUSTOM FEATURE MANAGER                            ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Select features to manage individually:%u%
 echo.
-echo %c%                           ╔════════════════════════════════╗
-echo                            ║  [1] Hyper-V Features          ║
-echo                            ║  [2] WSL and Linux Features    ║
-echo                            ║  [3] Media Features            ║
-echo                            ║  [4] .NET Framework            ║
-echo                            ║  [5] Internet Explorer         ║
-echo                            ║  [6] Container Features        ║
-echo                            ║  [7] Print Features            ║
-echo                            ║  [8] Legacy Components         ║
-echo                            ║                                ║
-echo                            ║  [0] Back to Features Menu     ║
-echo                            ╚════════════════════════════════╝%u%
+echo %c%                           +================================+
+echo                            ^|  [1] Hyper-V Features          ^|
+echo                            ^|  [2] WSL and Linux Features    ^|
+echo                            ^|  [3] Media Features            ^|
+echo                            ^|  [4] .NET Framework            ^|
+echo                            ^|  [5] Internet Explorer         ^|
+echo                            ^|  [6] Container Features        ^|
+echo                            ^|  [7] Print Features            ^|
+echo                            ^|  [8] Legacy Components         ^|
+echo                            ^|                                ^|
+echo                            ^|  [0] Back to Features Menu     ^|
+echo                            +================================+%u%
 echo.
 set /p choice="%c%Select feature category »%u% "
 if "!choice!"=="0" goto WindowsFeaturesManager
@@ -10233,9 +10235,9 @@ exit /b %errorlevel%
 
 :FeaturesComplete
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                      WINDOWS FEATURES OPTIMIZATION COMPLETED                 ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                      WINDOWS FEATURES OPTIMIZATION COMPLETED                 ^|
+echo +===============================================================================+%u%
 echo.
 if "!choice!"=="1" (
     echo %c%Gaming Features Applied:%u%
@@ -10285,7 +10287,7 @@ if /i "!restart_choice!"=="Y" (
     echo %c%Please restart manually when convenient to apply all changes.%u%
 )
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto WindowsMenu
 
@@ -10294,9 +10296,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           REGISTRY PERFORMANCE OPTIMIZER                     ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                           REGISTRY PERFORMANCE OPTIMIZER                     ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will apply comprehensive registry optimizations:%u%
 echo %c%• Disable Windows Tips and suggestions%u%
@@ -10447,9 +10449,9 @@ reg add "HKLM\SYSTEM\ResourcePolicyStore\ResourceSets\Policies\Memory\NoCap" /v 
 echo %c%✓ Final performance tweaks applied%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                   REGISTRY PERFORMANCE OPTIMIZATION COMPLETED                ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                   REGISTRY PERFORMANCE OPTIMIZATION COMPLETED                ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully Applied:%u%
 echo %c%• Windows Tips and suggestions completely disabled%u%
@@ -10473,7 +10475,7 @@ echo %c%• Enhanced gaming and productivity performance%u%
 echo.
 echo %red%Note: A system restart is recommended to fully apply all optimizations.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto WindowsMenu
 
@@ -10482,12 +10484,12 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           SYSTEM FILE OPTIMIZER                              ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                           SYSTEM FILE OPTIMIZER                              ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will perform comprehensive system file maintenance:%u%
-echo %c%• Run System File Checker (SFC) scan to repair corrupted files%u%
+echo %c%• Run System File Checker ^(SFC^) scan to repair corrupted files%u%
 echo %c%• Run DISM health check to repair Windows image%u%
 echo %c%• Clean component store to free up space%u%
 echo %c%• Optimize WinSxS folder and reduce its size%u%
@@ -10499,12 +10501,12 @@ choice /C YN /M "%c%Run comprehensive system file optimization? (Y/N)%u%"
 if errorlevel 2 goto WindowsMenu
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        SYSTEM FILE MAINTENANCE IN PROGRESS                   ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                        SYSTEM FILE MAINTENANCE IN PROGRESS                   ^|
+echo +===============================================================================+%u%
 
 echo.
-echo %c%[1/6] Running System File Checker (SFC) Scan...%u%
+echo %c%[1/6] Running System File Checker ^(SFC^) Scan...%u%
 echo %c%This will scan and repair corrupted system files...%u%
 echo.
 sfc /scannow
@@ -10604,12 +10606,12 @@ net start FontCache >nul 2>&1
 echo %c%✓ System files and logs cleared%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                     SYSTEM FILE OPTIMIZATION COMPLETED                       ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                     SYSTEM FILE OPTIMIZATION COMPLETED                       ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully Completed:%u%
-echo %c%• System File Checker (SFC) scan and repair%u%
+echo %c%• System File Checker ^(SFC^) scan and repair%u%
 echo %c%• DISM health check and Windows image repair%u%
 echo %c%• Component store cleanup and optimization%u%
 echo %c%• WinSxS folder size reduction%u%
@@ -10628,7 +10630,7 @@ echo %c%• Boot time potentially faster%u%
 echo.
 echo %red%Recommendation: Restart your computer to complete all optimizations.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto WindowsMenu
 
@@ -10637,9 +10639,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                            WINDOWS EXPLORER OPTIMIZER                        ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                            WINDOWS EXPLORER OPTIMIZER                        ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will optimize Windows Explorer for maximum performance:%u%
 echo %c%• Disable folder thumbnails and preview pane%u%
@@ -10806,7 +10808,7 @@ reg add "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows Media Foundation\Platform" 
 echo %c%✓ Media Foundation AI enhancements disabled%u%
 
 echo.
-echo %c%[10/16] Disabling video enhancements (VideoManagement, DirectShow, HDR)...%u%
+echo %c%[10/16] Disabling video enhancements ^(VideoManagement, DirectShow, HDR^)...%u%
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\VideoManagement" /v "EnableHDRVideoAutoBrightness" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\VideoManagement" /v "EnableHDRVideoAutoBrightness" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\VideoManagement" /v "EnableSDRtoHDRVideoExpansion" /t REG_DWORD /d "0" /f >nul 2>&1
@@ -10821,7 +10823,7 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\VideoSettings" /v "Enabl
 echo %c%✓ Video enhancements and HDR playback disabled%u%
 
 echo.
-echo %c%[11/16] Disabling WPF hardware acceleration and color management (Avalon.Graphics)...%u%
+echo %c%[11/16] Disabling WPF hardware acceleration and color management ^(Avalon.Graphics^)...%u%
 reg add "HKCU\Software\Microsoft\Avalon.Graphics" /v "DisableHWAcceleration" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\Software\Microsoft\Avalon.Graphics" /v "DisableHWAcceleration" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Avalon.Graphics" /v "DisableHWAcceleration" /t REG_DWORD /d "1" /f >nul 2>&1
@@ -10882,22 +10884,22 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinSock2\Parameters\NameSpace_Ca
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinSock2\Parameters\NameSpace_Catalog5\Catalog_Entries64\000000000005" /v "Enabled" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinSock2\Parameters\NameSpace_Catalog5\Catalog_Entries\000000000007" /v "Enabled" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinSock2\Parameters\NameSpace_Catalog5\Catalog_Entries64\000000000007" /v "Enabled" /t REG_DWORD /d "0" /f >nul 2>&1
-echo %c%✓ Unused WinSock2 namespace providers disabled (Email, PNRP, Bluetooth, NLAv1, NT DS)%u%
+echo %c%✓ Unused WinSock2 namespace providers disabled ^(Email, PNRP, Bluetooth, NLAv1, NT DS^)%u%
 netsh winsock remove provider 1012 >nul 2>&1
 netsh winsock remove provider 1013 >nul 2>&1
 netsh winsock remove provider 1014 >nul 2>&1
-echo %c%  [+] Hyper-V RAW and Bluetooth LSP providers removed (1012/1013/1014)%u%
+echo %c%  [+] Hyper-V RAW and Bluetooth LSP providers removed ^(1012/1013/1014^)%u%
 
 echo.
-echo %c%[16/16] Disabling storage and bind filter drivers (storqosflt, bindflt)...%u%
+echo %c%[16/16] Disabling storage and bind filter drivers ^(storqosflt, bindflt^)...%u%
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\storqosflt" /v "Start" /t REG_DWORD /d "4" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bindflt" /v "Start" /t REG_DWORD /d "4" /f >nul 2>&1
 echo %c%✓ Storage QoS filter and bind filter drivers disabled%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                      WINDOWS EXPLORER OPTIMIZATION COMPLETED                 ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                      WINDOWS EXPLORER OPTIMIZATION COMPLETED                 ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully Applied:%u%
 echo %c%• Folder thumbnails and previews disabled%u%
@@ -10908,16 +10910,16 @@ echo %c%• Notification area configured for minimal distractions%u%
 echo %c%• Unnecessary shell extensions disabled%u%
 echo %c%• Explorer animations and bloat removed%u%
 echo %c%• Icon cache cleared and rebuilt%u%
-echo %c%• Long file paths enabled (>260 chars)%u%
-echo %c%• Snap Assist flyout disabled (drag-to-resize kept)%u%
+echo %c%• Long file paths enabled ^(>260 chars^)%u%
+echo %c%• Snap Assist flyout disabled ^(drag-to-resize kept^)%u%
 echo %c%• End Task added to taskbar right-click menu%u%
 echo %c%• Transparency effects disabled%u%
 echo %c%• Tablet mode and touch keyboard bloat disabled%u%
 echo %c%• Aero Peek disabled%u%
 echo %c%• Storage Sense auto-delete disabled%u%
-echo %c%• Media Foundation AI enhancements disabled (upscaling, super-res, HDR conversion)%u%
-echo %c%• Video enhancements disabled (VideoManagement, DirectShow, HDR playback)%u%
-echo %c%• WPF hardware acceleration disabled (Avalon.Graphics)%u%
+echo %c%• Media Foundation AI enhancements disabled ^(upscaling, super-res, HDR conversion^)%u%
+echo %c%• Video enhancements disabled ^(VideoManagement, DirectShow, HDR playback^)%u%
+echo %c%• WPF hardware acceleration disabled ^(Avalon.Graphics^)%u%
 echo %c%• DPI scaling and GDI font smoothing disabled%u%
 echo %c%• Shell context menus and ShellNew entries cleaned%u%
 echo %c%• Print verbs removed from file right-click menus%u%
@@ -10931,7 +10933,7 @@ echo %c%• Cleaner, more efficient taskbar%u%
 echo %c%• Eliminated privacy tracking in file explorer%u%
 echo %c%• Reduced system resources usage%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto WindowsMenu
 
@@ -10940,19 +10942,19 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         WINDOWS DEFENDER OPTIMIZER                           ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                         WINDOWS DEFENDER OPTIMIZER                           ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Choose your Windows Defender optimization level:%u%
 echo.
-echo %c%                           ╔════════════════════════════════╗
-echo                            ║  [1] Gaming Optimization       ║
-echo                            ║  [2] Performance Optimization  ║
-echo                            ║  [3] Complete Removal (blocked) ║
-echo                            ║                                ║
-echo                            ║  [0] Return to Windows Menu    ║
-echo                            ╚════════════════════════════════╝%u%
+echo %c%                           +================================+
+echo                            ^|  [1] Gaming Optimization       ^|
+echo                            ^|  [2] Performance Optimization  ^|
+echo                            ^|  [3] Complete Removal ^(blocked^) ^|
+echo                            ^|                                ^|
+echo                            ^|  [0] Return to Windows Menu    ^|
+echo                            +================================+%u%
 echo.
 echo %c%[1] Gaming: Reduce scan load while keeping active protection%u%
 echo %c%[2] Performance: Disable real-time protection, configure exclusions%u%
@@ -10973,9 +10975,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         GAMING OPTIMIZATION MODE                              ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                         GAMING OPTIMIZATION MODE                              ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will optimize Defender for gaming while maintaining security:%u%
 echo %c%• Add gaming-related exclusions%u%
@@ -11024,9 +11026,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        PERFORMANCE OPTIMIZATION MODE                          ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                        PERFORMANCE OPTIMIZATION MODE                          ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will disable real-time protection and optimize for performance:%u%
 echo %c%• Disable real-time protection%u%
@@ -11093,9 +11095,9 @@ goto DefenderOptimizer
 
 :DefenderComplete
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                     WINDOWS DEFENDER OPTIMIZATION COMPLETED                  ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                     WINDOWS DEFENDER OPTIMIZATION COMPLETED                  ^|
+echo +===============================================================================+%u%
 echo.
 if "!choice!"=="1" (
     echo %c%Gaming Optimization Applied:%u%
@@ -11122,7 +11124,7 @@ if "!choice!"=="3" (
     echo %red%⚠️  Use a supported antivirus if you require Defender passive mode. ⚠️%u%
 )
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto WindowsMenu
 
@@ -11133,13 +11135,13 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           WINDOWS SEARCH INDEX OPTIMIZER                     ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                           WINDOWS SEARCH INDEX OPTIMIZER                     ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will optimize Windows Search and Indexing for maximum performance:%u%
 echo %c%• Disable Windows Search service completely%u%
-echo %c%• Configure search indexing locations (exclude unnecessary drives)%u%
+echo %c%• Configure search indexing locations ^(exclude unnecessary drives^)%u%
 echo %c%• Disable web search integration in Start Menu%u%
 echo %c%• Clear all search history and cache%u%
 echo %c%• Optimize indexing performance settings%u%
@@ -11176,7 +11178,7 @@ if exist "%ProgramData%\Microsoft\Search\Data\Applications\Windows\Windows.edb" 
         echo %c%Search index database cleared.%u%
     )
 ) else (
-    echo %c%✓ Search index database not found (already clean)%u%
+    echo %c%✓ Search index database not found ^(already clean^)%u%
 )
 
 echo.
@@ -11217,9 +11219,9 @@ if exist "%LOCALAPPDATA%\Microsoft\Windows\Caches" rmdir /s /q "%LOCALAPPDATA%\M
 echo %c%✓ Search history and cache cleared%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    WINDOWS SEARCH OPTIMIZATION COMPLETED                     ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                    WINDOWS SEARCH OPTIMIZATION COMPLETED                     ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully Applied:%u%
 echo %c%• Windows Search service completely disabled%u%
@@ -11228,19 +11230,19 @@ echo %c%• Web search in Start Menu disabled%u%
 echo %c%• Cortana functionality disabled%u%
 echo %c%• Search history and cache cleared%u%
 echo %c%• Search index database removed%u%
-echo %c%• Search box suggestions disabled (policy)%u%
+echo %c%• Search box suggestions disabled ^(policy^)%u%
 echo %c%• Encrypted store indexing disabled%u%
 echo %c%• Outlook, public folder and attachment indexing disabled%u%
 echo.
 echo %red%Impact:%u%
 echo %c%• Start Menu search will no longer work%u%
-echo %c%• File Explorer search will be basic (filename only)%u%
+echo %c%• File Explorer search will be basic ^(filename only^)%u%
 echo %c%• Cortana is completely disabled%u%
 echo %c%• No web search integration%u%
 echo %c%• Significantly reduced background CPU usage%u%
 echo %c%• Faster system startup and file operations%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto WindowsMenu
 
@@ -11248,13 +11250,13 @@ goto WindowsMenu
 cls
 call :SetupConsole
 call :DisplayBanner
-echo %c%                            ╔═══════════════════════════════╦════════════════════════════════╗ %u%
-echo                             %c%║%u% [%c%1%u%] Telemetry ^& Data Blocker  %c%║%u% [%c%6%u%] Advertising ^& Style        %c%║%u%
-echo                             %c%║%u% [%c%2%u%] Cortana ^& Search Privacy  %c%║%u% [%c%7%u%] Privacy Data Cleanup       %c%║%u%
-echo                             %c%║%u% [%c%3%u%] Account ^& Cloud Sync      %c%║%u% [%c%8%u%] Advanced Security          %c%║%u%
-echo                             %c%║%u% [%c%4%u%] Location ^& Sensor Privacy %c%║%u% [%c%9%u%] DNS ^& Hosts Protection     %c%║%u%
-echo                             %c%║%u% [%c%5%u%] App Permissions           %c%║%u% [%c%10%u%] Complete Privacy Audit    %c%║%u%
-echo %c%                            ╚═══════════════════════════════╩════════════════════════════════╝
+echo %c%                            +===============================+================================+ %u%
+echo                             %c%^|%u% [%c%1%u%] Telemetry ^& Data Blocker  %c%^|%u% [%c%6%u%] Advertising ^& Style        %c%^|%u%
+echo                             %c%^|%u% [%c%2%u%] Cortana ^& Search Privacy  %c%^|%u% [%c%7%u%] Privacy Data Cleanup       %c%^|%u%
+echo                             %c%^|%u% [%c%3%u%] Account ^& Cloud Sync      %c%^|%u% [%c%8%u%] Advanced Security          %c%^|%u%
+echo                             %c%^|%u% [%c%4%u%] Location ^& Sensor Privacy %c%^|%u% [%c%9%u%] DNS ^& Hosts Protection     %c%^|%u%
+echo                             %c%^|%u% [%c%5%u%] App Permissions           %c%^|%u% [%c%10%u%] Complete Privacy Audit    %c%^|%u%
+echo %c%                            +===============================+================================+
 echo.
 echo                              %u%[%c%11%u%] Colour Presets   [%c%12%u%] Back to Main   [%red%X%u%] Exit Application
 echo.
@@ -11286,15 +11288,15 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    ULTIMATE PRIVACY DATA CLEANUP ^& FORENSICS                 ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                    ULTIMATE PRIVACY DATA CLEANUP ^& FORENSICS                 ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will perform the most comprehensive privacy data cleanup available:%u%
 echo %c%• Clear all recent files, search history, and application traces%u%
 echo %c%• Remove privacy.sexy, Steam, and Visual Studio telemetry data%u%
-echo %c%• Preserve previous Windows installations (Windows.old) for rollback%u%
-echo %c%• Preserve System Resource Usage Monitor (SRUM) data%u%
+echo %c%• Preserve previous Windows installations ^(Windows.old^) for rollback%u%
+echo %c%• Preserve System Resource Usage Monitor ^(SRUM^) data%u%
 echo %c%• Preserve Recycle Bin contents and saved credentials%u%
 echo %c%• Preserve Windows Update and system diagnostic logs%u%
 echo %c%• Preserve cryptographic service diagnostic data%u%
@@ -11465,7 +11467,7 @@ if exist "%SYSTEMDRIVE%\Windows.old" (
 )
 
 echo.
-echo %c%[14/25] Clearing System Resource Usage Monitor (SRUM) Data...%u%
+echo %c%[14/25] Clearing System Resource Usage Monitor ^(SRUM^) Data...%u%
 echo %c%Preserving SRUM database and DPS service...%u%
 rem DPS remains running because the SRUM database is preserved.
 if exist "%SYSTEMROOT%\System32\sru\SRUDB.dat" (
@@ -11551,9 +11553,9 @@ rem Windows diagnostic and servicing logs are preserved for troubleshooting.
 echo %c%✓ WinSAT logs cleared%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    ULTIMATE PRIVACY DATA CLEANUP COMPLETED                   ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                    ULTIMATE PRIVACY DATA CLEANUP COMPLETED                   ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Cleanup summary:%u%
 echo %c%• All user activity history and recent files%u%
@@ -11561,7 +11563,7 @@ echo %c%• Application usage traces and registry history%u%
 echo %c%• Search history and network mappings%u%
 echo %c%• Privacy.sexy, Steam, and Visual Studio telemetry%u%
 echo %c%• Previous Windows installations preserved for rollback%u%
-echo %c%• System Resource Usage Monitor (SRUM) data preserved%u%
+echo %c%• System Resource Usage Monitor ^(SRUM^) data preserved%u%
 echo %c%• Recycle Bin contents and stored credentials preserved%u%
 echo %c%• Windows Update and system service logs preserved%u%
 echo %c%• Cryptographic services diagnostic traces preserved%u%
@@ -11577,7 +11579,7 @@ echo %c%• Developer tool telemetry completely removed%u%
 echo %c%• Gaming platform privacy data eliminated%u%
 echo %c%• Maximum privacy protection implemented%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto PrivacyMenu
 
@@ -11586,21 +11588,21 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       TELEMETRY & DATA COLLECTION BLOCKER                    ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                       TELEMETRY ^& DATA COLLECTION BLOCKER                    ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will comprehensively block Windows telemetry and data collection:%u%
 echo %c%• Disable Windows Error Reporting and crash data collection%u%
 echo %c%• Block Microsoft compatibility telemetry service%u%
 echo %c%• Disable Customer Experience Improvement Program%u%
 echo %c%• Block Windows Defender telemetry and sample submission%u%
-echo %c%• Disable diagnostic data collection (Full, Enhanced, Basic)%u%
+echo %c%• Disable diagnostic data collection ^(Full, Enhanced, Basic^)%u%
 echo %c%• Block Microsoft Office telemetry%u%
 echo %c%• Disable Application Impact Telemetry%u%
 echo %c%• Block Windows Media Player usage data%u%
 echo %c%• Disable WMI ETW autologger tracking sessions%u%
-echo %c%• Suppress user feedback (SIUF) prompts and input data harvesting%u%
+echo %c%• Suppress user feedback ^(SIUF^) prompts and input data harvesting%u%
 echo %c%• Harden system: SvcHost threshold, WPBT and driver co-installers%u%
 echo.
 choice /C YN /M "%c%Apply comprehensive telemetry blocking? (Y/N)%u%"
@@ -11704,9 +11706,9 @@ reg add "HKLM\Software\Microsoft\Windows Script Host\Settings" /v "Enabled" /t R
 echo %c%✓ SvcHost threshold, WPBT and co-installers hardened; Windows release targeting preserved; WSH disabled%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    TELEMETRY BLOCKING COMPLETED                              ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                    TELEMETRY BLOCKING COMPLETED                              ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully blocked:%u%
 echo %c%• Windows Error Reporting and crash data%u%
@@ -11718,7 +11720,7 @@ echo %c%• Microsoft Office telemetry%u%
 echo %c%• Application Impact Telemetry%u%
 echo %c%• Media Player usage tracking%u%
 echo %c%• WMI ETW autologger sessions%u%
-echo %c%• User feedback (SIUF) prompts and input personalization harvesting%u%
+echo %c%• User feedback ^(SIUF^) prompts and input personalization harvesting%u%
 echo %c%• System hardened: SvcHost threshold, WPBT, driver co-installers, Windows Script Host disabled%u%
 echo %c%• Windows Update product and feature release targeting preserved%u%
 echo.
@@ -11729,7 +11731,7 @@ echo %c%• Enhanced system privacy%u%
 echo %c%• Improved system performance%u%
 echo %c%• Vendor boot-time execution and driver bundleware blocked%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto PrivacyMenu
 
@@ -11738,9 +11740,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                          CORTANA & SEARCH PRIVACY                            ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                          CORTANA ^& SEARCH PRIVACY                            ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will completely remove Cortana and secure Windows Search:%u%
 echo %c%• Completely disable Cortana assistant%u%
@@ -11813,12 +11815,12 @@ sc config WSearch start= disabled >nul 2>&1
 sc stop WSearch >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowIndexingEncryptedStoresOrItems" /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "DisableRemovableDriveIndexing" /t REG_DWORD /d 1 /f >nul 2>&1
-echo %c%✓ Windows Search indexing disabled (service stopped)%u%
+echo %c%✓ Windows Search indexing disabled ^(service stopped^)%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                      CORTANA & SEARCH PRIVACY COMPLETED                      ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                      CORTANA ^& SEARCH PRIVACY COMPLETED                      ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully secured:%u%
 echo %c%• Cortana completely disabled and removed%u%
@@ -11835,7 +11837,7 @@ echo %c%• No search queries tracked or stored%u%
 echo %c%• No location data used for search%u%
 echo %c%• Enhanced local search privacy%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto PrivacyMenu
 
@@ -11844,9 +11846,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       MICROSOFT ACCOUNT & CLOUD SYNC PRIVACY                 ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                       MICROSOFT ACCOUNT ^& CLOUD SYNC PRIVACY                 ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will secure Microsoft Account integration and cloud synchronization:%u%
 echo %c%• Disable OneDrive integration and file sync%u%
@@ -11927,9 +11929,9 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\U
 echo %c%✓ Cloud-based password storage blocked%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                   MICROSOFT ACCOUNT & CLOUD SYNC PRIVACY COMPLETED           ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                   MICROSOFT ACCOUNT ^& CLOUD SYNC PRIVACY COMPLETED           ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully secured:%u%
 echo %c%• OneDrive integration and file sync disabled%u%
@@ -11946,7 +11948,7 @@ echo %c%• Settings and preferences remain private%u%
 echo %c%• No cross-device activity tracking%u%
 echo %c%• Enhanced local account privacy%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto PrivacyMenu
 
@@ -11955,9 +11957,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         LOCATION & SENSOR PRIVACY                            ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                         LOCATION ^& SENSOR PRIVACY                            ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will comprehensively secure location and sensor data:%u%
 echo %c%• Disable location services system-wide%u%
@@ -12037,9 +12039,9 @@ reg add "HKCU\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Current
 echo %c%✓ Geolocation in web browsers blocked%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                     LOCATION & SENSOR PRIVACY COMPLETED                      ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                     LOCATION ^& SENSOR PRIVACY COMPLETED                      ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully secured:%u%
 echo %c%• Location services system-wide disabled%u%
@@ -12057,7 +12059,7 @@ echo %c%• Motion sensors cannot track your activities%u%
 echo %c%• Network location services disabled%u%
 echo %c%• Complete location privacy achieved%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto PrivacyMenu
 
@@ -12066,9 +12068,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                     APP PERMISSIONS & BACKGROUND APPS                        ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                     APP PERMISSIONS ^& BACKGROUND APPS                        ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will secure app permissions and background activity:%u%
 echo %c%• Disable background apps globally%u%
@@ -12163,7 +12165,7 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\
 echo %c%✓ Final app permission restrictions applied%u%
 
 echo.
-echo %c%[9/11] Blocking microphone access (non-packaged apps and policy)...%u%
+echo %c%[9/11] Blocking microphone access ^(non-packaged apps and policy^)...%u%
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone\NonPackaged" /v "LastUsedTimeStop" /t REG_QWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone\NonPackaged" /v "Value" /t REG_SZ /d "Deny" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsAccessMicrophone" /t REG_DWORD /d "2" /f >nul 2>&1
@@ -12181,9 +12183,9 @@ powershell -NoProfile -Command "$rootRegistryKeyPath = 'HKCU\Software\Microsoft\
 echo %c%✓ Explorer FeatureUsage tracking cleared%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                 APP PERMISSIONS & BACKGROUND APPS SECURED                    ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                 APP PERMISSIONS ^& BACKGROUND APPS SECURED                    ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully secured:%u%
 echo %c%• Background apps globally disabled%u%
@@ -12202,7 +12204,7 @@ echo %c%• Files and media remain private%u%
 echo %c%• Reduced battery and performance impact%u%
 echo %c%• Enhanced overall system privacy%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto PrivacyMenu
 
@@ -12211,9 +12213,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       ADVERTISING & PERSONALIZATION BLOCKER                  ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                       ADVERTISING ^& PERSONALIZATION BLOCKER                  ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%This will completely block advertising and personalization:%u%
 echo %c%• Disable advertising ID and tracking%u%
@@ -12304,9 +12306,9 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v "DoNotShowF
 echo %c%✓ Windows tips and promotional content removed%u%
 
 echo.
-echo %c%╔═══════════════════════════════════════════════════════════════════════════════╗
-echo ║                ADVERTISING & PERSONALIZATION BLOCKING COMPLETED              ║
-echo ╚═══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+===============================================================================+
+echo ^|                ADVERTISING ^& PERSONALIZATION BLOCKING COMPLETED              ^|
+echo +===============================================================================+%u%
 echo.
 echo %c%Successfully blocked:%u%
 echo %c%• Advertising ID and tracking completely disabled%u%
@@ -12324,7 +12326,7 @@ echo %c%• No promotional content or suggestions%u%
 echo %c%• Enhanced browsing privacy%u%
 echo %c%• Reduced data collection and profiling%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto PrivacyMenu
 
@@ -12333,27 +12335,27 @@ goto PrivacyMenu
 cls
 chcp 65001 >nul
 echo.
-echo        %c%██████╗ ███████╗██╗  ██╗ %u%%white%████████╗ ██╗       ██╗███████╗ █████╗ ██╗  ██╗ ██████╗
-echo        %c%██╔══██╗██╔════╝╚██╗██╔╝ %u%%white%╚══██╔══╝ ██║  ██╗  ██║██╔════╝██╔══██╗██║ ██╔╝██╔════╝
-echo        %c%██║  ██║█████╗   ╚███╔╝  %u%%white%   ██║    ╚██╗████╗██╔╝█████╗  ███████║█████═╝ ╚█████╗
-echo        %c%██║  ██║██╔══╝   ██╔██╗  %u%%white%   ██║     ████╔═████║ ██╔══╝  ██╔══██║██╔═██╗  ╚═══██╗
-echo        %c%██████╔╝███████╗██╔╝╚██╗ %u%%white%   ██║     ╚██╔╝ ╚██╔╝ ███████╗██║  ██║██║ ╚██╗██████╔╝
-echo        %c%╚═════╝ ╚══════╝╚═╝  ╚═╝ %u%%white%   ╚═╝      ╚═╝   ╚═╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝
+echo        %c%######+ #######+##+  ##+ %u%%white%########+ ##+       ##+#######+ #####+ ##+  ##+ ######+
+echo        %c%##+==##+##+====++##+##++ %u%%white%+==##+==+ ##^|  ##+  ##^|##+====+##+==##+##^| ##++##+====+
+echo        %c%##^|  ##^|#####+   +###++  %u%%white%   ##^|    +##+####+##++#####+  #######^|#####=+ +#####+
+echo        %c%##^|  ##^|##+==+   ##+##+  %u%%white%   ##^|     ####+=####^| ##+==+  ##+==##^|##+=##+  +===##+
+echo        %c%######++#######+##+++##+ %u%%white%   ##^|     +##++ +##++ #######+##^|  ##^|##^| +##+######++
+echo        %c%+=====+ +======++=+  +=+ %u%%white%   +=+      +=+   +=+  +======++=+  +=++=+  +=++=====+
 echo.
-echo %c%                       ╔══════════════════════════════════════════════════╗%u%
-echo                        %c%║%u%           [%c%1%u%] Dex Toolbox                        %c%║%u%
-echo                        %c%║%u%           [%c%2%u%] Game Boosters                      %c%║%u%
-echo                        %c%║%u%           [%c%3%u%] Scheduled Tasks                    %c%║%u%
-echo                        %c%║%u%           [%c%4%u%] Interrupt %u%^&%c% Scheduling Lab         %c%║%u%
-echo                        %c%║%u%           [%c%5%u%] Program Debloat                    %c%║%u%
-echo                        %c%║%u%           [%c%6%u%] DirectX Optimization               %c%║%u%
-echo                        %c%║%u%           [%c%7%u%] OBS Optimizer                      %c%║%u%
-echo                        %c%║%u%           [%c%8%u%] Capture Priority Tool              %c%║%u%
-echo                        %c%║%u%           [%c%P%u%] Performance Toolkit                %c%║%u%
-echo %c%                       ╚══════════════════════════════════════════════════╝
-echo                        %c%║%u%        [%c%9%u%] Theme Presets    [%c%0%u%] Go Back          %c%║%u%
-echo                        %c%║%u%                  %u% [%c%Quit%u%] Leave                   %c%║%u%
-echo %c%                       ╚══════════════════════════════════════════════════╝%u%
+echo %c%                       +==================================================+%u%
+echo                        %c%^|%u%           [%c%1%u%] Dex Toolbox                        %c%^|%u%
+echo                        %c%^|%u%           [%c%2%u%] Game Boosters                      %c%^|%u%
+echo                        %c%^|%u%           [%c%3%u%] Scheduled Tasks                    %c%^|%u%
+echo                        %c%^|%u%           [%c%4%u%] Interrupt %u%^&%c% Scheduling Lab         %c%^|%u%
+echo                        %c%^|%u%           [%c%5%u%] Program Debloat                    %c%^|%u%
+echo                        %c%^|%u%           [%c%6%u%] DirectX Optimization               %c%^|%u%
+echo                        %c%^|%u%           [%c%7%u%] OBS Optimizer                      %c%^|%u%
+echo                        %c%^|%u%           [%c%8%u%] Capture Priority Tool              %c%^|%u%
+echo                        %c%^|%u%           [%c%P%u%] Performance Toolkit                %c%^|%u%
+echo %c%                       +==================================================+
+echo                        %c%^|%u%        [%c%9%u%] Theme Presets    [%c%0%u%] Go Back          %c%^|%u%
+echo                        %c%^|%u%                  %u% [%c%Quit%u%] Leave                   %c%^|%u%
+echo %c%                       +==================================================+%u%
 echo %u%                                %u%User %c%%username% %u%- Date %c%%date% %u%
 echo.
 echo.
@@ -12382,9 +12384,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                            PERFORMANCE TOOLKIT                               ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                            PERFORMANCE TOOLKIT                               ^|
+echo +==============================================================================+%u%
 echo.
 echo  [1] Startup App Manager - view and disable programs that auto-start with Windows
 echo  [2] CPU / GPU Temperature Snapshot - quick best-effort sensor reading
@@ -12514,14 +12516,14 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                        CAPTURE PRIORITY TOOL                                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                        CAPTURE PRIORITY TOOL                                 ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Works with ANY capture/streaming app — OBS, Tikinfinity, Streamlabs, etc.%u%
 echo %c%Pick the app's .exe and this will apply:%u%
-echo %c%• CPU priority: Above Normal for that process (Image File Execution Options)%u%
-echo %c%• Hardware-Accelerated GPU Scheduling (HAGS): enabled system-wide%u%
+echo %c%• CPU priority: Above Normal for that process ^(Image File Execution Options^)%u%
+echo %c%• Hardware-Accelerated GPU Scheduling ^(HAGS^): enabled system-wide%u%
 echo %c%• Xbox Game Bar / Game DVR capture overhead: disabled system-wide%u%
 echo.
 echo %c%Running this again on the same app UNDOES its priority boost.%u%
@@ -12557,9 +12559,9 @@ call :LogEvent "OK" "Capture Priority Tool applied to %file%"
 
 echo.
 echo.
-echo.                                         %c%═══════════════════════════════════════════════════════
+echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
-echo.                                         %c%═══════════════════════════════════════════════════════%u%
+echo.                                         %c%=======================================================%u%
 pause >nul
 goto AdvancedMenu
 
@@ -12568,14 +12570,14 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         DIRECTX OPTIMIZATION                                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                         DIRECTX OPTIMIZATION                                 ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%This will optimize DirectX rendering settings for lower latency and better fps:%u%
-echo %c%• Enable flip-queue bypass (FlipNoVsync) for Direct3D%u%
+echo %c%• Enable flip-queue bypass ^(FlipNoVsync^) for Direct3D%u%
 echo %c%• Force GPU-local video memory for Direct3D and DirectDraw%u%
-echo %c%• Disable Fullscreen Optimizations (FSO) for exclusive fullscreen%u%
+echo %c%• Disable Fullscreen Optimizations ^(FSO^) for exclusive fullscreen%u%
 echo %c%• Apply to both 64-bit and 32-bit subsystems%u%
 echo.
 choice /C YN /M "%c%Apply DirectX optimizations? (Y/N)%u%"
@@ -12606,22 +12608,22 @@ reg add "HKLM\SOFTWARE\Wow6432Node\Microsoft\DirectDraw" /v "DisableAGPSupport" 
 echo %c%✓ DirectDraw settings applied%u%
 
 echo.
-echo %c%[3/3] Disabling Fullscreen Optimizations (FSO)...%u%
+echo %c%[3/3] Disabling Fullscreen Optimizations ^(FSO^)...%u%
 reg add "HKCU\System\GameConfigStore" /v "GameDVR_DXGIHonorFSEWindowsCompatible" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKCU\System\GameConfigStore" /v "GameDVR_Enabled" /t REG_DWORD /d "0" /f >nul 2>&1
-echo %c%✓ FSO disabled (DXGIHonorFSEWindowsCompatible=1, GameDVR=0)%u%
+echo %c%✓ FSO disabled ^(DXGIHonorFSEWindowsCompatible=1, GameDVR=0^)%u%
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                   DIRECTX OPTIMIZATION COMPLETED                             ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                   DIRECTX OPTIMIZATION COMPLETED                             ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Applied:%u%
-echo %c%• Direct3D FlipNoVsync and GPU-local memory (64-bit + 32-bit)%u%
-echo %c%• DirectDraw local memory and AGP enabled (64-bit + 32-bit)%u%
-echo %c%• Fullscreen Optimizations (FSO) disabled for exclusive fullscreen%u%
+echo %c%• Direct3D FlipNoVsync and GPU-local memory ^(64-bit + 32-bit^)%u%
+echo %c%• DirectDraw local memory and AGP enabled ^(64-bit + 32-bit^)%u%
+echo %c%• Fullscreen Optimizations ^(FSO^) disabled for exclusive fullscreen%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto AdvancedMenu
 
@@ -12630,12 +12632,12 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                            OBS OPTIMIZER                                     ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                            OBS OPTIMIZER                                     ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%This will optimize OBS Studio encoding settings for your GPU:%u%
-echo %c%• Select encoder: NVENC (NVIDIA) / AMF (AMD) / x264 (CPU)%u%
+echo %c%• Select encoder: NVENC ^(NVIDIA^) / AMF ^(AMD^) / x264 ^(CPU^)%u%
 echo %c%• Three quality tiers: Performance / Balanced / Quality%u%
 echo %c%• Updates all existing OBS profiles automatically%u%
 echo %c%• Sets OBS process priority to Above Normal via registry%u%
@@ -12646,16 +12648,16 @@ if not exist "%OBSProfilePath%" (
     echo %c%    %OBSProfilePath%%u%
     echo %c%    Launch OBS at least once to create profiles, then re-run.%u%
     echo.
-    echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+    echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
     pause >nul
     goto AdvancedMenu
 )
 echo %c%[✓] OBS profiles found%u%
 echo.
 echo %c%Select encoder:%u%
-echo %c%[1] NVIDIA NVENC    - Hardware encoding (NVIDIA GPU required)%u%
-echo %c%[2] AMD AMF / VCE   - Hardware encoding (AMD GPU required)%u%
-echo %c%[3] x264 CPU        - Software encoding (any CPU)%u%
+echo %c%[1] NVIDIA NVENC    - Hardware encoding ^(NVIDIA GPU required^)%u%
+echo %c%[2] AMD AMF / VCE   - Hardware encoding ^(AMD GPU required^)%u%
+echo %c%[3] x264 CPU        - Software encoding ^(any CPU^)%u%
 echo.
 set /p ENC_PICK="%c%Choose encoder [1/2/3] »%u% "
 echo.
@@ -12728,20 +12730,20 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution 
 echo %c%✓ OBS priority set to Above Normal%u%
 
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       OBS OPTIMIZER COMPLETED                                ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       OBS OPTIMIZER COMPLETED                                ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Applied:%u%
 echo %c%• Encoder:        %ENC_NAME%%u%
 echo %c%• Preset:         %OBS_PRESET%%u%
 echo %c%• Stream bitrate: %OBS_BITRATE% kbps%u%
 echo %c%• Record quality: %OBS_RECQUALITY%%u%
-echo %c%• Process priority: Above Normal (CpuPriorityClass=6)%u%
+echo %c%• Process priority: Above Normal ^(CpuPriorityClass=6^)%u%
 echo.
 echo %c%Restart OBS Studio for profile changes to take effect.%u%
 echo.
-echo %c%══════════════════════════ PRESS ANY KEY TO CONTINUE ══════════════════════════%u%
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto AdvancedMenu
 
@@ -12749,16 +12751,16 @@ goto AdvancedMenu
 cls
 call :SetupConsole
 call :DisplayBanner
-echo %c%                       ╔═════════════════════════════════════════════╗ %u%
-echo                        %c%║%u%           [%c%1%u%] Program Debloat (VS / Nvidia / etc)   %c%║%u%
-echo                        %c%║%u%           [%c%2%u%] Discord Debloat                        %c%║%u%
-echo                        %c%║%u%           [%c%3%u%] Steam Debloat                          %c%║%u%
-echo                        %c%║%u%           [%c%4%u%] Spotify Debloat                        %c%║%u%
-echo                        %c%║%u%           [%c%5%u%] Firefox Debloat                        %c%║%u%
-echo                        %c%║%u%           [%c%6%u%] Chrome Debloat                         %c%║%u%
-echo %c%                       ╚═════════════════════════════════════════════╝
-echo %c%                                   ║  %u%[%c%0%u%] Go Back    [%red%X%u%] Exit%c%  ║%u%
-echo %c%                                   ╚═══════════════════════════════╝%u%
+echo %c%                       +=============================================+ %u%
+echo                        %c%^|%u%           [%c%1%u%] Program Debloat ^(VS / Nvidia / etc^)   %c%^|%u%
+echo                        %c%^|%u%           [%c%2%u%] Discord Debloat                        %c%^|%u%
+echo                        %c%^|%u%           [%c%3%u%] Steam Debloat                          %c%^|%u%
+echo                        %c%^|%u%           [%c%4%u%] Spotify Debloat                        %c%^|%u%
+echo                        %c%^|%u%           [%c%5%u%] Firefox Debloat                        %c%^|%u%
+echo                        %c%^|%u%           [%c%6%u%] Chrome Debloat                         %c%^|%u%
+echo %c%                       +=============================================+
+echo %c%                                   ^|  %u%[%c%0%u%] Go Back    [%red%X%u%] Exit%c%  ^|%u%
+echo %c%                                   +===============================+%u%
 echo.
 echo.
 set /p M="%c%Choose an option »%u% "
@@ -12781,9 +12783,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           CHROME DEBLOAT                                    ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           CHROME DEBLOAT                                    ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Applying Chrome privacy policies while preserving security updates:%u%
 echo %c%• Google Update services and updater files preserved%u%
@@ -12800,9 +12802,9 @@ reg add "HKLM\SOFTWARE\WOW6432Node\Policies\Google\Chrome" /v "CloudReportingEna
 
 cls
 echo.
-echo.                                         %c%═══════════════════════════════════════════════════════
+echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u% 
-echo.                                         %c%═══════════════════════════════════════════════════════%u%
+echo.                                         %c%=======================================================%u%
 pause >nul
 goto ProgramDebloat
 
@@ -12811,12 +12813,12 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           FIREFOX DEBLOAT                                   ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           FIREFOX DEBLOAT                                   ^|
+echo +==============================================================================+%u%
 echo.
-echo %c%Reducing Firefox telemetry and background tasks (reversible, updater kept):%u%
-echo %c%• Crash reporter and minidump analyzer removed (crash-report tooling only)%u%
+echo %c%Reducing Firefox telemetry and background tasks ^(reversible, updater kept^):%u%
+echo %c%• Crash reporter and minidump analyzer removed ^(crash-report tooling only^)%u%
 echo %c%• Background update and default browser agent scheduled tasks deleted%u%
 echo %c%• Auto-update disabled via the official DisableAppUpdate policy%u%
 echo %c%• updater.exe / maintenanceservice.exe are KEPT — deleting them would%u%
@@ -12849,9 +12851,9 @@ del /f install.log >nul 2>&1
 del /f minidump*.* >nul 2>&1
 cls
 echo.
-echo.                                         %c%═══════════════════════════════════════════════════════
+echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u% 
-echo.                                         %c%═══════════════════════════════════════════════════════%u%
+echo.                                         %c%=======================================================%u%
 pause >nul
 goto ProgramDebloat
 
@@ -12860,12 +12862,12 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           SPOTIFY DEBLOAT                                   ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           SPOTIFY DEBLOAT                                   ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Stripping Spotify bloat:%u%
-echo %c%• Unused locale packs removed (keeps en-US only)%u%
+echo %c%• Unused locale packs removed ^(keeps en-US only^)%u%
 echo %c%• Crash reporter cache and unused .spa app modules removed%u%
 echo %c%• Spotify startup entry removed from registry%u%
 echo %c%• D3D/Vulkan/EGL renderer files are KEPT — deleting them risks breaking%u%
@@ -12875,7 +12877,7 @@ chcp 437 >nul
 for /f "delims=" %%L in ('powershell -NoProfile -Command "(Get-Culture).Name"') do set "DEX_OS_LOCALE=%%L"
 chcp 65001 >nul
 if /i not "!DEX_OS_LOCALE:~0,2!"=="en" (
-    echo %red%[!] Your Windows display language is not English (%DEX_OS_LOCALE%).%u%
+    echo %red%[!] Your Windows display language is not English ^(%DEX_OS_LOCALE%^).%u%
     echo %red%    Removing every locale except en-US will leave Spotify's UI in English%u%
     echo %red%    only, even if Windows itself is in another language.%u%
 )
@@ -12984,9 +12986,9 @@ del /f/s/q "%appdata%\Spotify\locales\zh-TW.pak" >NUL 2>&1
 REG DELETE "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "Spotify" /f >NUL 2>&1
 cls
 echo.
-echo.                                         %c%═══════════════════════════════════════════════════════
+echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u% 
-echo.                                         %c%═══════════════════════════════════════════════════════%u%
+echo.                                         %c%=======================================================%u%
 pause >nul
 goto ProgramDebloat
 
@@ -12995,9 +12997,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                            STEAM DEBLOAT                                    ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                            STEAM DEBLOAT                                    ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Applying Steam performance tweaks:%u%
 echo %c%• Smooth scrolling and GPU-accelerated web views disabled%u%
@@ -13017,9 +13019,9 @@ reg add "HKCU\SOFTWARE\Valve\Steam" /v "GPUAccelWebViews" /t REG_DWORD /d 0 /f >
 reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Steam" /f >nul 2>&1
 cls
 echo.
-echo.                                         %c%═══════════════════════════════════════════════════════
+echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u% 
-echo.                                         %c%═══════════════════════════════════════════════════════%u%
+echo.                                         %c%=======================================================%u%
 pause >nul
 goto ProgramDebloat
 
@@ -13042,9 +13044,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           PROGRAM DEBLOAT                                   ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           PROGRAM DEBLOAT                                   ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Disabling telemetry for common programs:%u%
 echo %c%• Visual Studio SQM and IntelliCode telemetry disabled%u%
@@ -13170,9 +13172,9 @@ reg add "HKLM\SOFTWARE\WOW6432Node\Microsoft\Office\Word\Addins\VS10WordAdaptor"
 
 cls
 echo.
-echo.                                         %c%═══════════════════════════════════════════════════════
+echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u% 
-echo.                                         %c%═══════════════════════════════════════════════════════%u%
+echo.                                         %c%=======================================================%u%
 pause >nul
 goto ProgramDebloat
 
@@ -13181,9 +13183,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                    INTERRUPT %u%^&%c% SCHEDULING LAB                              ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                    INTERRUPT %u%^&%c% SCHEDULING LAB                              ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Applies the "HoneCtrl" interrupt-routing tweak in one pass:%u%
 echo %c%• MSI Mode: enables Message-Signaled Interrupts for USB/GPU/Network/IDE%u%
@@ -13216,9 +13218,9 @@ call :ApplyMSIMode
 call :MarkRebootRequired "Interrupt and Scheduling Lab applied"
 call :LogEvent "OK" "Interrupt Scheduling Lab applied"
 echo.
-echo.                                         %yellow%═══════════════════════════════════════════════════════
+echo.                                         %yellow%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
-echo.                                         %yellow%═══════════════════════════════════════════════════════
+echo.                                         %yellow%=======================================================
 echo %c%Reboot to apply the new interrupt routing. Use [2] Revert if a device misbehaves.%u%
 pause >nul
 goto InterruptSchedulingLab
@@ -13427,7 +13429,7 @@ echo \Microsoft\Windows\Application Experience\AitAgent
 echo \Microsoft\Windows\Windows Error Reporting\QueueReporting
 echo \Microsoft\Windows\CloudExperienceHost\CreateObjectTask
 echo \Microsoft\Windows\DiskFootprint\Diagnostics
-echo \Microsoft\Windows\FileHistory\File History (maintenance mode^)
+echo \Microsoft\Windows\FileHistory\File History ^(maintenance mode^)
 echo \Microsoft\Windows\PI\Sqm-Tasks
 echo \Microsoft\Windows\NetTrace\GatherNetworkInfo
 echo \Microsoft\Windows\AppID\SmartScreenSpecific
@@ -13476,7 +13478,7 @@ echo %c%The following diagnostic/telemetry scheduled tasks will be disabled:%u%
 echo.
 for /f "usebackq delims=" %%T in ("%DEX_TASK_LIST%") do echo   %%T
 echo.
-echo %red%Kept ON purpose (recovery/security, not touched by Dex Tweaks):%u%
+echo %red%Kept ON purpose ^(recovery/security, not touched by Dex Tweaks^):%u%
 echo %red%  \Microsoft\Windows\SystemRestore\SR%u%
 echo %red%  \Microsoft\Windows\Registry\RegIdleBackup%u%
 echo %red%  \Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance%u%
@@ -13495,9 +13497,9 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\CrossDeviceResume" /v "E
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\CrossDeviceResume" /v "UsePerformanceMode" /t REG_DWORD /d 0 /f >nul 2>&1
 call :LogEvent "OK" "Scheduled diagnostic tasks disabled"
 echo.
-echo.                                         %yellow%═══════════════════════════════════════════════════════
+echo.                                         %yellow%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
-echo.                                         %yellow%═══════════════════════════════════════════════════════
+echo.                                         %yellow%=======================================================
 pause >nul
 goto :GameBoosters
 
@@ -13505,16 +13507,16 @@ goto :GameBoosters
 cls
 call :SetupConsole
 call :DisplayBanner
-echo %c%                       ╔══════════════════════════════════════════════════╗ %u%
-echo                        %c%║%u%           [%c%1%u%] Valorant                           %c%║%u%
-echo                        %c%║%u%           [%c%2%u%] Counter-Strike 2                   %c%║%u%
-echo                        %c%║%u%           [%c%3%u%] Minecraft                          %c%║%u%
-echo                        %c%║%u%           [%c%4%u%] Fortnite                           %c%║%u%
-echo                        %c%║%u%           [%c%5%u%] Warzone                            %c%║%u%
-echo                        %c%║%u%           [%c%6%u%] Select your Own Game               %c%║%u%
-echo %c%                       ╚══════════════════════════════════════════════════╝
-echo %c%                                   ║  %u%[%c%0%u%] Go Back    [%red%X%u%] Exit%c%  ║%u%
-echo %c%                                   ╚═══════════════════════════════╝%u%
+echo %c%                       +==================================================+ %u%
+echo                        %c%^|%u%           [%c%1%u%] Valorant                           %c%^|%u%
+echo                        %c%^|%u%           [%c%2%u%] Counter-Strike 2                   %c%^|%u%
+echo                        %c%^|%u%           [%c%3%u%] Minecraft                          %c%^|%u%
+echo                        %c%^|%u%           [%c%4%u%] Fortnite                           %c%^|%u%
+echo                        %c%^|%u%           [%c%5%u%] Warzone                            %c%^|%u%
+echo                        %c%^|%u%           [%c%6%u%] Select your Own Game               %c%^|%u%
+echo %c%                       +==================================================+
+echo %c%                                   ^|  %u%[%c%0%u%] Go Back    [%red%X%u%] Exit%c%  ^|%u%
+echo %c%                                   +===============================+%u%
 echo.
 echo.
 set /p M="%c%Choose an option »%u% "
@@ -13537,9 +13539,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                         SELECT YOUR OWN GAME                                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                         SELECT YOUR OWN GAME                                 ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Choose a game .exe to toggle performance optimizations:%u%
 echo %c%• GPU High Performance mode%u%
@@ -13549,7 +13551,7 @@ echo.
 echo %c%Running this again on the same game will UNDO the tweaks.%u%
 echo.
 echo.
-echo Please select the game executable (file) for applying performance tweaks:
+echo Please select the game executable ^(file^) for applying performance tweaks:
 chcp 437 >nul
 for /f "delims=" %%p in ('powershell -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; $d=New-Object System.Windows.Forms.OpenFileDialog; $d.Filter='Executable Files (*.exe)|*.exe'; if($d.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){ Write-Output $d.FileName }"') do set "file=%%p"
 chcp 65001 >nul
@@ -13575,9 +13577,9 @@ for %%F in ("%file%") do (
 )
 echo.
 echo.
-echo.                                         %c%═══════════════════════════════════════════════════════
+echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u% 
-echo.                                         %c%═══════════════════════════════════════════════════════%u%
+echo.                                         %c%=======================================================%u%
 pause >nul
 goto Boosters
 
@@ -13587,13 +13589,13 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                          VALORANT OPTIMIZER                                  ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                          VALORANT OPTIMIZER                                  ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Applying Valorant-specific optimizations:%u%
 echo %c%• CFG process mitigation for Valorant/VGC/VGTray%u%
-echo %c%• QoS DSCP 46 (Expedited Forwarding) for both Valorant executables%u%
+echo %c%• QoS DSCP 46 ^(Expedited Forwarding^) for both Valorant executables%u%
 echo %c%• Riot Client CPU priority elevated to High%u%
 echo %c%• Auto-update and ping telemetry disabled%u%
 echo.
@@ -13636,9 +13638,9 @@ reg.exe add "HKCU\Software\Riot Games\Riot Client" /v "autoUpdateOnLaunch" /t RE
 reg.exe add "HKCU\Software\Riot Games\Riot Client" /v "pingUrl" /t REG_SZ /d "" /f
 echo.
 echo.
-echo.                                         %c%═══════════════════════════════════════════════════════
+echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u% 
-echo.                                         %c%═══════════════════════════════════════════════════════%u%
+echo.                                         %c%=======================================================%u%
 pause >nul
 goto Boosters
 
@@ -13647,15 +13649,15 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                          FORTNITE OPTIMIZER                                  ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                          FORTNITE OPTIMIZER                                  ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Applying Fortnite-specific optimizations:%u%
 echo %c%• FortniteClient CPU priority set to High%u%
 echo %c%• Junk cache cleared from LocalAppData%u%
 echo %c%• Priority separation and multimedia priority tweaked%u%
-echo %c%• Render resolution scale set to 50%% of native (safe floor for readability)%u%
+echo %c%• Render resolution scale set to 50%% of native ^(safe floor for readability^)%u%
 echo %c%• Shadows, effects, textures, and view distance set to lowest for max FPS%u%
 echo %c%• Game DVR and Fullscreen Optimizations disabled%u%
 echo.
@@ -13688,9 +13690,9 @@ reg add "HKCU\Control Panel\Mouse" /v "MouseSensitivity" /t REG_SZ /d "10" /f >n
 reg add "HKCU\Control Panel\Mouse" /v "MouseSpeed" /t REG_SZ /d "0" /f >nul 2>&1
 cls
 echo.
-echo.                                         %c%═══════════════════════════════════════════════════════
+echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u% 
-echo.                                         %c%═══════════════════════════════════════════════════════%u%
+echo.                                         %c%=======================================================%u%
 pause >nul
 goto Boosters
 
@@ -13699,9 +13701,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                       COUNTER-STRIKE 2 OPTIMIZER                             ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                       COUNTER-STRIKE 2 OPTIMIZER                             ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Applying CS2-specific optimizations:%u%
 echo %c%• CS2 process CPU priority elevated to High%u%
@@ -13741,9 +13743,9 @@ reg add "HKCU\Software\Valve\Steam" /v "SilentStartup" /t REG_DWORD /d 1 /f >nul
 
 cls
 echo.
-echo.                                         %c%═══════════════════════════════════════════════════════
+echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u% 
-echo.                                         %c%═══════════════════════════════════════════════════════%u%
+echo.                                         %c%=======================================================%u%
 pause >nul
 goto Boosters
 
@@ -13752,9 +13754,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           WARZONE OPTIMIZER                                  ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           WARZONE OPTIMIZER                                  ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Applying Warzone-specific optimizations:%u%
 echo %c%• Priority separation tuned for responsiveness%u%
@@ -13777,9 +13779,9 @@ powershell -NoProfile -Command "$ram=[math]::Round((Get-CimInstance Win32_Physic
 chcp 65001 >nul
 cls
 echo.
-echo.                                         %c%═══════════════════════════════════════════════════════
+echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u% 
-echo.                                         %c%═══════════════════════════════════════════════════════%u%
+echo.                                         %c%=======================================================%u%
 pause >nul
 goto Boosters
 
@@ -13788,13 +13790,13 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                          MINECRAFT OPTIMIZER                                 ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                          MINECRAFT OPTIMIZER                                 ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Applying Minecraft-specific optimizations:%u%
 echo %c%• Aikars optimized JVM flags written to JVMarguments.txt%u%
-echo %c%• OptiFine config applied (low quality / high FPS preset)%u%
+echo %c%• OptiFine config applied ^(low quality / high FPS preset^)%u%
 echo %c%• Animations, particles and weather effects minimized%u%
 echo.
 echo %c%To use the JVM flags: open your Minecraft Launcher, go to%u%
@@ -13886,9 +13888,9 @@ cd /d "%APPDATA%\.minecraft"
 ) > optionsof.txt
 
 echo.
-echo.                                         %c%═══════════════════════════════════════════════════════
+echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u% 
-echo.                                         %c%═══════════════════════════════════════════════════════%u%
+echo.                                         %c%=======================================================%u%
 pause >nul
 goto Boosters
 
@@ -13896,9 +13898,9 @@ goto Boosters
 cls
 call :SetupConsole
 call :DisplayBanner
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                              Dex TOOLBOX                                   ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                              Dex TOOLBOX                                   ^|
+echo +==============================================================================+%u%
 echo.
 echo                                 %c%Dex Toolbox allows you to install any app or software!%u%
 echo.
@@ -13937,17 +13939,17 @@ exit /b
 cls
 call :SetupConsole
 call :DisplayBanner
-echo %c%                       ╔══════════════════════════════════════════════════╗ %u%
-echo                        %c%║%u%           [%c%1%u%] Page 1  - Browsers / VPN / Security   %c%║%u%
-echo                        %c%║%u%           [%c%2%u%] Page 2  - Productivity / Messaging     %c%║%u%
-echo                        %c%║%u%           [%c%3%u%] Page 3  - System Tools / Runtimes      %c%║%u%
-echo                        %c%║%u%           [%c%4%u%] Page 4  - Design / Game / DevOps        %c%║%u%
-echo                        %c%║%u%           [%c%S%u%] Search  - Find specific software       %c%║%u%
-echo                        %c%║%u%           [%c%U%u%] Uninstall software                     %c%║%u%
-echo                        %c%║%u%           [%c%I%u%] Installed apps / available updates     %c%║%u%
-echo %c%                       ╚══════════════════════════════════════════════════╝
-echo %c%                                   ║  %u%[%red%X%u%] Exit Toolbox%c%        ║%u%
-echo %c%                                   ╚═══════════════════════════════╝%u%
+echo %c%                       +==================================================+ %u%
+echo                        %c%^|%u%           [%c%1%u%] Page 1  - Browsers / VPN / Security   %c%^|%u%
+echo                        %c%^|%u%           [%c%2%u%] Page 2  - Productivity / Messaging     %c%^|%u%
+echo                        %c%^|%u%           [%c%3%u%] Page 3  - System Tools / Runtimes      %c%^|%u%
+echo                        %c%^|%u%           [%c%4%u%] Page 4  - Design / Game / DevOps        %c%^|%u%
+echo                        %c%^|%u%           [%c%S%u%] Search  - Find specific software       %c%^|%u%
+echo                        %c%^|%u%           [%c%U%u%] Uninstall software                     %c%^|%u%
+echo                        %c%^|%u%           [%c%I%u%] Installed apps / available updates     %c%^|%u%
+echo %c%                       +==================================================+
+echo %c%                                   ^|  %u%[%red%X%u%] Exit Toolbox%c%        ^|%u%
+echo %c%                                   +===============================+%u%
 echo.
 echo                     %c%208 catalog entries: 159 automatic and 49 web/manual guidance%u%
 echo.
@@ -13970,9 +13972,9 @@ goto START
 cls
 call :SetupConsole
 title Dex Toolbox - Page 1 of 4 (Items 1-52)
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║               PAGE 1 OF 4  —  Browsers / VPN / Security / Office  (1-52)      ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|               PAGE 1 OF 4  —  Browsers / VPN / Security / Office  ^(1-52^)      ^|
+echo +==============================================================================+%u%
 echo.
 echo       %c%[Browsers]%u%                    %c%[VPN]%u%                       %c%[Security]%u%                   %c%[Office]%u%
 echo.
@@ -13990,7 +13992,7 @@ echo   11. Opera GX                  24. CyberGhost              37. Webroot    
 echo   12. Yandex Browser            25. IPVanish                38. Comodo Antivirus         51. OpenOffice
 echo   13. Chromium                  26. Betternet               39. Spybot Free              52. OneDrive
 echo.
-echo %c%[N]%u% Next Page (53-104)   %c%[M]%u% Main Menu   %red%[X]%u% Exit
+echo %c%[N]%u% Next Page ^(53-104^)   %c%[M]%u% Main Menu   %red%[X]%u% Exit
 set /p "p1Choice=%c%Choose an option »%u% "
 if /I "!p1Choice!"=="N" goto PAGE2
 if /I "!p1Choice!"=="M" goto START
@@ -14004,9 +14006,9 @@ goto PAGE1
 cls
 call :SetupConsole
 title Dex Toolbox - Page 2 of 4 (Items 53-104)
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║             PAGE 2 OF 4  —  Productivity / Messaging / Media / Dev  (53-104)   ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|             PAGE 2 OF 4  —  Productivity / Messaging / Media / Dev  ^(53-104^)   ^|
+echo +==============================================================================+%u%
 echo.
 echo       %c%[Productivity]%u%                %c%[Messaging]%u%                 %c%[Media]%u%                       %c%[Development]%u%
 echo.
@@ -14024,7 +14026,7 @@ echo   63. OneNote                   76. WeChat                  89. PotPlayer  
 echo   64. Zoho Notebook             77. QQ                      90. Audacity                 103. Code::Blocks
 echo   65. Miro                      78. Line                    91. OBS Studio               104. phpStorm
 echo.
-echo %c%[P]%u% Previous (1-52)   %c%[N]%u% Next (105-156)   %c%[M]%u% Main Menu   %red%[X]%u% Exit
+echo %c%[P]%u% Previous ^(1-52^)   %c%[N]%u% Next ^(105-156^)   %c%[M]%u% Main Menu   %red%[X]%u% Exit
 set /p "p2Choice=%c%Choose an option »%u% "
 if /I "!p2Choice!"=="P" goto PAGE1
 if /I "!p2Choice!"=="N" goto PAGE3
@@ -14039,9 +14041,9 @@ goto PAGE2
 cls
 call :SetupConsole
 title Dex Toolbox - Page 3 of 4 (Items 105-156)
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║           PAGE 3 OF 4  —  System Tools / File Tools / Runtimes / Misc (105-156) ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|           PAGE 3 OF 4  —  System Tools / File Tools / Runtimes / Misc ^(105-156^) ^|
+echo +==============================================================================+%u%
 echo.
 echo        %c%[System Tools]%u%               %c%[File Tools]%u%                %c%[Runtimes]%u%                   %c%[Misc]%u%
 echo.
@@ -14059,7 +14061,7 @@ echo   115. Partition Wizard        128. ImgBurn                141. MS SQL CLI 
 echo   116. Macrium Reflect         129. UltraISO               142. Oracle Instant Cl.      155. Qbittorrent
 echo   117. Clonezilla              130. FreeCommander          143. PHP                     156. OpenToonz
 echo.
-echo %c%[P]%u% Previous (53-104)   %c%[N]%u% Next (157-208)   %c%[M]%u% Main Menu   %red%[X]%u% Exit
+echo %c%[P]%u% Previous ^(53-104^)   %c%[N]%u% Next ^(157-208^)   %c%[M]%u% Main Menu   %red%[X]%u% Exit
 set /p "p3Choice=%c%Choose an option »%u% "
 if /I "!p3Choice!"=="P" goto PAGE2
 if /I "!p3Choice!"=="N" goto PAGE4
@@ -14074,9 +14076,9 @@ goto PAGE3
 cls
 call :SetupConsole
 title Dex Toolbox - Page 4 of 4 (Items 157-208)
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║          PAGE 4 OF 4  —  Design Tools / Game Tools / Comm / DevOps (157-208)   ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|          PAGE 4 OF 4  —  Design Tools / Game Tools / Comm / DevOps ^(157-208^)   ^|
+echo +==============================================================================+%u%
 echo.
 echo        %c%[Design Tools]%u%               %c%[Game Tools]%u%                %c%[Extra Comm]%u%                 %c%[DevOps Tools]%u%
 echo.
@@ -14094,7 +14096,7 @@ echo   167. Scribus                 180. unrealengine           193. miranda-ng 
 echo   168. piskel                  181. unityhub               194. guilded                 207. helm
 echo   169. pencil2d                182. gamemakerstudio        195. teamspeak               208. OpenToonz
 echo.
-echo %c%[P]%u% Previous (105-156)   %c%[M]%u% Main Menu   %red%[X]%u% Exit
+echo %c%[P]%u% Previous ^(105-156^)   %c%[M]%u% Main Menu   %red%[X]%u% Exit
 set /p "p4Choice=%c%Choose an option »%u% "
 if /I "!p4Choice!"=="P" goto PAGE3
 if /I "!p4Choice!"=="M" goto START
@@ -14415,9 +14417,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                          SEARCH FOR SOFTWARE                                  ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                          SEARCH FOR SOFTWARE                                  ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Search the Chocolatey repository by name. Copy the exact package ID to install.%u%
 echo.
@@ -14434,7 +14436,7 @@ echo.
 echo %c%Searching for packages containing "!searchTerm!"...%u%
 choco search "!searchTerm!" --limit-output
 echo.
-echo %c%Copy the package name exactly as shown above (e.g., googlechrome)%u%
+echo %c%Copy the package name exactly as shown above ^(e.g., googlechrome^)%u%
 echo.
 
 set /p "installPkg=%c%Enter exact package name to install (or Enter to return) »%u% "
@@ -14516,9 +14518,9 @@ cls
 call :SetupConsole
 echo.
 echo.
-echo %c%╔══════════════════════════════════════════════════════════════════════════════╗
-echo ║                           UNINSTALL SOFTWARE                                  ║
-echo ╚══════════════════════════════════════════════════════════════════════════════╝%u%
+echo %c%+==============================================================================+
+echo ^|                           UNINSTALL SOFTWARE                                  ^|
+echo +==============================================================================+%u%
 echo.
 echo %c%Installed Chocolatey packages:%u%
 echo %red%Do NOT uninstall any Chocolatey core services.%u%
@@ -14699,41 +14701,40 @@ if defined DEX_TEST_BUILD (
     set "DEX_OS_64BIT=1"
 )
 if not defined DEX_TEST_BUILD (
-    rem CIM/PowerShell is the primary source: it returns clean numeric values and
-    rem is not affected by console code page or locale, unlike parsing "reg query"
-    rem text output while the console runs UTF-8 (chcp 65001), which can garble
-    rem "for /f" parsing on some builds/locales and made new Windows versions
-    rem look unsupported even though they were not.
+    rem The registry is the primary source: it is read instantly with no
+    rem external process, unlike spawning powershell.exe to query WMI/CIM,
+    rem which can take a long time to start (AV real-time scanning of
+    rem powershell.exe, a slow/rebuilding WMI repository) or even hang.
+    rem Because this detection runs before anything else is on screen, a
+    rem slow CIM call looked like the script was frozen on a black window,
+    rem and an occasional CIM failure could wrongly report an unsupported
+    rem build. Reading stays guarded against the UTF-8 console code page.
     chcp 437 >nul
-    for /f "tokens=1,2 delims=|" %%b in ('powershell -NoProfile -Command "$o=Get-CimInstance -ClassName Win32_OperatingSystem -ErrorAction SilentlyContinue; $v=@($o.BuildNumber,$o.ProductType) | ForEach-Object{if($_){$_}else{'NA'}}; $v -join '|'" 2^>nul') do (
-        set "_OS_BUILD=%%b"
-        set "_OS_PRODUCTTYPE_NUM=%%c"
-    )
+    for /f "tokens=3" %%b in ('reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v CurrentBuildNumber 2^>nul ^| findstr /I "CurrentBuildNumber"') do set "_OS_BUILD=%%b"
+    set "_OS_INSTALLTYPE="
+    for /f "tokens=3" %%t in ('reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v InstallationType 2^>nul ^| findstr /I "InstallationType"') do set "_OS_INSTALLTYPE=%%t"
     chcp 65001 >nul
-    if /I "!_OS_BUILD!"=="NA" set "_OS_BUILD=0"
-    if /I "!_OS_PRODUCTTYPE_NUM!"=="NA" set "_OS_PRODUCTTYPE_NUM="
-    rem Win32_OperatingSystem.ProductType: 1=Workstation/client, 2=Domain Controller, 3=Server
-    if "!_OS_PRODUCTTYPE_NUM!"=="1" set "DEX_PRODUCT_TYPE=1"
-    if not "!_OS_PRODUCTTYPE_NUM!"=="1" if defined _OS_PRODUCTTYPE_NUM set "DEX_PRODUCT_TYPE=3"
-    rem CIM was unavailable for build and/or product type: fall back to the
-    rem registry, still guarded against the UTF-8 console code page.
-    chcp 437 >nul
-    if "!_OS_BUILD!"=="0" for /f "tokens=3" %%b in ('reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v CurrentBuildNumber 2^>nul ^| findstr /I "CurrentBuildNumber"') do set "_OS_BUILD=%%b"
-    if not "!DEX_PRODUCT_TYPE!"=="1" if not "!DEX_PRODUCT_TYPE!"=="3" (
-        set "_OS_INSTALLTYPE="
-        for /f "tokens=3" %%t in ('reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v InstallationType 2^>nul ^| findstr /I "InstallationType"') do set "_OS_INSTALLTYPE=%%t"
-        if /I "!_OS_INSTALLTYPE!"=="Client" (
-            set "DEX_PRODUCT_TYPE=1"
-        ) else (
-            if defined _OS_INSTALLTYPE (
-                set "DEX_PRODUCT_TYPE=3"
-            ) else (
-                set "DEX_PRODUCT_TYPE=1"
-                call :LogEvent "WARN" "Could not confirm product type via CIM or registry; assuming Windows client"
-            )
+    if /I "!_OS_INSTALLTYPE!"=="Client" set "DEX_PRODUCT_TYPE=1"
+    if defined _OS_INSTALLTYPE if /I not "!_OS_INSTALLTYPE!"=="Client" set "DEX_PRODUCT_TYPE=3"
+    rem Registry was unavailable for build and/or product type: fall back to
+    rem CIM/PowerShell, still guarded against the UTF-8 console code page.
+    if "!_OS_BUILD!"=="0" (
+        chcp 437 >nul
+        for /f "tokens=1,2 delims=|" %%b in ('powershell -NoProfile -Command "$o=Get-CimInstance -ClassName Win32_OperatingSystem -ErrorAction SilentlyContinue; $v=@($o.BuildNumber,$o.ProductType) | ForEach-Object{if($_){$_}else{'NA'}}; $v -join '|'" 2^>nul') do (
+            set "_OS_BUILD=%%b"
+            set "_OS_PRODUCTTYPE_NUM=%%c"
         )
+        chcp 65001 >nul
+        if /I "!_OS_BUILD!"=="NA" set "_OS_BUILD=0"
+        if /I "!_OS_PRODUCTTYPE_NUM!"=="NA" set "_OS_PRODUCTTYPE_NUM="
+        rem Win32_OperatingSystem.ProductType: 1=Workstation/client, 2=Domain Controller, 3=Server
+        if "!_OS_PRODUCTTYPE_NUM!"=="1" set "DEX_PRODUCT_TYPE=1"
+        if not "!_OS_PRODUCTTYPE_NUM!"=="1" if defined _OS_PRODUCTTYPE_NUM set "DEX_PRODUCT_TYPE=3"
     )
-    chcp 65001 >nul
+    if not "!DEX_PRODUCT_TYPE!"=="1" if not "!DEX_PRODUCT_TYPE!"=="3" (
+        set "DEX_PRODUCT_TYPE=1"
+        call :LogEvent "WARN" "Could not confirm product type via registry or CIM; assuming Windows client"
+    )
     set "DEX_OS_64BIT=0"
     if defined PROCESSOR_ARCHITEW6432 set "DEX_OS_64BIT=1"
     if /I "%PROCESSOR_ARCHITECTURE%"=="AMD64" set "DEX_OS_64BIT=1"
@@ -15055,11 +15056,11 @@ for /f "usebackq eol=# delims=" %%Q in ("%DEX_QUEUE%") do (
 )
 echo  Preflight: !DEX_OS_NAME! build !_OS_BUILD_NUM! ^| %DEX_DEVICE_TYPE% ^| Free disk %DEX_FREE_GB%
 echo  Edition: %DEX_EDITION%
-echo  Queue: %DEX_QUEUE_COUNT% managed action(s) ^| Existing backups: %DEX_BACKUP_COUNT%
+echo  Queue: %DEX_QUEUE_COUNT% managed action^(s^) ^| Existing backups: %DEX_BACKUP_COUNT%
 if "%DEX_QUEUE_INCOMPATIBLE%"=="0" (
     echo  Compatibility: all queued actions are supported by this Windows build.
 ) else (
-    echo  %yellow%Compatibility: %DEX_QUEUE_INCOMPATIBLE% action(s) will be blocked on this system.%u%
+    echo  %yellow%Compatibility: %DEX_QUEUE_INCOMPATIBLE% action^(s^) will be blocked on this system.%u%
 )
 if /I "!DEX_OS_FAMILY!"=="Windows 10" echo  Windows 10 mode: Windows 11-only shell actions are automatically skipped.
 if "%DEX_CAP_HAGS%"=="1" echo  HAGS: operating system capable; compatible GPU and WDDM driver still required.
@@ -15450,8 +15451,8 @@ if not exist "%DEX_SNAPSHOT_FILE%" (
 )
 call :LogEvent "BACKUP" "Managed snapshot created: %DEX_SNAPSHOT%"
 echo Managed snapshot created: "%DEX_SNAPSHOT%"
-echo (Covers Game Bar/DVR, HAGS, visual effects, a few privacy keys, power plan,
-echo  Defender preferences, BCD and wuauserv/BITS/WSearch startup type only.)
+echo ^(Covers Game Bar/DVR, HAGS, visual effects, a few privacy keys, power plan,
+echo  Defender preferences, BCD and wuauserv/BITS/WSearch startup type only.^)
 exit /b 0
 
 :RestoreLatestManagedSnapshot
@@ -15507,7 +15508,7 @@ if %DEX_RESTORE_FAIL% EQU 0 (
     echo Snapshot restored. Restart Windows to complete the rollback.
     call :LogEvent "RESTORE" "Managed snapshot restored"
 ) else (
-    echo Snapshot restored with %DEX_RESTORE_FAIL% registry import error(s).
+    echo Snapshot restored with %DEX_RESTORE_FAIL% registry import error^(s^).
     call :LogEvent "WARN" "Snapshot restore had %DEX_RESTORE_FAIL% error(s)"
 )
 pause
@@ -15641,7 +15642,7 @@ echo  [1] Managed registry settings
 echo  [2] Windows Update and Search service startup
 echo  [3] Power plan
 echo  [4] Defender preferences
-echo  [5] Boot configuration (BCD)
+echo  [5] Boot configuration ^(BCD^)
 echo  [0] Cancel
 echo.
 choice /C 123450 /N /M "Choose a module: "
@@ -15771,7 +15772,7 @@ if errorlevel 1 set /a DEX_FULL_FAIL+=1
 >>"%DEX_FULL_PATH%\Restore_FullRegistry_WinRE.bat" echo echo under %%WINDIR_DRIVE%%:\Users\ under the correct profile folder.
 >>"%DEX_FULL_PATH%\Restore_FullRegistry_WinRE.bat" echo echo Reboot normally now to test.
 >>"%DEX_FULL_PATH%\Restore_FullRegistry_WinRE.bat" echo pause
-echo Backup completed with %DEX_FULL_FAIL% error(s): "%DEX_FULL_PATH%"
+echo Backup completed with %DEX_FULL_FAIL% error^(s^): "%DEX_FULL_PATH%"
 echo A ready-to-run WinRE restore script was generated: "%DEX_FULL_PATH%\Restore_FullRegistry_WinRE.bat"
 call :LogEvent "BACKUP" "Full registry backup completed with %DEX_FULL_FAIL% error(s), WinRE restore script generated"
 pause
@@ -15793,7 +15794,7 @@ echo.
 echo %c%SYSTEM HEALTH CENTER%u%
 echo.
 echo  [1] Quick health check
-echo  [2] Full Windows repair (DISM and SFC)
+echo  [2] Full Windows repair ^(DISM and SFC^)
 echo  [3] Storage health report
 echo  [4] Recent critical event report
 echo  [5] Security status audit
@@ -16033,7 +16034,7 @@ echo.
 echo  [1] View current session log
 echo  [2] List all session logs
 echo  [3] Export current log to Desktop
-echo  [4] Clear old logs (keep current)
+echo  [4] Clear old logs ^(keep current^)
 echo  [0] Back
 echo.
 choice /C 12340 /N /M "Choose an option: "
