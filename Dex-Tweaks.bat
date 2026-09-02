@@ -13922,16 +13922,52 @@ echo.
 if exist "%ALLUSERSPROFILE%\chocolatey" (
     echo %c%✔ Chocolatey is already installed.%u%
     timeout /t 2 >nul
-) else (
-    echo %yellow%Chocolatey is not installed.%u%
-    echo %c%Dex Tweaks will not download and execute a remote script as administrator.%u%
-    echo %c%Install it from the official instructions, then reopen the Toolbox.%u%
-    choice /C YN /N /M "Open the official Chocolatey installation page? [Y/N]: "
-    if errorlevel 2 exit /b 1
-    start "" "https://chocolatey.org/install"
-    call :LogEvent "INFO" "Opened official Chocolatey installation instructions"
+    exit /b 0
+)
+
+echo %yellow%Chocolatey is not installed.%u%
+where winget >nul 2>&1
+if errorlevel 1 (
+    echo %red%WinGet is not available on this system, so Chocolatey cannot be installed automatically.%u%
+    echo %c%Install WinGet ^(App Installer, from the Microsoft Store^) or Chocolatey manually, then reopen the Toolbox.%u%
+    call :LogEvent "FAIL" "WinGet unavailable, cannot auto-install Chocolatey"
+    pause
     exit /b 1
-    rem Legacy remote bootstrap removed: never execute downloaded scripts as administrator.
+)
+
+echo %c%Installing Chocolatey via WinGet...%u%
+winget install --id Chocolatey.Chocolatey -e --accept-package-agreements --accept-source-agreements --silent
+if errorlevel 1 (
+    echo %red%WinGet failed to install Chocolatey.%u%
+    call :LogEvent "FAIL" "WinGet install of Chocolatey.Chocolatey failed"
+    pause
+    exit /b 1
+)
+
+call :RefreshEnvPath
+if exist "%ALLUSERSPROFILE%\chocolatey" (
+    echo %c%✔ Chocolatey installed successfully via WinGet.%u%
+    call :LogEvent "OK" "WinGet installed Chocolatey.Chocolatey"
+    timeout /t 2 >nul
+    exit /b 0
+)
+
+echo %red%Chocolatey install via WinGet did not complete as expected.%u%
+call :LogEvent "FAIL" "Chocolatey folder missing after WinGet install"
+pause
+exit /b 1
+
+:RefreshEnvPath
+set "_machinePath="
+set "_userPath="
+for /f "usebackq tokens=2,*" %%A in (`reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v Path 2^>nul`) do set "_machinePath=%%B"
+for /f "usebackq tokens=2,*" %%A in (`reg query "HKCU\Environment" /v Path 2^>nul`) do set "_userPath=%%B"
+if defined _machinePath (
+    if defined _userPath (
+        set "PATH=%_machinePath%;%_userPath%"
+    ) else (
+        set "PATH=%_machinePath%"
+    )
 )
 exit /b
 
