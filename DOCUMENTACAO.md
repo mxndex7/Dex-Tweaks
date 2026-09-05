@@ -223,7 +223,7 @@ Dex-Tweaks.bat --self-test
 Dex-Tweaks.bat --smoke-test
 ```
 
-`--self-test` valida labels duplicados, destinos de `goto`/`call`, modulos obrigatorios e navegacao. `--smoke-test` roda o fluxo gerenciado completo (deteccao de SO, dashboard, perfil, snapshot) em dados temporarios, sem aplicar tweaks reais.
+`--self-test` valida labels duplicados, destinos de `goto`/`call` (com e sem dois-pontos), modulos obrigatorios, navegacao, codificacao do arquivo (ASCII puro), quebras de linha CRLF e disciplina de code page. `--smoke-test` roda o fluxo gerenciado completo (deteccao de SO, dashboard, perfil, snapshot) em dados temporarios, sem aplicar tweaks reais.
 
 ## Observacoes finais
 
