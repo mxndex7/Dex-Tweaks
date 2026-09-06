@@ -119,7 +119,6 @@ if exist "%DEX_AGREEMENT_FILE%" if exist "%DEX_COLOR_FILE%" (
 )
 
 :loading
-cls
 call :SetupConsole
 echo.
 echo.
@@ -139,13 +138,11 @@ if /I "!userInput!"=="I agree" (
     goto :epicmanfail
 )
 
-
 :epicmanfail
-cls
 call :SetupConsole
 echo.
 echo.
-echo %u%[%red%-%u%] %red%Failed! 
+echo %u%[%red%-%u%] %red%Failed!
 echo.
 echo %u%Developed by: %red%Mendes
 echo %u%Github: %red%https://github.com/mxndex7
@@ -155,11 +152,10 @@ call :DexSleep 3 nobreak & exit
 
 :legit
 > "%DEX_AGREEMENT_FILE%" echo Accepted on %date% %time%
-cls
 call :SetupConsole
 echo.
 echo.
-echo %u%[%green%+%u%] %green%Successful! 
+echo %u%[%green%+%u%] %green%Successful!
 echo.
 echo %u%Developed by: %green%Mendes
 echo %u%Github: %green%https://github.com/mxndex7
@@ -346,11 +342,9 @@ if /i "!preset!"=="Grey"      set "c=%grey%"      & goto menu
 if /i "!preset!"=="Charcoal"  set "c=%charcoal%"  & goto menu
 if /i "!preset!"=="White"     set "c=%white%"     & goto menu
 
-
 echo %red%Invalid option. Please try again.%u%
 call :DexSleep 1
 goto Presets
-
 
 :SetupConsole
 rem The code page is configured once at startup; this used to spawn two
@@ -423,9 +417,7 @@ echo                                %c%Dex%u%%white% Tweaks%u%%c% is a batch scr
 echo                                      %c%to provide the best gaming experience possible%u%
 goto :eof
 
-
 :menu
-cls
 call :SetupConsole
 if defined c if not defined DEX_COLOR_LOADED (
     >"%DEX_COLOR_FILE%" echo(!c!
@@ -459,9 +451,8 @@ if errorlevel 1 goto DashboardCenter
 goto menu
 
 :Comingsoon
-cls
-call :SetupConsole 
-call :DisplayBanner  
+call :SetupConsole
+call :DisplayBanner
 echo.
 echo.
 echo                              %c%This function is not available yet.%u%
@@ -481,19 +472,18 @@ if defined COMINGSOON_BACK (
 goto menu
 
 :More
-cls
-call :SetupConsole 
-call :DisplayBanner                                  
+call :SetupConsole
+call :DisplayBanner
 echo.
 echo.
 echo                                                 [%c%1%u%] About     [%c%2%u%] Disclaimer
 echo.
-echo                                                 [%c%3%u%] Updates   [%c%4%u%] Back   
+echo                                                 [%c%3%u%] Updates   [%c%4%u%] Back
 echo.
-echo.                                                          
 echo.
-echo.  
-echo                                                       %c%[ X to close ]%u%  
+echo.
+echo.
+echo                                                       %c%[ X to close ]%u%
 echo.
 set /p M="%c%Choose an option >%u% "
 set choice=%errorlevel%
@@ -508,7 +498,6 @@ pause >nul
 goto More
 
 :about
-cls
 call :SetupConsole
 echo.
 echo.
@@ -532,7 +521,6 @@ pause >nul
 goto More
 
 :disclaimer
-cls
 call :SetupConsole
 echo.
 echo.
@@ -541,7 +529,7 @@ echo ^|                               IMPORTANT NOTICE                          
 echo +==============================================================================+%u%
 echo.
 echo.
-echo %c%Dex Tweaks is a professional optimization suite designed to enhance%u% 
+echo %c%Dex Tweaks is a professional optimization suite designed to enhance%u%
 echo %c%system performance through proven methodologies and safe modifications.%u%
 echo.
 echo %lime%   Performance Results:%u% %c%While these optimizations are scientifically%u%
@@ -563,9 +551,7 @@ echo %c%========================== PRESS ANY KEY TO CONTINUE ===================
 pause >nul
 goto More
 
-
 :changelog
-cls
 call :SetupConsole
 echo.
 echo.
@@ -592,7 +578,6 @@ goto More
 
 :Backup
 goto BackupManager
-cls
 call :SetupConsole
 call :DisplayBanner
 echo.
@@ -614,7 +599,6 @@ if "!input!"=="n" goto menu
 echo %c%Please enter a valid number!%u% & goto Backup
 
 :TweaksMenu
-cls
 call :SetupConsole
 call :DisplayBanner
 echo %c%                            +==============================+===============================+ %u%
@@ -653,7 +637,6 @@ goto TweaksMenu
 
 :L
 rem Delayed expansion is already enabled globally.
-cls
 call :SetupConsole
 echo.
 echo.
@@ -738,7 +721,7 @@ echo %c%- Dex Tweaks does not side-load CRX files or bypass browser validation.%
 if "%EDGE_FOUND%"=="true" (
     echo.
     echo %c%[2/8] Configuring Microsoft Edge for Maximum Privacy...%u%
-    
+
     echo %c%- Disabling Edge telemetry and data collection...%u%
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "DiagnosticData" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "MetricsReportingEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
@@ -747,20 +730,20 @@ if "%EDGE_FOUND%"=="true" (
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "PersonalizationReportingEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "SpellcheckEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "RelatedMatchesCloudServiceEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     echo %c%- Enabling maximum privacy protection...%u%
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "TrackingPrevention" /t REG_DWORD /d "3" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "BlockThirdPartyCookies" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "ConfigureDoNotTrack" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "SiteSafetyServicesEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "ResolveNavigationErrorsUseWebService" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     if "!BROWSER_INSTALL_EXT!"=="true" (
         echo %c%- Force installing uBlock Origin in Edge...%u%
         reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallForcelist" /v "1" /t REG_SZ /d "odfafepnkmbhccpbejgmiehpchacaeak;https://edge.microsoft.com/extensionwebstorebase/v1/crx" /f >nul 2>&1
         reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallForcelist" /v "2" /t REG_SZ /d "bhhhlbepdkbapadjdnnojkbgioiodbic;https://edge.microsoft.com/extensionwebstorebase/v1/crx" /f >nul 2>&1
     )
-    
+
     echo %c%- Disabling Copilot and AI features...%u%
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "CopilotCDPPageContext" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "CopilotPageContext" /t REG_DWORD /d "0" /f >nul 2>&1
@@ -768,7 +751,7 @@ if "%EDGE_FOUND%"=="true" (
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "HubsSidebarEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "StandaloneHubsSidebarEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "NewTabPageBingChatEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     echo %c%- Disabling bloatware features and ads...%u%
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "EdgeCollectionsEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "EdgeShoppingAssistantEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
@@ -777,7 +760,7 @@ if "%EDGE_FOUND%"=="true" (
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "AllowGamesMenu" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "EdgeEnhanceImagesEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "InAppSupportEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     echo %c%- Removing ads and promotional content...%u%
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "ShowMicrosoftRewards" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "SpotlightExperiencesAndRecommendationsEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
@@ -786,7 +769,7 @@ if "%EDGE_FOUND%"=="true" (
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "PromotionalTabsEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "MicrosoftEdgeInsiderPromotionEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "ShowAcrobatSubscriptionButton" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     echo %c%- Configuring Edge privacy settings...%u%
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "AddressBarMicrosoftSearchInBingProviderEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "AlternateErrorPagesEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
@@ -795,35 +778,35 @@ if "%EDGE_FOUND%"=="true" (
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "PaymentMethodQueryEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "SearchSuggestEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "FamilySafetySettingsEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     echo %c%- Cleaning up new tab page...%u%
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "NewTabPageAllowedBackgroundTypes" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "NewTabPageQuickLinksEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "SignInCtaOnNtpEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "NewTabPageHideDefaultTopSites" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     echo %c%- Disabling desktop search widget...%u%
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "WebWidgetAllowed" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "WebWidgetIsEnabledOnStartup" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "SearchbarAllowed" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "SearchbarIsEnabledOnStartup" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     echo %c%- Disabling startup boost and experiments...%u%
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "StartupBoostEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "ExperimentationAndConfigurationServiceControl" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     echo %c%- Keeping Edge security updates enabled...%u%
     reg delete "HKLM\SOFTWARE\Policies\Microsoft\EdgeUpdate" /v "AutoUpdateCheckPeriodMinutes" /f >nul 2>&1
     reg delete "HKLM\SOFTWARE\Policies\Microsoft\EdgeUpdate" /v "UpdatesSuppressedDurationMin" /f >nul 2>&1
     reg delete "HKLM\SOFTWARE\Policies\Microsoft\EdgeUpdate" /v "UpdatesSuppressedStartHour" /f >nul 2>&1
     reg delete "HKLM\SOFTWARE\Policies\Microsoft\EdgeUpdate" /v "UpdatesSuppressedStartMin" /f >nul 2>&1
-    
+
     echo %c%- Enabling Edge update services...%u%
     powershell -Command "$services = @('edgeupdate', 'edgeupdatem'); foreach ($serviceName in $services) { if(Get-Service -Name $serviceName -ErrorAction SilentlyContinue){ Set-Service -Name $serviceName -StartupType Manual -ErrorAction SilentlyContinue } }" >nul 2>&1
 
     echo %c%- Enabling Edge update scheduled tasks...%u%
     powershell -Command "Get-ScheduledTask -TaskPath '\' -TaskName 'MicrosoftEdgeUpdateTaskMachine*' -ErrorAction SilentlyContinue | Enable-ScheduledTask" >nul 2>&1
-    
+
     echo %c%+ Microsoft Edge configured for maximum privacy and performance%u%
 ) else (
     echo %c%[2/8] Microsoft Edge not detected, skipping...%u%
@@ -832,13 +815,13 @@ if "%EDGE_FOUND%"=="true" (
 if "%CHROME_FOUND%"=="true" (
     echo.
     echo %c%[3/8] Configuring Google Chrome for Maximum Privacy...%u%
-    
+
     tasklist /fi "imagename eq chrome.exe" 2>nul | find /i "chrome.exe" >nul && (
         echo %c%* Chrome is running - attempting to close gracefully...%u%
         taskkill /im chrome.exe /f >nul 2>&1
         call :DexSleep 2
     )
-    
+
     echo %c%- Disabling Chrome telemetry and cleanup...%u%
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "ChromeCleanupEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "ChromeCleanupReportingEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
@@ -847,20 +830,20 @@ if "%CHROME_FOUND%"=="true" (
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "SafeBrowsingExtendedReportingEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "CloudPrintProxyEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "BackgroundModeEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     echo %c%- Blocking Chrome Software Reporter Tool...%u%
     reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\software_reporter_tool.exe" /v "Debugger" /t REG_SZ /d "%SYSTEMROOT%\System32\taskkill.exe" /f >nul 2>&1
     tasklist /fi "ImageName eq software_reporter_tool.exe" /fo csv 2>NUL | find /i "software_reporter_tool.exe">NUL && (
         taskkill /f /im software_reporter_tool.exe >nul 2>&1
     )
-    
+
     echo %c%- Disabling Google data collection and sync...%u%
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "SyncDisabled" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "SigninAllowed" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "CloudManagementEnrollmentMandatory" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "SubmitSafeBrowsingDownloadVerdicts" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "UrlKeyedAnonymizedDataCollectionEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     echo %c%- Disabling location, sensor and notification access...%u%
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "DefaultGeolocationSetting" /t REG_DWORD /d "2" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "DefaultSensorsSetting" /t REG_DWORD /d "2" /f >nul 2>&1
@@ -893,38 +876,38 @@ if "%CHROME_FOUND%"=="true" (
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "DefaultCookiesSetting" /t REG_DWORD /d "4" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "ThirdPartyStoragePartitioningEnabled" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "BlockThirdPartyCookies" /t REG_DWORD /d "1" /f >nul 2>&1
-    
+
     echo %c%- Configuring privacy sandbox and tracking protection...%u%
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "PrivacySandboxAdTopicsEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "PrivacySandboxSiteEnabledAdsEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "PrivacySandboxAdMeasurementEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "AdBlockingModeEnabled" /t REG_DWORD /d "1" /f >nul 2>&1
-    
+
     echo %c%- Disabling Google services integration...%u%
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "GoogleSearchSidePanelEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "LensRegionSearchEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "TranslateEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "DefaultWebBluetoothGuardSetting" /t REG_DWORD /d "2" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "DefaultWebUsbGuardSetting" /t REG_DWORD /d "2" /f >nul 2>&1
-    
+
     echo %c%- Configuring DNS and security settings...%u%
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "BuiltInDnsClientEnabled" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "DnsOverHttpsMode" /t REG_SZ /d "automatic" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "SafeBrowsingEnabled" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "SSLErrorOverrideAllowed" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     if "!BROWSER_INSTALL_EXT!"=="true" (
         echo %c%- Force installing uBlock Origin in Chrome...%u%
         reg add "HKLM\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist" /v "1" /t REG_SZ /d "cjpalhdlnbpafiamejdnhcphjbkeiagm" /f >nul 2>&1
         reg add "HKLM\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist" /v "2" /t REG_SZ /d "pkehgijcmpdhfbdbbnkijodmdjhbjlgp" /f >nul 2>&1
         reg add "HKLM\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist" /v "3" /t REG_SZ /d "ldpochfccmkkmhdbclfhpagapcfdljkj" /f >nul 2>&1
     )
-    
+
     echo %c%- Keeping Chrome security updates enabled...%u%
     reg delete "HKLM\SOFTWARE\Policies\Google\Update" /v "AutoUpdateCheckPeriodMinutes" /f >nul 2>&1
     reg delete "HKLM\SOFTWARE\Policies\Google\Update" /v "UpdateDefault" /f >nul 2>&1
     reg delete "HKLM\SOFTWARE\Policies\Google\Update" /v "Update{8A69D345-D564-463C-AFF1-A69D9E530F96}" /f >nul 2>&1
-    
+
     echo %c%- Enabling Google update services...%u%
     powershell -Command "$services = @('gupdate', 'gupdatem', 'GoogleChromeElevationService'); foreach ($serviceName in $services) { if(Get-Service -Name $serviceName -ErrorAction SilentlyContinue){ Set-Service -Name $serviceName -StartupType Manual -ErrorAction SilentlyContinue } }" >nul 2>&1
 
@@ -936,7 +919,7 @@ if "%CHROME_FOUND%"=="true" (
 
     echo %c%- Activating executable blocking policy...%u%
     powershell -Command "try { $fileExplorerDisallowRunRegistryPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer'; $currentDisallowRunPolicyValue = Get-ItemProperty -Path $fileExplorerDisallowRunRegistryPath -Name 'DisallowRun' -ErrorAction Ignore | Select -ExpandProperty DisallowRun; if ([string]::IsNullOrEmpty($currentDisallowRunPolicyValue)) { if (!(Test-Path $fileExplorerDisallowRunRegistryPath)) { New-Item -Path $fileExplorerDisallowRunRegistryPath -Force -ErrorAction Stop | Out-Null; }; New-ItemProperty -Path $fileExplorerDisallowRunRegistryPath -Name 'DisallowRun' -Value 1 -PropertyType DWORD -Force -ErrorAction Stop | Out-Null; } elseif ($currentDisallowRunPolicyValue -ne 1) { Set-ItemProperty -Path $fileExplorerDisallowRunRegistryPath -Name 'DisallowRun' -Value 1 -Type DWORD -Force -ErrorAction Stop | Out-Null; } } catch { }" >nul 2>&1
-    
+
     echo %c%+ Google Chrome configured for maximum privacy and performance%u%
 ) else (
     echo %c%[3/8] Google Chrome not detected, skipping...%u%
@@ -945,17 +928,17 @@ if "%CHROME_FOUND%"=="true" (
 if "%FIREFOX_FOUND%"=="true" (
     echo.
     echo %c%[4/8] Configuring Mozilla Firefox for Maximum Privacy...%u%
-    
+
     echo %c%- Disabling Firefox telemetry and data collection...%u%
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisableTelemetry" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisableDefaultBrowserAgent" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisableFirefoxStudies" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisableFirefoxAccounts" /t REG_DWORD /d "1" /f >nul 2>&1
     reg delete "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisableSystemAddonUpdate" /f >nul 2>&1
-    
+
     echo %c%- Disabling Firefox background services...%u%
     powershell -Command "$tasks = @('Firefox Default Browser Agent 308046B0AF4A39CB', 'Firefox Default Browser Agent D2CEEC440E2074BD'); foreach ($taskName in $tasks) { $task = Get-ScheduledTask -TaskPath '\Mozilla\' -TaskName $taskName -ErrorAction SilentlyContinue; if ($task -and $task.State -ne [Microsoft.PowerShell.Cmdletization.GeneratedTypes.ScheduledTask.StateEnum]::Disabled) { try { $task | Disable-ScheduledTask -ErrorAction Stop | Out-Null } catch { } } }" >nul 2>&1
-    
+
     echo %c%- Configuring Firefox security and privacy policies...%u%
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisablePocket" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisableProfileImport" /t REG_DWORD /d "1" /f >nul 2>&1
@@ -963,35 +946,35 @@ if "%FIREFOX_FOUND%"=="true" (
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisableFeedbackCommands" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisablePrivateBrowsingShortcut" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisablePasswordReveal" /t REG_DWORD /d "1" /f >nul 2>&1
-    
+
     echo %c%- Disabling Firefox data submission and reporting...%u%
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "UserMessaging" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "ExtensionRecommendations" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "FirefoxHome" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     if "!BROWSER_INSTALL_EXT!"=="true" (
         echo %c%- Installing uBlock Origin and privacy extensions...%u%
         reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox\Extensions\Install" /v "1" /t REG_SZ /d "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi" /f >nul 2>&1
         reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox\Extensions\Install" /v "2" /t REG_SZ /d "https://addons.mozilla.org/firefox/downloads/latest/privacy-badger17/latest.xpi" /f >nul 2>&1
         reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox\Extensions\Install" /v "3" /t REG_SZ /d "https://addons.mozilla.org/firefox/downloads/latest/decentraleyes/latest.xpi" /f >nul 2>&1
     )
-    
+
     echo %c%- Keeping Firefox security updates enabled...%u%
     reg delete "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisableAppUpdate" /f >nul 2>&1
     reg delete "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "ManualAppUpdateOnly" /f >nul 2>&1
-    
+
     echo %c%- Creating comprehensive Firefox privacy configuration...%u%
     call :CreateFirefoxPrivacyConfig "%ProgramFiles%\Mozilla Firefox\defaults\pref"
     call :CreateFirefoxPrivacyConfig "%ProgramFiles(x86)%\Mozilla Firefox\defaults\pref"
-    
+
     echo %c%- Configuring Firefox DNS and network settings...%u%
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox\DNSOverHTTPS" /v "Enabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox\NetworkPrediction" /v "Enabled" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     echo %c%- Disabling Firefox crash reporting and error collection...%u%
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisableCrashReporter" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "CaptivePortal" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     echo %c%+ Mozilla Firefox configured for maximum privacy and performance%u%
 ) else (
     echo %c%[4/8] Mozilla Firefox not detected, skipping...%u%
@@ -1178,17 +1161,17 @@ exit /b
 if "%OPERAGX_FOUND%"=="true" (
     echo.
     echo %c%[5/8] Configuring Opera GX for Maximum Privacy...%u%
-    
+
     echo %c%- Disabling Opera GX telemetry and ads...%u%
     reg add "HKLM\SOFTWARE\Policies\Opera Software\Opera GX Stable" /v "MetricsReportingEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Opera Software\Opera GX Stable" /v "UserFeedbackAllowed" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Opera Software\Opera GX Stable" /v "DefaultSearchProviderEnabled" /t REG_DWORD /d "1" /f >nul 2>&1
-    
+
     if "!BROWSER_INSTALL_EXT!"=="true" (
         echo %c%- Force installing uBlock Origin in Opera GX...%u%
         reg add "HKLM\SOFTWARE\Policies\Opera Software\Opera GX Stable\ExtensionInstallForcelist" /v "1" /t REG_SZ /d "cjpalhdlnbpafiamejdnhcphjbkeiagm" /f >nul 2>&1
     )
-    
+
     echo %c%- Configuring Opera GX gaming optimizations...%u%
     reg add "HKLM\SOFTWARE\Policies\Opera Software\Opera GX Stable" /v "BackgroundModeEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Opera Software\Opera GX Stable" /v "HardwareAccelerationModeEnabled" /t REG_DWORD /d "1" /f >nul 2>&1
@@ -1199,18 +1182,18 @@ if "%OPERAGX_FOUND%"=="true" (
 if "%BRAVE_FOUND%"=="true" (
     echo.
     echo %c%[6/8] Configuring Brave Browser for Maximum Privacy...%u%
-    
+
     echo %c%- Enhancing Brave privacy settings...%u%
     reg add "HKLM\SOFTWARE\Policies\BraveSoftware\Brave" /v "MetricsReportingEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\BraveSoftware\Brave" /v "SpellCheckServiceEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\BraveSoftware\Brave" /v "SafeBrowsingExtendedReportingEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     if "!BROWSER_INSTALL_EXT!"=="true" (
         echo %c%- Installing additional privacy extensions in Brave...%u%
         reg add "HKLM\SOFTWARE\Policies\BraveSoftware\Brave\ExtensionInstallForcelist" /v "1" /t REG_SZ /d "pkehgijcmpdhfbdbbnkijodmdjhbjlgp" /f >nul 2>&1
         reg add "HKLM\SOFTWARE\Policies\BraveSoftware\Brave\ExtensionInstallForcelist" /v "2" /t REG_SZ /d "ldpochfccmkkmhdbclfhpagapcfdljkj" /f >nul 2>&1
     )
-    
+
     echo %c%- Optimizing Brave for performance...%u%
     reg add "HKLM\SOFTWARE\Policies\BraveSoftware\Brave" /v "BackgroundModeEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\BraveSoftware\Brave" /v "HardwareAccelerationModeEnabled" /t REG_DWORD /d "1" /f >nul 2>&1
@@ -1221,17 +1204,17 @@ if "%BRAVE_FOUND%"=="true" (
 if "%VIVALDI_FOUND%"=="true" (
     echo.
     echo %c%[7/8] Configuring Vivaldi Browser for Maximum Privacy...%u%
-    
+
     echo %c%- Disabling Vivaldi telemetry...%u%
     reg add "HKLM\SOFTWARE\Policies\Vivaldi" /v "MetricsReportingEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Vivaldi" /v "UserFeedbackAllowed" /t REG_DWORD /d "0" /f >nul 2>&1
-    
+
     if "!BROWSER_INSTALL_EXT!"=="true" (
         echo %c%- Installing privacy extensions in Vivaldi...%u%
         reg add "HKLM\SOFTWARE\Policies\Vivaldi\ExtensionInstallForcelist" /v "1" /t REG_SZ /d "cjpalhdlnbpafiamejdnhcphjbkeiagm" /f >nul 2>&1
         reg add "HKLM\SOFTWARE\Policies\Vivaldi\ExtensionInstallForcelist" /v "2" /t REG_SZ /d "pkehgijcmpdhfbdbbnkijodmdjhbjlgp" /f >nul 2>&1
     )
-    
+
     echo %c%- Configuring Vivaldi privacy settings...%u%
     reg add "HKLM\SOFTWARE\Policies\Vivaldi" /v "NetworkPredictionOptions" /t REG_DWORD /d "2" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Policies\Vivaldi" /v "SpellCheckServiceEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
@@ -1338,7 +1321,6 @@ pause >nul
 goto TweaksMenu
 
 :K
-cls
 call :SetupConsole
 echo.
 echo.
@@ -1377,7 +1359,6 @@ pause >nul
 goto K
 
 :ViewCurrentPlan
-cls
 call :SetupConsole
 echo.
 echo.
@@ -1396,7 +1377,6 @@ pause >nul
 goto K
 
 :DesktopPowerPlan
-cls
 call :SetupConsole
 echo.
 echo.
@@ -1698,7 +1678,6 @@ echo %c%  -^> Power scheme activation completed%u%
 goto :eof
 
 :LaptopPowerPlan
-cls
 call :SetupConsole
 echo.
 echo.
@@ -1848,7 +1827,6 @@ pause >nul
 goto TweaksMenu
 
 :A
-cls
 call :SetupConsole
 echo.
 echo.
@@ -2061,7 +2039,6 @@ goto TweaksMenu
 rem Delayed expansion is already enabled globally.
 call :RequireExpertMode "Boot configuration repair changes BCD values and requires a restart."
 if errorlevel 1 goto TweaksMenu
-cls
 call :SetupConsole
 echo.
 echo %c%SAFE BOOT CONFIGURATION REPAIR%u%
@@ -2177,9 +2154,7 @@ if "!TR_OPT!"=="1" (
 )
 goto TweaksMenu
 
-
 :C
-cls
 call :SetupConsole
 echo.
 echo.
@@ -2226,7 +2201,6 @@ set "GPU_RETURN=C"
 goto GPUOptimizer
 
 :NVIDIAGPU
-cls
 call :SetupConsole
 echo.
 echo.
@@ -2257,7 +2231,6 @@ echo %red%Invalid option. Please try again.%u%
 call :DexSleep 1
 goto NVIDIAGPU
 
-
 :NVIDIAGPUStandard
 rem NVIDIA graphics now share the vendor-neutral, documented-only GPU optimizer.
 rem The old version here disabled DLSS, ray tracing, Resizable BAR, HAGS (via
@@ -2268,7 +2241,6 @@ goto GPUOptimizer
 :NVIDIAGPUExperimental
 call :RequireExpertMode "Maximum Performance DWORD mode disables all NVIDIA power management and can raise temperatures, increase power draw, or cause instability."
 if errorlevel 1 goto NVIDIAGPU
-cls
 call :SetupConsole
 echo.
 echo.
@@ -2409,7 +2381,6 @@ pause >nul
 goto NVIDIAGPU
 
 :NVIDIAGPURevert
-cls
 call :SetupConsole
 echo.
 echo.
@@ -2457,7 +2428,6 @@ pause >nul
 goto NVIDIAGPU
 
 :AMDGPU
-cls
 call :SetupConsole
 echo.
 echo.
@@ -2586,7 +2556,6 @@ call :LogEvent "OK" "AMD GPU selected for :AMDGPU tweaks: index=!AMD_GPU_INDEX! 
 exit /b 0
 
 :D
-cls
 call :SetupConsole
 echo.
 echo.
@@ -2626,7 +2595,6 @@ goto D
 
 :WiFiOptimization
 rem Delayed expansion is already enabled globally.
-cls
 call :SetupConsole
 echo.
 echo.
@@ -2918,7 +2886,6 @@ goto D
 
 :EthernetOptimization
 rem Delayed expansion is already enabled globally.
-cls
 call :SetupConsole
 echo.
 echo.
@@ -3210,7 +3177,6 @@ goto D
 
 :UniversalTweaks
 rem Delayed expansion is already enabled globally.
-cls
 call :SetupConsole
 echo.
 echo.
@@ -3253,7 +3219,6 @@ set "NETSH_OUTPUT=%TEMP%\netsh_output.txt"
 powershell -Command "Get-NetAdapter | Where-Object {$_.Status -eq 'Up'} | Select-Object Name, InterfaceDescription, LinkSpeed, Status | Format-Table -AutoSize > '%CONN_DETECT_FILE%'" 2>nul
 netsh interface show interface > "%NETSH_OUTPUT%" 2>nul
 set "CONN_TYPE=Unknown"
-set "INTERFACE_NAME="
 if exist "%CONN_DETECT_FILE%" (
     findstr /i "Wi-Fi Wireless WLAN" "%CONN_DETECT_FILE%" >nul 2>&1
     if !errorlevel! equ 0 (
@@ -3681,7 +3646,6 @@ pause >nul
 goto D
 
 :E
-cls
 call :SetupConsole
 echo.
 echo.
@@ -3720,7 +3684,6 @@ pause >nul
 goto E
 
 :IntelOptimization
-cls
 call :SetupConsole
 echo.
 echo.
@@ -3900,7 +3863,6 @@ pause >nul
 goto TweaksMenu
 
 :RyzenOptimization
-cls
 call :SetupConsole
 echo.
 echo.
@@ -4034,7 +3996,6 @@ pause >nul
 goto TweaksMenu
 
 :UniversalCPU
-cls
 call :SetupConsole
 echo.
 echo.
@@ -4119,7 +4080,6 @@ goto TweaksMenu
 
 :F
 rem Delayed expansion is already enabled globally.
-cls
 call :SetupConsole
 echo.
 echo.
@@ -4173,7 +4133,7 @@ if defined RAM_GB (
 if "!RAM_GB_IS_VALID!"=="1" (
     echo %c%PowerShell detected RAM: !RAM_GB! GB%u%
     set /a TotalRAM = RAM_GB * 1024
-    set /a temp_RAM_GB_for_compare = RAM_GB + 0 
+    set /a temp_RAM_GB_for_compare = RAM_GB + 0
     if !temp_RAM_GB_for_compare! LSS 8 (
         set "RAM_PROFILE=LOW"
     ) else if !temp_RAM_GB_for_compare! EQU 8 (
@@ -4183,9 +4143,9 @@ if "!RAM_GB_IS_VALID!"=="1" (
     )
 ) else (
     echo %red%PowerShell output [!RAM_GB!] was not a valid number or was empty. Using defaults.%u%
-    set RAM_GB=8      
-    set TotalRAM=8192 
-    set RAM_PROFILE=MEDIUM 
+    set RAM_GB=8
+    set TotalRAM=8192
+    set RAM_PROFILE=MEDIUM
 )
 echo %c%System Total RAM ^(for display^): !TotalRAM! MB. RAM Profile set to: !RAM_PROFILE!%u%
 
@@ -4247,7 +4207,7 @@ if "!RAM_PROFILE!"=="MAXIMUM" (
 ) else if "!RAM_PROFILE!"=="MEDIUM" (
     reg add "HKLM\SYSTEM\CurrentControlSet\Services\lanmanserver\parameters" /v "Size"            /t REG_DWORD /d "2"    /f >nul 2>&1
     reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem"                   /v "ContigFileAllocSize" /t REG_DWORD /d "512"  /f >nul 2>&1
-) else ( 
+) else (
     reg add "HKLM\SYSTEM\CurrentControlSet\Services\lanmanserver\parameters" /v "Size"            /t REG_DWORD /d "1"    /f >nul 2>&1
     reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem"                   /v "ContigFileAllocSize" /t REG_DWORD /d "64"   /f >nul 2>&1
 )
@@ -4283,9 +4243,7 @@ echo %c%========================== PRESS ANY KEY TO CONTINUE ===================
 pause >nul
 goto TweaksMenu
 
-
 :G
-cls
 call :SetupConsole
 echo.
 echo.
@@ -4431,7 +4389,6 @@ pause >nul
 goto TweaksMenu
 
 :H
-cls
 call :SetupConsole
 echo.
 echo.
@@ -4577,7 +4534,6 @@ goto TweaksMenu
 
 :I
 rem Delayed expansion is already enabled globally.
-cls
 call :SetupConsole
 echo.
 echo.
@@ -4608,7 +4564,6 @@ echo.
 call :DexChoice "YN" "%c%Proceed with comprehensive service optimization? (Y/N)%u%"
 if errorlevel 2 goto TweaksMenu
 
-cls
 call :SetupConsole
 echo.
 echo.
@@ -5006,7 +4961,6 @@ for /f "skip=1 tokens=2" %%s in ('sc query type= service state= all ^| findstr "
 exit /b
 
 :IAdvanced
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5030,7 +4984,6 @@ goto IAdvMenu
 :IAdv_DisableAll
 call :RequireExpertMode "Disabling every optional service can remove networking, security, backup, printing and device capabilities."
 if errorlevel 1 goto IAdvanced
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5070,7 +5023,6 @@ call :ApplyFinalServiceConfigurations
 goto IAdv_Complete
 
 :IAdv_CategoryMode
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5087,7 +5039,6 @@ echo.
 echo %c%========================== PRESS ANY KEY TO BEGIN ==========================%u%
 pause >nul
 
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5109,7 +5060,6 @@ if /i "!G1!"=="M" (
     sc config "diagnosticshub.standardcollector.service" start= demand >nul 2>&1
 )
 
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5129,7 +5079,6 @@ if /i "!G2!"=="M" (
     for %%s in (HPAppHelperCap HPDiagsCap HPNetworkCap HPOmenCap HPPrintScanDoctorService HPSysInfoCap HpTouchpointAnalyticsService DCUService cplspcon igccservice jhi_service IntelAudioService RtkAudioUniversalService SynTPEnhService ClickToRunSvc VSInstallerElevationService) do sc config %%s start= demand >nul 2>&1
 )
 
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5149,7 +5098,6 @@ if /i "!G3!"=="M" (
     for %%s in (ALG NetTcpPortSharing RemoteAccess RemoteRegistry WinRM wcncsvc WMPNetworkSvc ssh-agent upnphost SSDPSRV lltdsvc dot3svc icssvc SharedAccess WFDSConMgrSvc RasAuto RasMan SstpSvc WwanSvc Wecsvc WebClient fdPHost FDResPub lmhosts NcbService NcdAutoSetup Netlogon Netman NetSetupSvc p2pimsvc p2psvc PeerDistSvc PNRPAutoReg PNRPsvc RpcLocator SNMPTrap Eaphost IKEEXT PolicyAgent) do sc config %%s start= demand >nul 2>&1
 )
 
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5170,7 +5118,6 @@ if /i "!G4!"=="M" (
     for %%s in (XblAuthManager XblGameSave XboxGipSvc XboxNetApiSvc GamingServices GamingServicesNet GameInputSvc InstallService ClipSVC LicenseManager) do sc config %%s start= demand >nul 2>&1
 )
 
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5191,7 +5138,6 @@ if /i "!G5!"=="M" (
     sc config "Razer Game Scanner Service" start= demand >nul 2>&1
 )
 
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5210,7 +5156,6 @@ if /i "!G6!"=="M" (
     echo %yellow%  Update services preserved to avoid delaying browser and application security fixes.%u%
 )
 
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5229,7 +5174,6 @@ if /i "!G7!"=="M" (
     for %%s in (SysMain WSearch PimIndexMaintenanceSvc MapsBroker lfsvc GraphicsPerfSvc WalletService) do sc config %%s start= demand >nul 2>&1
 )
 
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5253,7 +5197,6 @@ if /i "!G8!"=="M" (
     for %%s in (WbioSrvc SCardSvr ScDeviceEnum SCPolicySvc NgcCtnrSvc NgcSvc NaturalAuthentication SEMgrSvc WpcMonSvc SDRSVC fhsvc wbengine swprv refsdedupsvc svsvc workfolderssvc BTAGService BthAvctpSvc bthserv) do sc config %%s start= demand >nul 2>&1
 )
 
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5275,7 +5218,6 @@ if /i "!G9!"=="M" (
     sc config "PrintScanBrokerService" start= demand >nul 2>&1
 )
 
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5294,7 +5236,6 @@ if /i "!G10!"=="M" (
     for %%s in (HvHost vmicguestinterface vmicheartbeat vmickvpexchange vmicrdv vmicshutdown vmictimesync vmicvmsession vmicvss) do sc config %%s start= demand >nul 2>&1
 )
 
-cls
 call :SetupConsole
 echo.
 echo %c%+==============================================================================+
@@ -5324,7 +5265,6 @@ call :EnableCriticalServices
 call :ApplyFinalServiceConfigurations
 
 :IAdv_Complete
-cls
 call :SetupConsole
 echo.
 echo.
@@ -5519,7 +5459,6 @@ reg add "HKCU\Software\Microsoft\VisualStudio\Telemetry" /v TurnOffSwitch /t REG
 echo %green%    -^> Third-party telemetry disabled ^(privacy.sexy integrated^)%u%
 exit /b
 
-
 :DisableGamingHardwareServices
 echo %c%    Disabling gaming hardware background services...%u%
 call :DisableService "Razer Game Scanner Service"
@@ -5681,7 +5620,6 @@ exit /b
 rem Delayed expansion is already enabled globally.
 call :RequireExpertMode "Comprehensive app removal can affect Store, Xbox, WebView and recovery."
 if errorlevel 1 goto TweaksMenu
-cls
 call :SetupConsole
 echo.
 echo.
@@ -5870,10 +5808,10 @@ echo.
 echo %c%[10/12] OEM Manufacturer Bloatware%u%
 call :DexChoice "YN" "%c%Remove OEM manufacturer bloatware? (Y/N)%u%"
 if errorlevel 2 (
-    set "REMOVE_OEM=false" 
+    set "REMOVE_OEM=false"
     echo %c%- OEM bloatware will be PRESERVED%u%
 ) else (
-    set "REMOVE_OEM=true"  
+    set "REMOVE_OEM=true"
     echo %c%- OEM bloatware will be REMOVED%u%
 )
 
@@ -5881,10 +5819,10 @@ echo.
 echo %c%[11/12] System Apps ^(Wallet, Web Extensions...^)%u%
 call :DexChoice "YN" "%c%Remove System apps? (Y/N)%u%"
 if errorlevel 2 (
-    set "REMOVE_SYSTEM=false" 
+    set "REMOVE_SYSTEM=false"
     echo %c%- System apps will be PRESERVED%u%
 ) else (
-    set "REMOVE_SYSTEM=true"  
+    set "REMOVE_SYSTEM=true"
     echo %c%- System apps will be REMOVED%u%
 )
 
@@ -5892,10 +5830,10 @@ echo.
 echo %c%[12/16] Windows Services and Startup Programs%u%
 call :DexChoice "YN" "%c%Disable unnecessary services & startup programs? (Y/N)%u%"
 if errorlevel 2 (
-    set "DISABLE_SERVICES=false" 
+    set "DISABLE_SERVICES=false"
     echo %c%- Services and startup programs will be PRESERVED%u%
 ) else (
-    set "DISABLE_SERVICES=true"  
+    set "DISABLE_SERVICES=true"
     echo %c%- Unnecessary services and startup programs will be DISABLED%u%
 )
 
@@ -6307,7 +6245,7 @@ exit /b
 
 :RemoveXboxServices
 call :RemoveAppCompletely "Microsoft.GamingApp" "Microsoft.GamingApp_8wekyb3d8bbwe"
-call :RemoveAppCompletely "Microsoft.XboxGamingOverlay" "Microsoft.XboxGamingOverlay_8wekyb3d8bbwe"  
+call :RemoveAppCompletely "Microsoft.XboxGamingOverlay" "Microsoft.XboxGamingOverlay_8wekyb3d8bbwe"
 call :RemoveAppCompletely "Microsoft.XboxGameOverlay" "Microsoft.XboxGameOverlay_8wekyb3d8bbwe"
 call :RemoveAppCompletely "Microsoft.XboxApp" "Microsoft.XboxApp_8wekyb3d8bbwe"
 call :RemoveAppCompletely "Microsoft.Xbox.TCUI" "Microsoft.Xbox.TCUI_8wekyb3d8bbwe"
@@ -6538,7 +6476,7 @@ sc config dmwappushservice start=disabled >nul 2>&1
 sc config RetailDemo start=disabled >nul 2>&1
 sc config MapsBroker start=disabled >nul 2>&1
 sc stop WSearch >nul 2>&1
-sc config WSearch start=disabled >nul 2>&1   
+sc config WSearch start=disabled >nul 2>&1
 
 schtasks /change /tn "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /disable >nul 2>&1
 schtasks /change /tn "Microsoft\Windows\Application Experience\ProgramDataUpdater" /disable >nul 2>&1
@@ -6552,7 +6490,6 @@ schtasks /change /tn "Microsoft\Windows\Windows Error Reporting\QueueReporting" 
 exit /b
 
 :HardwareMenu
-cls
 call :SetupConsole
 call :DisplayBanner
 echo %c%                                 +===================================================+ %u%
@@ -6586,7 +6523,6 @@ pause >nul
 goto HardwareMenu
 
 :MonitorOptimization
-cls
 call :SetupConsole
 echo.
 echo.
@@ -6624,7 +6560,6 @@ echo.
 call :DexChoice "YN" "%c%Disable Windows HDR while gaming? (Y/N)%u%"
 if errorlevel 2 (set "MON_DISABLE_HDR=false") else (set "MON_DISABLE_HDR=true")
 
-cls
 call :SetupConsole
 echo.
 echo.
@@ -6714,7 +6649,6 @@ pause >nul
 goto HardwareMenu
 
 :AudioOptimization
-cls
 call :SetupConsole
 echo.
 echo.
@@ -6746,7 +6680,6 @@ echo %c%in calls, even though it removes some background processing overhead.%u%
 call :DexChoice "YN" "%c%Disable audio/video AI enhancements and DSP effects? (Y/N)%u%"
 if errorlevel 2 (set "AUDIO_DISABLE_FX=false") else (set "AUDIO_DISABLE_FX=true")
 
-cls
 call :SetupConsole
 echo.
 echo.
@@ -6825,7 +6758,6 @@ pause >nul
 goto HardwareMenu
 
 :USBOptimization
-cls
 call :SetupConsole
 echo.
 echo.
@@ -6846,7 +6778,6 @@ echo.
 echo.
 call :DexChoice "YN" "Apply USB optimizations"
 if errorlevel 2 goto HardwareMenu
-cls
 call :SetupConsole
 echo.
 echo.
@@ -6889,7 +6820,6 @@ pause >nul
 goto HardwareMenu
 
 :HardwareSecurityCenter
-cls
 call :SetupConsole
 echo.
 echo.
@@ -6927,7 +6857,6 @@ set /p virt_status=<"%temp%\virt_status.txt"
 powershell -Command "if (Get-BitLockerVolume -ErrorAction SilentlyContinue) { Write-Host 'BITLOCKER_AVAILABLE' } else { Write-Host 'BITLOCKER_UNAVAILABLE' }" > "%temp%\bitlocker_status.txt"
 set /p bitlocker_status=<"%temp%\bitlocker_status.txt"
 
-cls
 call :SetupConsole
 echo.
 echo %c%+===============================================================================+
@@ -7085,7 +7014,6 @@ call :DexSleep 2
 goto HardwareSecurityCenter
 
 :ConfigureBitLocker
-cls
 call :SetupConsole
 echo.
 echo %c%+===============================================================================+
@@ -7153,7 +7081,6 @@ pause >nul
 goto HardwareSecurityCenter
 
 :EnableWindowsHello
-cls
 call :SetupConsole
 echo.
 echo %c%+===============================================================================+
@@ -7187,7 +7114,6 @@ pause >nul
 goto HardwareSecurityCenter
 
 :EnableCredentialGuard
-cls
 call :SetupConsole
 echo.
 echo %c%+===============================================================================+
@@ -7213,7 +7139,6 @@ pause >nul
 goto HardwareSecurityCenter
 
 :ConfigureDeviceGuard
-cls
 call :SetupConsole
 echo.
 echo %c%+===============================================================================+
@@ -7242,7 +7167,6 @@ pause >nul
 goto HardwareSecurityCenter
 
 :EnableCoreIsolation
-cls
 call :SetupConsole
 echo.
 echo %c%+===============================================================================+
@@ -7272,7 +7196,6 @@ pause >nul
 goto HardwareSecurityCenter
 
 :SecurityComplianceReport
-cls
 call :SetupConsole
 echo.
 echo %c%+===============================================================================+
@@ -7339,7 +7262,6 @@ echo.
 echo %c%Press any key to return to Hardware Security Center...%u%
 pause >nul
 goto HardwareSecurityCenter
-
 
 :ShowASUSGuide
 echo %c%+===============================================================================+
@@ -7418,7 +7340,6 @@ echo +==========================================================================
 goto :eof
 
 :EnableSystemGuard
-cls
 call :SetupConsole
 echo.
 echo %c%+===============================================================================+
@@ -7501,7 +7422,6 @@ del /q "%temp%\sg_compat.txt" 2>nul
 goto HardwareSecurityCenter
 
 :EnableHVCI
-cls
 call :SetupConsole
 echo.
 echo %c%+===============================================================================+
@@ -7599,7 +7519,6 @@ del /q "%temp%\hvci_compat.txt" 2>nul
 goto HardwareSecurityCenter
 
 :ConfigureSmartCard
-cls
 call :SetupConsole
 echo.
 echo %c%+===============================================================================+
@@ -7738,7 +7657,6 @@ if "!sc_choice!"=="6" (
 )
 
 if "!sc_choice!"=="7" (
-    cls
     call :SetupConsole
     echo.
     echo %c%+===============================================================================+
@@ -7746,7 +7664,7 @@ if "!sc_choice!"=="7" (
     echo +===============================================================================+%u%
     echo.
     echo %c%Smart Card Services Status:%u%
-    sc query "SCardSvr" | findstr "STATE" 
+    sc query "SCardSvr" | findstr "STATE"
     sc query "SCPolicySvc" | findstr "STATE"
     sc query "CertPropSvc" | findstr "STATE"
     echo.
@@ -7812,7 +7730,6 @@ del /q "%temp%\bitlocker_status.txt" 2>nul
 del /q "%temp%\bio_status.txt" 2>nul
 
 :AutomatedSecuritySetup
-cls
 call :SetupConsole
 echo.
 echo %c%+===============================================================================+
@@ -7886,7 +7803,6 @@ goto HardwareSecurityCenter
 
 :GPUOptimizer
 if not defined GPU_RETURN set "GPU_RETURN=HardwareMenu"
-cls
 call :SetupConsole
 echo.
 echo.
@@ -8057,7 +7973,6 @@ set "GPU_RETURN="
 goto !GPU_JUMP!
 
 :StorageAcceleration
-cls
 call :SetupConsole
 echo.
 echo.
@@ -8104,7 +8019,6 @@ if "%SSD_FOUND%"=="true" echo %c%  + SSD drives detected%u%
 if "%NVME_FOUND%"=="true" echo %c%  + NVMe drives detected%u%
 if "%SSD_FOUND%"=="false" echo %c%  - Traditional hard drives detected%u%
 
-
 echo %c%[2/8] Verifying TRIM Settings...%u%
 for /f "tokens=*" %%t in ('fsutil behavior query DisableDeleteNotify 2^>nul') do echo %c%  - %%t%u%
 fsutil behavior set DisableDeleteNotify 0 >nul 2>&1
@@ -8142,7 +8056,7 @@ echo %c%[5/8] Configuring Prefetch and Superfetch...%u%
 if "%SSD_FOUND%"=="true" (
     reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v "EnableSuperfetch" /t REG_DWORD /d "0" /f >nul 2>&1
     echo %c%  + Superfetch disabled for SSD optimization%u%
-    
+
     reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v "EnablePrefetcher" /t REG_DWORD /d "1" /f >nul 2>&1
     echo %c%  + Prefetch optimized for SSD usage%u%
 ) else (
@@ -8255,7 +8169,6 @@ pause >nul
 goto HardwareMenu
 
 :MemoryDiagnostics
-cls
 call :SetupConsole
 echo.
 echo.
@@ -8319,7 +8232,6 @@ goto HardwareMenu
 
 :HardwareInformation
 rem Delayed expansion is already enabled globally.
-cls
 call :SetupConsole
 echo.
 echo.
@@ -8490,8 +8402,6 @@ set "cpu_manufacturer=Unknown"
 set "cpu_cores=Unknown"
 set "cpu_threads=Unknown"
 set "cpu_speed=0"
-set "cpu_cache=Unknown"
-set "cpu_arch=Unknown"
 
 echo %c%- Reading CPU name...%u%
 echo %c%- Reading CPU specifications...%u%
@@ -8663,7 +8573,7 @@ for /f "tokens=1,* delims=|" %%i in ('powershell -NoProfile -Command "Get-CimIns
 if !drivecount! equ 0 for /f "skip=1 tokens=1,2" %%i in ('wmic diskdrive get model^,size /format:table 2^>nul') do (
     if not "%%i"=="" if not "%%i"=="Model" (
         set /a "drivecount+=1"
-        
+
         if !drivecount! equ 1 (
             set "drive1_name=%%i"
             if not "%%j"=="" (
@@ -8672,7 +8582,7 @@ if !drivecount! equ 0 for /f "skip=1 tokens=1,2" %%i in ('wmic diskdrive get mod
                 )
             )
         )
-        
+
         if !drivecount! equ 2 (
             set "drive2_name=%%i"
             if not "%%j"=="" (
@@ -8681,7 +8591,7 @@ if !drivecount! equ 0 for /f "skip=1 tokens=1,2" %%i in ('wmic diskdrive get mod
                 )
             )
         )
-        
+
         echo %c%Drive !drivecount!: %%i%u%
         if not "%%j"=="" (
             for /f %%k in ('powershell -NoProfile -Command "try { [math]::round(%%j/1GB, 0) } catch { 0 }"') do (
@@ -8722,20 +8632,20 @@ echo %c%- Analyzing partition usage...%u%
 for %%d in (C D E F G H) do (
     if exist %%d:\ (
         echo %c%- Checking drive %%d:...%u%
-        
+
         for /f "tokens=3,4" %%x in ('dir %%d:\ /-c 2^>nul ^| find "bytes free"') do (
             set /a "free_bytes=%%x" 2>nul
             set /a "total_bytes=%%y" 2>nul
-            
+
             if !total_bytes! gtr 0 (
                 set /a "free_gb=!free_bytes!/1073741824" 2>nul
                 set /a "total_gb=!total_bytes!/1073741824" 2>nul
                 set /a "used_gb=!total_gb!-!free_gb!" 2>nul
-                
+
                 if !total_gb! gtr 0 (
                     set /a "used_percent=!used_gb!*100/!total_gb!" 2>nul
                     echo %c%  %%d: - !used_gb! GB used / !total_gb! GB total ^(!used_percent!%% used^)%u%
-                    
+
                     if "%%d"=="C" (
                         set "c_drive_info=!used_gb! GB used / !total_gb! GB total (!used_percent!%% used)"
                     )
@@ -8839,9 +8749,6 @@ echo %c%- Analyzing CPU performance...%u%
 
 set "cpu_score=0"
 set "cpu_rating=Unknown"
-
-set "detected_cores=%NUMBER_OF_PROCESSORS%"
-
 
 echo "!CPUName!" | find /i "i9-14" >nul && ^(set /a "cpu_score=38" & set "cpu_rating=Flagship"^)
 echo "!CPUName!" | find /i "i7-14" >nul && ^(set /a "cpu_score=34" & set "cpu_rating=High-End"^)
@@ -9329,7 +9236,7 @@ echo Performance Category: !perf_category!
 echo.
 echo Component Breakdown:
 echo - RAM: !ram_rating! ^(!totalmem!GB^) - RAM Score
-echo - CPU: !cpu_rating! ^(!NUMBER_OF_PROCESSORS! threads^) - !cpu_score! points  
+echo - CPU: !cpu_rating! ^(!NUMBER_OF_PROCESSORS! threads^) - !cpu_score! points
 echo - GPU: !gpu_rating! ^(!detected_vram!GB VRAM^) - !gpu_score! points
 echo - VRAM: !vram_rating! ^(!detected_vram!GB^) - !vram_score! points
 echo - Laptop Penalty: -5 points ^(if applicable^)
@@ -9436,7 +9343,7 @@ if !perfscore! geq 80 (
 echo.
 echo Performance Analysis Summary:
 echo - CPU Performance: !cpu_rating! tier
-echo - Graphics Performance: !gpu_rating! tier  
+echo - Graphics Performance: !gpu_rating! tier
 echo - Memory Configuration: !ram_rating! for current standards
 echo - Overall Rating: !perfscore!/100 points
 echo.
@@ -9447,7 +9354,7 @@ echo - Computer Scanned: !comp_model!
 echo - Report Generated For: %USERNAME%
 echo.
 echo ================================================================================
-echo Report End - Generated by Dex Tweaks 
+echo Report End - Generated by Dex Tweaks
 echo ================================================================================
 )
 
@@ -9463,20 +9370,19 @@ pause >nul
 goto HardwareMenu
 
 :WindowsMenu
-cls
 call :SetupConsole
 call :DisplayBanner
 echo %c%                                 +===================================================+ %u%
-echo                                  %c%^|%u%          [%c%1%u%] Search Index Optimizer               %c%^|%u% 
-echo                                  %c%^|%u%          [%c%2%u%] Windows Defender Optimizer           %c%^|%u% 
+echo                                  %c%^|%u%          [%c%1%u%] Search Index Optimizer               %c%^|%u%
+echo                                  %c%^|%u%          [%c%2%u%] Windows Defender Optimizer           %c%^|%u%
 echo                                  %c%^|%u%          [%c%3%u%] Windows Explorer Fixes               %c%^|%u%
 echo                                  %c%^|%u%          [%c%4%u%] System File Checker                  %c%^|%u%
 echo                                  %c%^|%u%          [%c%5%u%] Registry Fixes                       %c%^|%u%
 echo                                  %c%^|%u%          [%c%6%u%] Windows Features Manager             %c%^|%u%
 echo %c%                                 +===================================================+
 echo.
-echo                             %u%[%c%7%u%] Colour Presets   [%c%8%u%] Back to Main   [%red%X%u%] Exit Application       
-echo.                                      
+echo                             %u%[%c%7%u%] Colour Presets   [%c%8%u%] Back to Main   [%red%X%u%] Exit Application
+echo.
 set /p M="%c%Choose an option >%u% "
 if "!M!"=="1" goto SearchIndexOptimizer
 if "!M!"=="2" goto DefenderOptimizer
@@ -9495,7 +9401,6 @@ pause >nul
 goto WindowsMenu
 
 :WindowsFeaturesManager
-cls
 call :SetupConsole
 echo.
 echo %c%Detected: !DEX_OS_NAME! build !_OS_BUILD_NUM!. Feature availability varies by edition.%u%
@@ -9539,7 +9444,6 @@ call :DexSleep 2
 goto WindowsFeaturesManager
 
 :GamingFeatures
-cls
 call :SetupConsole
 echo.
 echo.
@@ -9638,7 +9542,6 @@ echo %c%+ Optional features optimized%u%
 goto FeaturesComplete
 
 :PerformanceFeatures
-cls
 call :SetupConsole
 echo.
 echo.
@@ -9751,7 +9654,6 @@ echo %c%+ Final optimizations complete%u%
 goto FeaturesComplete
 
 :PrivacyFeatures
-cls
 call :SetupConsole
 echo.
 echo.
@@ -9828,7 +9730,6 @@ echo %c%+ SmartScreen executables were left unchanged%u%
 goto FeaturesComplete
 
 :DeveloperFeatures
-cls
 call :SetupConsole
 echo.
 echo.
@@ -9922,7 +9823,6 @@ echo %c%+ Developer mode configured%u%
 goto FeaturesComplete
 
 :ViewFeatures
-cls
 call :SetupConsole
 echo.
 echo.
@@ -9947,7 +9847,6 @@ pause >nul
 goto WindowsFeaturesManager
 
 :CustomFeatures
-cls
 call :SetupConsole
 echo.
 echo.
@@ -10174,7 +10073,6 @@ pause >nul
 goto WindowsMenu
 
 :RegistryPerformance
-cls
 call :SetupConsole
 echo.
 echo.
@@ -10360,7 +10258,6 @@ pause >nul
 goto WindowsMenu
 
 :SystemFileOptimizer
-cls
 call :SetupConsole
 echo.
 echo.
@@ -10513,7 +10410,6 @@ pause >nul
 goto WindowsMenu
 
 :ExplorerOptimizer
-cls
 call :SetupConsole
 echo.
 echo.
@@ -10816,7 +10712,6 @@ pause >nul
 goto WindowsMenu
 
 :DefenderOptimizer
-cls
 call :SetupConsole
 echo.
 echo.
@@ -10849,7 +10744,6 @@ call :DexSleep 2
 goto DefenderOptimizer
 
 :DefenderGaming
-cls
 call :SetupConsole
 echo.
 echo.
@@ -10892,7 +10786,6 @@ goto DefenderComplete
 :DefenderPerformance
 call :RequireExpertMode "This mode disables active malware protection."
 if errorlevel 1 goto DefenderOptimizer
-cls
 call :SetupConsole
 echo.
 echo.
@@ -10940,7 +10833,6 @@ echo %c%+ Scan performance optimized%u%
 goto DefenderComplete
 
 :DefenderRemoval
-cls
 call :SetupConsole
 echo.
 echo %red%Complete Defender removal is disabled by the safety policy.%u%
@@ -10991,7 +10883,6 @@ goto WindowsMenu
 :SearchIndexOptimizer
 call :RequireExpertMode "Disabling Windows Search removes Start menu and file-search capabilities."
 if errorlevel 1 goto WindowsMenu
-cls
 call :SetupConsole
 echo.
 echo.
@@ -11107,7 +10998,6 @@ pause >nul
 goto WindowsMenu
 
 :PrivacyMenu
-cls
 call :SetupConsole
 call :DisplayBanner
 echo %c%                            +===============================+================================+ %u%
@@ -11144,7 +11034,6 @@ goto PrivacyMenu
 :PrivacyDataCleanup
 call :RequireExpertMode "Forensic cleanup permanently removes history and diagnostic evidence."
 if errorlevel 1 goto PrivacyMenu
-cls
 call :SetupConsole
 echo.
 echo.
@@ -11444,7 +11333,6 @@ pause >nul
 goto PrivacyMenu
 
 :TelemetryBlocker
-cls
 call :SetupConsole
 echo.
 echo.
@@ -11594,7 +11482,6 @@ pause >nul
 goto PrivacyMenu
 
 :CortanaPrivacy
-cls
 call :SetupConsole
 echo.
 echo.
@@ -11700,7 +11587,6 @@ pause >nul
 goto PrivacyMenu
 
 :AccountPrivacy
-cls
 call :SetupConsole
 echo.
 echo.
@@ -11811,7 +11697,6 @@ pause >nul
 goto PrivacyMenu
 
 :LocationPrivacy
-cls
 call :SetupConsole
 echo.
 echo.
@@ -11920,7 +11805,6 @@ pause >nul
 goto PrivacyMenu
 
 :AppPermissions
-cls
 call :SetupConsole
 echo.
 echo.
@@ -12063,7 +11947,6 @@ pause >nul
 goto PrivacyMenu
 
 :AdvertisingPrivacy
-cls
 call :SetupConsole
 echo.
 echo.
@@ -12233,7 +12116,6 @@ pause >nul
 goto AdvancedMenu
 
 :PerformanceToolkit
-cls
 call :SetupConsole
 echo.
 echo.
@@ -12256,7 +12138,6 @@ if "!PT!"=="0" goto AdvancedMenu
 goto PerformanceToolkit
 
 :StartupManager
-cls
 call :SetupConsole
 echo.
 echo %c%STARTUP APP MANAGER%u%
@@ -12295,7 +12176,6 @@ pause
 goto PerformanceToolkit
 
 :TempSnapshot
-cls
 call :SetupConsole
 echo.
 echo %c%CPU / GPU TEMPERATURE SNAPSHOT%u%
@@ -12312,7 +12192,6 @@ pause
 goto PerformanceToolkit
 
 :ScheduledMaintenanceSetup
-cls
 call :SetupConsole
 echo.
 echo %c%SCHEDULED AUTO-MAINTENANCE%u%
@@ -12337,7 +12216,6 @@ pause
 goto PerformanceToolkit
 
 :DriverRestorePoint
-cls
 call :SetupConsole
 echo.
 echo %c%DRIVER RESTORE POINT%u%
@@ -12361,7 +12239,6 @@ pause
 goto PerformanceToolkit
 
 :CapturePriorityTool
-cls
 call :SetupConsole
 echo.
 echo.
@@ -12413,7 +12290,6 @@ pause >nul
 goto AdvancedMenu
 
 :DirectXOptimization
-cls
 call :SetupConsole
 echo.
 echo.
@@ -12475,7 +12351,6 @@ pause >nul
 goto AdvancedMenu
 
 :OBSOptimizer
-cls
 call :SetupConsole
 echo.
 echo.
@@ -12593,7 +12468,6 @@ pause >nul
 goto AdvancedMenu
 
 :ProgramDebloat
-cls
 call :SetupConsole
 call :DisplayBanner
 echo %c%                       +=============================================+ %u%
@@ -12624,7 +12498,6 @@ pause >nul
 goto ProgramDebloat
 
 :debloatchrome
-cls
 call :SetupConsole
 echo.
 echo.
@@ -12648,13 +12521,12 @@ reg add "HKLM\SOFTWARE\WOW6432Node\Policies\Google\Chrome" /v "CloudReportingEna
 cls
 echo.
 echo.                                         %c%=======================================================
-echo.                                           %c%  Operation Completed, Press any key to continue%u% 
+echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
 pause >nul
 goto ProgramDebloat
 
 :debloatfirefox
-cls
 call :SetupConsole
 echo.
 echo.
@@ -12697,13 +12569,12 @@ del /f minidump*.* >nul 2>&1
 cls
 echo.
 echo.                                         %c%=======================================================
-echo.                                           %c%  Operation Completed, Press any key to continue%u% 
+echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
 pause >nul
 goto ProgramDebloat
 
 :debloatspotify
-cls
 call :SetupConsole
 echo.
 echo.
@@ -12830,13 +12701,12 @@ REG DELETE "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "Spotify" /f 
 cls
 echo.
 echo.                                         %c%=======================================================
-echo.                                           %c%  Operation Completed, Press any key to continue%u% 
+echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
 pause >nul
 goto ProgramDebloat
 
 :debloatsteam
-cls
 call :SetupConsole
 echo.
 echo.
@@ -12863,13 +12733,12 @@ reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Steam" /f >n
 cls
 echo.
 echo.                                         %c%=======================================================
-echo.                                           %c%  Operation Completed, Press any key to continue%u% 
+echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
 pause >nul
 goto ProgramDebloat
 
 :debloatdiscord
-cls
 call :SetupConsole
 echo.
 echo %c%Discord cache cleanup preserves the updater, application modules and user settings.%u%
@@ -12883,7 +12752,6 @@ pause
 goto ProgramDebloat
 
 :debloatprogram
-cls
 call :SetupConsole
 echo.
 echo.
@@ -13016,13 +12884,12 @@ reg add "HKLM\SOFTWARE\WOW6432Node\Microsoft\Office\Word\Addins\VS10WordAdaptor"
 cls
 echo.
 echo.                                         %c%=======================================================
-echo.                                           %c%  Operation Completed, Press any key to continue%u% 
+echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
 pause >nul
 goto ProgramDebloat
 
 :InterruptSchedulingLab
-cls
 call :SetupConsole
 echo.
 echo.
@@ -13247,7 +13114,6 @@ for /f %%i in ('powershell -NoProfile -Command "(Get-CimInstance Win32_NetworkAd
 exit /b 0
 
 :ScheduledTasks
-cls
 call :SetupConsole
 set "DEX_TASK_LIST=%TEMP%\dex_scheduled_tasks.txt"
 > "%DEX_TASK_LIST%" (
@@ -13346,7 +13212,6 @@ pause >nul
 goto :GameBoosters
 
 :Boosters
-cls
 call :SetupConsole
 call :DisplayBanner
 echo %c%                       +==================================================+ %u%
@@ -13377,7 +13242,6 @@ pause >nul
 goto Boosters
 
 :SelectGame
-cls
 call :SetupConsole
 echo.
 echo.
@@ -13418,14 +13282,12 @@ for %%F in ("%file%") do (
 echo.
 echo.
 echo.                                         %c%=======================================================
-echo.                                           %c%  Operation Completed, Press any key to continue%u% 
+echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
 pause >nul
 goto Boosters
 
-
 :Valorant
-cls
 call :SetupConsole
 echo.
 echo.
@@ -13444,17 +13306,17 @@ for %%i in (valorant valorant-win64-shipping vgtray vgc) do (
     PowerShell -NoProfile -Command "Set-ProcessMitigation -Name %%i.exe -Enable CFG"
 )
 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Version" /t REG_SZ /d "1.0" /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Application Name" /t REG_SZ /d "valorant.exe" /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Protocol" /t REG_SZ /d "*" /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Local Port" /t REG_SZ /d "*" /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Local IP" /t REG_SZ /d "*" /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Local IP Prefix Length" /t REG_SZ /d "*" /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Remote Port" /t REG_SZ /d "*" /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Remote IP" /t REG_SZ /d "*" /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Remote IP Prefix Length" /t REG_SZ /d "*" /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "DSCP Value" /t REG_SZ /d "46" /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Throttle Rate" /t REG_SZ /d "-1" /f 
+reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Version" /t REG_SZ /d "1.0" /f
+reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Application Name" /t REG_SZ /d "valorant.exe" /f
+reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Protocol" /t REG_SZ /d "*" /f
+reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Local Port" /t REG_SZ /d "*" /f
+reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Local IP" /t REG_SZ /d "*" /f
+reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Local IP Prefix Length" /t REG_SZ /d "*" /f
+reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Remote Port" /t REG_SZ /d "*" /f
+reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Remote IP" /t REG_SZ /d "*" /f
+reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Remote IP Prefix Length" /t REG_SZ /d "*" /f
+reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "DSCP Value" /t REG_SZ /d "46" /f
+reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Throttle Rate" /t REG_SZ /d "-1" /f
 
 reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT-Shipping" /v "Version" /t REG_SZ /d "1.0" /f
 reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT-Shipping" /v "Application Name" /t REG_SZ /d "VALORANT-Win64-Shipping.exe" /f
@@ -13475,13 +13337,12 @@ reg.exe add "HKCU\Software\Riot Games\Riot Client" /v "pingUrl" /t REG_SZ /d "" 
 echo.
 echo.
 echo.                                         %c%=======================================================
-echo.                                           %c%  Operation Completed, Press any key to continue%u% 
+echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
 pause >nul
 goto Boosters
 
 :Fortnite
-cls
 call :SetupConsole
 echo.
 echo.
@@ -13527,13 +13388,12 @@ reg add "HKCU\Control Panel\Mouse" /v "MouseSpeed" /t REG_SZ /d "0" /f >nul 2>&1
 cls
 echo.
 echo.                                         %c%=======================================================
-echo.                                           %c%  Operation Completed, Press any key to continue%u% 
+echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
 pause >nul
 goto Boosters
 
 :CS2
-cls
 call :SetupConsole
 echo.
 echo.
@@ -13576,13 +13436,12 @@ reg add "HKCU\Software\Valve\Steam" /v "SilentStartup" /t REG_DWORD /d 1 /f >nul
 cls
 echo.
 echo.                                         %c%=======================================================
-echo.                                           %c%  Operation Completed, Press any key to continue%u% 
+echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
 pause >nul
 goto Boosters
 
 :Warzone
-cls
 call :SetupConsole
 echo.
 echo.
@@ -13610,13 +13469,12 @@ powershell -NoProfile -Command "$ram=[math]::Round((Get-CimInstance Win32_Physic
 cls
 echo.
 echo.                                         %c%=======================================================
-echo.                                           %c%  Operation Completed, Press any key to continue%u% 
+echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
 pause >nul
 goto Boosters
 
 :Minecraft
-cls
 call :SetupConsole
 echo.
 echo.
@@ -13719,13 +13577,12 @@ cd /d "%APPDATA%\.minecraft"
 
 echo.
 echo.                                         %c%=======================================================
-echo.                                           %c%  Operation Completed, Press any key to continue%u% 
+echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
 pause >nul
 goto Boosters
 
 :Toolbox
-cls
 call :SetupConsole
 call :DisplayBanner
 echo %c%+==============================================================================+
@@ -13744,7 +13601,6 @@ call :EnsureChoco
 goto START
 
 :EnsureChoco
-cls
 call :SetupConsole
 echo.
 echo %c%Checking for Chocolatey package manager...%u%
@@ -13802,7 +13658,6 @@ if defined _machinePath (
 exit /b
 
 :START
-cls
 call :SetupConsole
 call :DisplayBanner
 echo %c%                       +==================================================+ %u%
@@ -13835,7 +13690,6 @@ pause >nul
 goto START
 
 :PAGE1
-cls
 call :SetupConsole
 title Dex Toolbox - Page 1 of 4 (Items 1-52)
 echo %c%+==============================================================================+
@@ -13869,7 +13723,6 @@ call :InstallSoftware "!p1Choice!" "PAGE1"
 goto PAGE1
 
 :PAGE2
-cls
 call :SetupConsole
 title Dex Toolbox - Page 2 of 4 (Items 53-104)
 echo %c%+==============================================================================+
@@ -13904,7 +13757,6 @@ call :InstallSoftware "!p2Choice!" "PAGE2"
 goto PAGE2
 
 :PAGE3
-cls
 call :SetupConsole
 title Dex Toolbox - Page 3 of 4 (Items 105-156)
 echo %c%+==============================================================================+
@@ -13939,7 +13791,6 @@ call :InstallSoftware "!p3Choice!" "PAGE3"
 goto PAGE3
 
 :PAGE4
-cls
 call :SetupConsole
 title Dex Toolbox - Page 4 of 4 (Items 157-208)
 echo %c%+==============================================================================+
@@ -13999,7 +13850,7 @@ if "%page%"=="PAGE1" (
     if "!choice!"=="11" call :Install "opera-gx" "Opera GX"
     if "!choice!"=="12" call :Install "yandex" "Yandex Browser"
     if "!choice!"=="13" call :Install "chromium" "Chromium"
-    
+
     if "!choice!"=="14" call :Install "nordvpn" "NordVPN"
     if "!choice!"=="15" call :ShowMessage "ExpressVPN requires manual installation"
     if "!choice!"=="16" call :Install "mullvad-app" "Mullvad VPN"
@@ -14013,7 +13864,7 @@ if "%page%"=="PAGE1" (
     if "!choice!"=="24" call :ShowMessage "CyberGhost requires manual installation"
     if "!choice!"=="25" call :ShowMessage "IPVanish requires manual installation"
     if "!choice!"=="26" call :ShowMessage "Betternet requires manual installation"
-    
+
     if "!choice!"=="27" call :Install "avastfreeantivirus" "Avast Free Antivirus"
     if "!choice!"=="28" call :Install "malwarebytes" "Malwarebytes"
     if "!choice!"=="29" call :ShowMessage "Windows Defender is built into Windows"
@@ -14027,7 +13878,7 @@ if "%page%"=="PAGE1" (
     if "!choice!"=="37" call :ShowMessage "Webroot requires manual installation"
     if "!choice!"=="38" call :ShowMessage "Comodo requires manual installation"
     if "!choice!"=="39" call :Install "spybot" "Spybot - Search & Destroy"
-    
+
     if "!choice!"=="40" call :ShowMessage "Microsoft Office requires manual installation or subscription"
     if "!choice!"=="41" call :ShowMessage "Office 365 requires subscription and manual setup"
     if "!choice!"=="42" call :Install "libreoffice-fresh" "LibreOffice"
@@ -14057,7 +13908,7 @@ if "%page%"=="PAGE2" (
     if "!choice!"=="63"  call :Install "onenote" "Microsoft OneNote"
     if "!choice!"=="64"  call :ShowMessage "Zoho Notebook is web-based - no installation needed"
     if "!choice!"=="65"  call :Install "miro" "Miro"
-    
+
     if "!choice!"=="66"  call :Install "discord" "Discord"
     if "!choice!"=="67"  call :Install "skype" "Skype"
     if "!choice!"=="68"  call :Install "zoom" "Zoom"
@@ -14071,7 +13922,7 @@ if "%page%"=="PAGE2" (
     if "!choice!"=="76"  call :ShowMessage "WeChat requires manual installation"
     if "!choice!"=="77"  call :ShowMessage "QQ requires manual installation"
     if "!choice!"=="78"  call :ShowMessage "Line requires manual installation"
-    
+
     if "!choice!"=="79"  call :Install "vlc" "VLC Media Player"
     if "!choice!"=="80"  call :Install "winamp" "Winamp"
     if "!choice!"=="81"  call :Install "spotify" "Spotify"
@@ -14085,7 +13936,7 @@ if "%page%"=="PAGE2" (
     if "!choice!"=="89"  call :Install "potplayer" "PotPlayer"
     if "!choice!"=="90"  call :Install "audacity" "Audacity"
     if "!choice!"=="91"  call :Install "obs-studio" "OBS Studio"
-    
+
     if "!choice!"=="92"  call :Install "visualstudio2022community" "Visual Studio 2022 Community"
     if "!choice!"=="93"  call :Install "vscode" "Visual Studio Code"
     if "!choice!"=="94"  call :Install "androidstudio" "Android Studio"
@@ -14115,7 +13966,7 @@ if "%page%"=="PAGE3" (
     if "!choice!"=="115" call :Install "minitool-partition-wizard-free" "MiniTool Partition Wizard"
     if "!choice!"=="116" call :Install "reflect-free" "Macrium Reflect"
     if "!choice!"=="117" call :ShowMessage "Clonezilla requires manual installation"
-    
+
     if "!choice!"=="118" call :Install "winrar" "WinRAR"
     if "!choice!"=="119" call :Install "7zip" "7-Zip"
     if "!choice!"=="120" call :Install "peazip" "PeaZip"
@@ -14129,7 +13980,7 @@ if "%page%"=="PAGE3" (
     if "!choice!"=="128" call :Install "imgburn" "ImgBurn"
     if "!choice!"=="129" call :Install "ultraiso" "UltraISO"
     if "!choice!"=="130" call :Install "freecommander-xe" "FreeCommander XE"
-    
+
     if "!choice!"=="131" call :Install "directx" "DirectX"
     if "!choice!"=="132" call :Install "dotnet-4.8" ".NET Framework 4.8"
     if "!choice!"=="133" call :Install "openjdk" "OpenJDK"
@@ -14143,7 +13994,7 @@ if "%page%"=="PAGE3" (
     if "!choice!"=="141" call :Install "sqlcmd" "SQL Server Command Line Utilities"
     if "!choice!"=="142" call :ShowMessage "Oracle Instant Client requires manual installation"
     if "!choice!"=="143" call :Install "php" "PHP"
-    
+
     if "!choice!"=="144" call :Install "teamviewer" "TeamViewer"
     if "!choice!"=="145" call :Install "anydesk" "AnyDesk"
     if "!choice!"=="146" call :Install "dropbox" "Dropbox"
@@ -14173,7 +14024,7 @@ if "%page%"=="PAGE4" (
     if "!choice!"=="167" call :Install "scribus" "Scribus"
     if "!choice!"=="168" call :ShowMessage "Piskel requires manual installation"
     if "!choice!"=="169" call :Install "pencil2d" "Pencil2D"
-    
+
     if "!choice!"=="170" call :Install "itch" "itch.io"
     if "!choice!"=="171" call :Install "dolphin" "Dolphin Emulator"
     if "!choice!"=="172" call :Install "pcsx2" "PCSX2"
@@ -14187,7 +14038,7 @@ if "%page%"=="PAGE4" (
     if "!choice!"=="180" call :ShowMessage "Unreal Engine requires Epic Games Launcher"
     if "!choice!"=="181" call :Install "unity-hub" "Unity Hub"
     if "!choice!"=="182" call :ShowMessage "GameMaker Studio requires manual installation"
-    
+
     if "!choice!"=="183" call :Install "thunderbird" "Mozilla Thunderbird"
     if "!choice!"=="184" call :ShowMessage "Postbox requires manual installation"
     if "!choice!"=="185" call :Install "mailspring" "Mailspring"
@@ -14201,7 +14052,7 @@ if "%page%"=="PAGE4" (
     if "!choice!"=="193" call :Install "miranda-ng" "Miranda NG"
     if "!choice!"=="194" call :ShowMessage "Guilded requires manual installation"
     if "!choice!"=="195" call :Install "teamspeak" "TeamSpeak"
-    
+
     if "!choice!"=="196" call :Install "docker-desktop" "Docker Desktop"
     if "!choice!"=="197" call :Install "kubernetes-cli" "Kubernetes CLI"
     if "!choice!"=="198" call :Install "minikube" "Minikube"
@@ -14279,7 +14130,6 @@ echo.
 exit /b
 
 :SEARCH
-cls
 call :SetupConsole
 echo.
 echo.
@@ -14335,7 +14185,6 @@ if /I "!confirmInstall!"=="Y" (
 goto START
 
 :SoftwareStatus
-cls
 call :SetupConsole
 echo.
 echo %c%INSTALLED SOFTWARE AND UPDATES%u%
@@ -14379,7 +14228,6 @@ goto START
 
 :UNINSTALL
 setlocal EnableDelayedExpansion
-cls
 call :SetupConsole
 echo.
 echo.
@@ -14830,7 +14678,6 @@ echo %c%========================================================================
 exit /b
 
 :DashboardCenter
-cls
 call :SetupConsole
 call :RefreshDashboardCache
 call :DisplayCompactDashboard
@@ -14848,7 +14695,6 @@ if errorlevel 1 goto DashboardCenter
 goto DashboardCenter
 
 :SettingsCenter
-cls
 call :SetupConsole
 echo.
 echo %c%DEX SETTINGS%u%
@@ -14899,7 +14745,6 @@ pause
 exit /b
 
 :ProfilesCenter
-cls
 call :SetupConsole
 echo.
 echo %c%OPTIMIZATION PROFILES%u%
@@ -14987,7 +14832,6 @@ call :LogEvent "QUEUE" "Profile %~1 prepared"
 exit /b
 
 :ReviewQueue
-cls
 call :SetupConsole
 echo.
 echo %c%CHANGE PREVIEW - %DEX_SELECTED_PROFILE%%u%
@@ -15306,7 +15150,6 @@ if %DEX_APPLY_FAIL% EQU 0 (
     >"%DEX_PROFILE_FILE%" echo %DEX_SELECTED_PROFILE%
 )
 call :RefreshDashboardCache
-cls
 call :SetupConsole
 echo.
 echo %c%PROFILE RESULT%u%
@@ -15322,7 +15165,6 @@ pause
 goto menu
 
 :ChangeCenter
-cls
 call :SetupConsole
 call :CollectManagedChangeState
 echo.
@@ -15375,7 +15217,6 @@ exit /b
 set "DEX_SELECTED_PROFILE=Custom Batch"
 > "%DEX_QUEUE%" echo # Custom managed batch
 :CustomQueueBuilderLoop
-cls
 call :SetupConsole
 echo.
 echo %c%CUSTOM BATCH QUEUE%u%
@@ -15515,7 +15356,6 @@ reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessAppli
 exit /b
 
 :BackupManager
-cls
 call :SetupConsole
 echo.
 echo %c%BACKUP AND RESTORE MANAGER%u%
@@ -15617,7 +15457,6 @@ if not exist "!DEX_RESTORE_PATH!\metadata.txt" (
     pause
     exit /b
 )
-cls
 call :SetupConsole
 echo.
 echo %c%SELECTIVE RESTORE%u%
@@ -15773,7 +15612,6 @@ pause
 exit /b
 
 :HealthCenter
-cls
 call :SetupConsole
 echo.
 echo %c%SYSTEM HEALTH CENTER%u%
@@ -15872,7 +15710,6 @@ pause
 exit /b
 
 :BenchmarkCenter
-cls
 call :SetupConsole
 echo.
 echo %c%BEFORE / AFTER BENCHMARK%u%
@@ -15967,7 +15804,6 @@ exit /b
 exit /b
 
 :GlobalSearch
-cls
 call :SetupConsole
 echo.
 echo %c%GLOBAL SEARCH%u%
@@ -16009,7 +15845,6 @@ pause
 goto GlobalSearch
 
 :HistoryCenter
-cls
 call :SetupConsole
 echo.
 echo %c%HISTORY AND LOGS%u%
@@ -16056,7 +15891,6 @@ pause
 exit /b
 
 :RestartCenter
-cls
 call :SetupConsole
 call :RefreshDashboardCache
 echo.
@@ -16102,7 +15936,7 @@ goto RestartCenter
 if defined DEX_LOG call :LogEvent "EXIT" "Panel closed from the menu"
 title Thanks for using Dex Tweaks!
 cls
-echo.            
+echo.
 echo %u%Developed by: %c%Mendes
 echo %u%Github: %c%https://github.com/mxndex7
 call :DexSleep 5
