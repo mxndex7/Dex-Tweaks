@@ -104,6 +104,19 @@ set "orange=[38;5;214m"
 set "peach=[38;5;216m"
 set "tan=[38;5;180m"
 set "brown=[38;5;130m"
+set "sok=[38;5;78m"
+set "swn=[38;5;221m"
+set "shi=[38;5;215m"
+set "scr=[38;5;203m"
+set "bdLOW=[30;48;5;78m LOW  [0m"
+set "bdMOD=[30;48;5;221m MOD  [0m"
+set "bdHIGH=[30;48;5;215m HIGH [0m"
+set "bdCRIT=[30;48;5;203m CRIT [0m"
+set "bdNONE=[90m  -   [0m"
+set "DEX_RULE=-------------------------------------------------------------------------------"
+set "DEX_DOT=*"
+set "DEX_DOTO=o"
+set "DEX_ARROW=>"
 
 set "DEX_AGREEMENT_FILE=%DEX_STATE_DIR%\agreement.accepted"
 set "DEX_COLOR_FILE=%DEX_STATE_DIR%\color.value"
@@ -346,6 +359,75 @@ echo %red%Invalid option. Please try again.%u%
 call :DexSleep 1
 goto Presets
 
+:DexHeader
+rem Usage: call :DexHeader "Section name"   (shared header used by every screen)
+set "_dxhp=%~1                                        "
+set "_dxhp=!_dxhp:~0,30!"
+echo.
+echo  %c%%bold%DEX TWEAKS%u% %grey%%DEX_ARROW%%u% %c%!_dxhp!%u%%grey%!DEX_OS_NAME! build !_OS_BUILD_NUM!%u%
+echo %grey%%DEX_RULE%%u%
+call :DexStatusLine
+echo %grey%%DEX_RULE%%u%
+exit /b
+
+:DexStatusLine
+if not defined DEX_DEFENDER set "DEX_DEFENDER=Unknown"
+if not defined DEX_NETWORK set "DEX_NETWORK=Unknown"
+if not defined DEX_REBOOT_STATUS set "DEX_REBOOT_STATUS=No"
+if not defined DEX_LAST_PROFILE set "DEX_LAST_PROFILE=Not applied"
+set "_dxdd=%sok%"
+if /I "!DEX_DEFENDER!"=="Limited" set "_dxdd=%swn%"
+if /I "!DEX_DEFENDER!"=="Disabled" set "_dxdd=%scr%"
+if /I "!DEX_DEFENDER!"=="Unavailable" set "_dxdd=%grey%"
+if /I "!DEX_DEFENDER!"=="Unknown" set "_dxdd=%grey%"
+set "_dxdn=%sok%"
+if /I not "!DEX_NETWORK!"=="Online" set "_dxdn=%scr%"
+set "_dxdr=%sok%"
+set "_dxrt=None"
+if /I "!DEX_REBOOT_STATUS!"=="Required" set "_dxdr=%swn%"
+if /I "!DEX_REBOOT_STATUS!"=="Required" set "_dxrt=Required"
+echo  %grey%Defender%u% !_dxdd!%DEX_DOT%%u% !DEX_DEFENDER!   %grey%Network%u% !_dxdn!%DEX_DOT%%u% !DEX_NETWORK!   %grey%Reboot%u% !_dxdr!%DEX_DOT%%u% !_dxrt!   %grey%Profile%u% !DEX_LAST_PROFILE!
+exit /b
+
+:DexRow
+rem Usage: call :DexRow key "Name" "Short description" RISK   (RISK = LOW, MOD, HIGH, CRIT or NONE)
+set "_dxk=[%~1]      "
+set "_dxk=!_dxk:~0,5!"
+set "_dxn=%~2                                "
+set "_dxn=!_dxn:~0,30!"
+set "_dxd=%~3                                   "
+set "_dxd=!_dxd:~0,35!"
+set "_dxb=!bd%~4!"
+echo  %c%!_dxk!%u%!_dxn!%grey%!_dxd!%u%!_dxb!
+exit /b
+
+:DexTableHead
+echo  %grey%KEY  TWEAK                         WHAT IT DOES                       RISK%u%
+exit /b
+
+:DexRiskLegend
+echo %grey%%DEX_RULE%%u%
+echo  %bdLOW% %grey%reversible          %u%%bdMOD% %grey%changes behavior or compatibility%u%
+echo  %bdHIGH% %grey%removes features    %u%%bdCRIT% %grey%can affect boot or security%u%
+echo  %grey%The badge shows the worst case of each tweak.%u%
+exit /b
+
+:DexFooter
+echo %grey%%DEX_RULE%%u%
+echo  %c%[0]%u% Back    %c%[H]%u% Main menu    %c%[C]%u% Search    %red%[X]%u% Exit
+if defined DEX_NOTE echo  %red%!DEX_NOTE!%u%
+set "DEX_NOTE="
+echo.
+exit /b
+
+:DexChangeLine
+rem Usage: call :DexChangeLine RISK "Description" [restart]
+set "_dxb=!bd%~1!"
+set "_dxr="
+if /I "%~3"=="restart" set "_dxr=  %swn%restart%u%"
+echo  !_dxb! %~2!_dxr!
+exit /b
+
 :SetupConsole
 rem The code page is configured once at startup; this used to spawn two
 rem chcp.com processes on every single screen redraw.
@@ -424,15 +506,22 @@ if defined c if not defined DEX_COLOR_LOADED (
     set "DEX_COLOR_LOADED=1"
 )
 call :RefreshDashboardCache
-call :DisplayCompactDashboard
+set "_dxrb="
+if /I "!DEX_REBOOT_STATUS!"=="Required" set "_dxrb=  %swn%reboot pending%u%"
+call :DexHeader "Control Panel"
 echo.
-echo   %c%[1]%u% Dashboard       %c%[2]%u% Profiles         %c%[3]%u% Optimizations
-echo   %c%[4]%u% Hardware        %c%[5]%u% Windows          %c%[6]%u% Privacy
-echo   %c%[7]%u% Advanced        %c%[8]%u% Change Center    %c%[9]%u% Backup / Restore
-echo   %c%[A]%u% System Health   %c%[B]%u% Benchmark        %c%[C]%u% Global Search
-echo   %c%[D]%u% History         %c%[E]%u% Restart Center   %red%[X]%u% Exit
+echo  %grey%MANAGE                    TWEAK                     TOOLS%u%
 echo.
-call :DexChoice "123456789ABCDEX" "%c%Choose an option: %u%" "/N"
+echo  %c%[1]%u% Dashboard             %c%[3]%u% Optimizations         %c%[A]%u% System Health
+echo  %c%[2]%u% Profiles              %c%[4]%u% Hardware              %c%[B]%u% Benchmark
+echo  %c%[8]%u% Change Center         %c%[5]%u% Windows               %c%[C]%u% Global Search
+echo  %c%[9]%u% Backup / Restore      %c%[6]%u% Privacy               %c%[D]%u% History
+echo                            %c%[7]%u% Advanced              %c%[E]%u% Restart Center!_dxrb!
+echo.
+echo %grey%%DEX_RULE%%u%
+echo  %red%[X]%u% Exit
+echo.
+call :DexChoice "123456789ABCDEX" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
 if errorlevel 15 goto Destruct
 if errorlevel 14 goto RestartCenter
 if errorlevel 13 goto HistoryCenter
@@ -600,20 +689,26 @@ echo %c%Please enter a valid number!%u% & goto Backup
 
 :TweaksMenu
 call :SetupConsole
-call :DisplayBanner
-echo %c%                            +==============================+===============================+ %u%
-echo                             %c%^|%u% [%c%1%u%] Windows Cleaner          %c%^|%u% [%c%7%u%] Mouse/Keyboard Tweaks     %c%^|%u%
-echo                             %c%^|%u% [%c%2%u%] BCDEdit Tweaks           %c%^|%u% [%c%8%u%] Internet Refresher        %c%^|%u%
-echo                             %c%^|%u% [%c%3%u%] GPU Optimizations        %c%^|%u% [%c%9%u%] Service Tweaks            %c%^|%u%
-echo                             %c%^|%u% [%c%4%u%] Network Tweaks           %c%^|%u% [%c%10%u%] Debloater                %c%^|%u%
-echo                             %c%^|%u% [%c%5%u%] CPU Optimizations        %c%^|%u% [%c%11%u%] Custom Power Plan        %c%^|%u%
-echo                             %c%^|%u% [%c%6%u%] Memory Optimizer         %c%^|%u% [%c%12%u%] Browser Config           %c%^|%u%
-echo %c%                            +==============================+===============================+
+call :DexHeader "Optimizations"
 echo.
-echo                              %u%[%c%13%u%] Colour Presets   [%c%14%u%] Back to Main   [%red%X%u%] Exit Application
+call :DexTableHead
+call :DexRow 1 "Windows Cleaner" "Temp files, app and browser caches" MOD
+call :DexRow 2 "BCDEdit Tweaks" "Timer and boot. Expert mode only" CRIT
+call :DexRow 3 "GPU Optimizations" "Per vendor: Intel, NVIDIA, AMD" HIGH
+call :DexRow 4 "Network Tweaks" "DNS, TCP/IP, firewall" MOD
+call :DexRow 5 "CPU Optimizations" "Power and scheduling by vendor" MOD
+call :DexRow 6 "Memory Optimizer" "Paging, cache, memory priorities" MOD
+call :DexRow 7 "Mouse/Keyboard Tweaks" "No acceleration, faster key repeat" MOD
+call :DexRow 8 "Internet Refresher" "Flush DNS and ARP, renew IP" MOD
+call :DexRow 9 "Service Tweaks" "Disables optional services" HIGH
+call :DexRow 10 "Debloater" "Removes apps and components" HIGH
+call :DexRow 11 "Custom Power Plan" "Power plan for your device type" MOD
+call :DexRow 12 "Browser Config" "Less tracking, keeps updates" MOD
 echo.
-echo.
-set /p M="%c%Choose an option >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "M="
+set /p M=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!M!"=="1" goto A
 if "!M!"=="2" goto B
 if "!M!"=="3" goto C
@@ -626,13 +721,12 @@ if "!M!"=="9" goto I
 if "!M!"=="10" goto J
 if "!M!"=="11" goto K
 if "!M!"=="12" goto L
-if "!M!"=="13" goto Presets
-if "!M!"=="14" goto menu
-if "!M!"=="X" goto Destruct
-if "!M!"=="x" goto Destruct
-cls
-echo %underline%%red%Invalid Input. Press any key to continue.%u%
-pause >nul
+if "!M!"=="0" goto menu
+if /I "!M!"=="H" goto menu
+if /I "!M!"=="C" goto GlobalSearch
+if /I "!M!"=="X" goto Destruct
+if /I "!M!"=="Quit" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto TweaksMenu
 
 :L
@@ -6491,21 +6585,22 @@ exit /b
 
 :HardwareMenu
 call :SetupConsole
-call :DisplayBanner
-echo %c%                                 +===================================================+ %u%
-echo                                  %c%^|%u%            [%c%1%u%] Hardware Information               %c%^|%u%
-echo                                  %c%^|%u%            [%c%2%u%] GPU Driver ^& Performance           %c%^|%u%
-echo                                  %c%^|%u%            [%c%3%u%] Storage Acceleration               %c%^|%u%
-echo                                  %c%^|%u%            [%c%4%u%] Memory ^(XMP/EXPO Check^)            %c%^|%u%
-echo                                  %c%^|%u%            [%c%5%u%] Audio Optimization                 %c%^|%u%
-echo                                  %c%^|%u%            [%c%6%u%] USB Optimization                   %c%^|%u%
-echo                                  %c%^|%u%            [%c%7%u%] Monitor / Display Optimization     %c%^|%u%
-echo                                  %c%^|%u%            [%c%8%u%] Hardware Security Center           %c%^|%u%
-echo %c%                                 +===================================================+
+call :DexHeader "Hardware"
 echo.
-echo                          %u%[%c%9%u%] Colour Presets    [%c%10%u%] Back to Main   [%red%X%u%] Exit Application
+call :DexTableHead
+call :DexRow 1 "Hardware Information" "Read-only inventory" NONE
+call :DexRow 2 "GPU Driver & Performance" "Driver services, telemetry, overlay" HIGH
+call :DexRow 3 "Storage Acceleration" "TRIM, drive cache, defrag" MOD
+call :DexRow 4 "Memory (XMP/EXPO Check)" "Memory profile check" NONE
+call :DexRow 5 "Audio Optimization" "Lower audio latency" MOD
+call :DexRow 6 "USB Optimization" "Fewer USB suspend delays" MOD
+call :DexRow 7 "Monitor / Display Optimization" "Display latency and power" MOD
+call :DexRow 8 "Hardware Security Center" "BitLocker, Core Isolation, TPM" NONE
 echo.
-set /p M="%c%Choose an option >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "M="
+set /p M=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!M!"=="1" goto HardwareInformation
 if "!M!"=="2" goto GPUOptimizer
 if "!M!"=="3" goto StorageAcceleration
@@ -6514,12 +6609,12 @@ if "!M!"=="5" goto AudioOptimization
 if "!M!"=="6" goto USBOptimization
 if "!M!"=="7" goto MonitorOptimization
 if "!M!"=="8" goto HardwareSecurityCenter
-if /i "!M!"=="9" goto Presets
-if /i "!M!"=="10" goto menu
-if /i "!M!"=="X" goto Destruct
-cls
-echo %underline%%red%Invalid Input. Press any key to continue.%u%
-pause >nul
+if "!M!"=="0" goto menu
+if /I "!M!"=="H" goto menu
+if /I "!M!"=="C" goto GlobalSearch
+if /I "!M!"=="X" goto Destruct
+if /I "!M!"=="Quit" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto HardwareMenu
 
 :MonitorOptimization
@@ -9371,33 +9466,32 @@ goto HardwareMenu
 
 :WindowsMenu
 call :SetupConsole
-call :DisplayBanner
-echo %c%                                 +===================================================+ %u%
-echo                                  %c%^|%u%          [%c%1%u%] Search Index Optimizer               %c%^|%u%
-echo                                  %c%^|%u%          [%c%2%u%] Windows Defender Optimizer           %c%^|%u%
-echo                                  %c%^|%u%          [%c%3%u%] Windows Explorer Fixes               %c%^|%u%
-echo                                  %c%^|%u%          [%c%4%u%] System File Checker                  %c%^|%u%
-echo                                  %c%^|%u%          [%c%5%u%] Registry Fixes                       %c%^|%u%
-echo                                  %c%^|%u%          [%c%6%u%] Windows Features Manager             %c%^|%u%
-echo %c%                                 +===================================================+
+call :DexHeader "Windows"
 echo.
-echo                             %u%[%c%7%u%] Colour Presets   [%c%8%u%] Back to Main   [%red%X%u%] Exit Application
+call :DexTableHead
+call :DexRow 1 "Search Index Optimizer" "Reduces or disables indexing" HIGH
+call :DexRow 2 "Windows Defender Optimizer" "Gaming or performance mode" CRIT
+call :DexRow 3 "Windows Explorer Fixes" "Fewer animations and thumbnails" MOD
+call :DexRow 4 "System File Checker" "SFC, DISM, Component Store cleanup" NONE
+call :DexRow 5 "Registry Fixes" "Fewer suggestions, ads, effects" MOD
+call :DexRow 6 "Windows Features Manager" "Optional features by mode" NONE
 echo.
-set /p M="%c%Choose an option >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "M="
+set /p M=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!M!"=="1" goto SearchIndexOptimizer
 if "!M!"=="2" goto DefenderOptimizer
 if "!M!"=="3" goto ExplorerOptimizer
 if "!M!"=="4" goto SystemFileOptimizer
 if "!M!"=="5" goto RegistryPerformance
 if "!M!"=="6" goto WindowsFeaturesManager
-if "!M!"=="7" goto Presets
-if "!M!"=="8" goto menu
-if "!M!"=="Quit" goto Destruct
-if "!M!"=="X" goto Destruct
-if "!M!"=="x" goto Destruct
-cls
-echo %underline%%red%Invalid Input. Press any key to continue.%u%
-pause >nul
+if "!M!"=="0" goto menu
+if /I "!M!"=="H" goto menu
+if /I "!M!"=="C" goto GlobalSearch
+if /I "!M!"=="X" goto Destruct
+if /I "!M!"=="Quit" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto WindowsMenu
 
 :WindowsFeaturesManager
@@ -10999,19 +11093,21 @@ goto WindowsMenu
 
 :PrivacyMenu
 call :SetupConsole
-call :DisplayBanner
-echo %c%                            +===============================+================================+ %u%
-echo                             %c%^|%u% [%c%1%u%] Telemetry ^& Data Blocker  %c%^|%u% [%c%6%u%] Advertising ^& Style        %c%^|%u%
-echo                             %c%^|%u% [%c%2%u%] Cortana ^& Search Privacy  %c%^|%u% [%c%7%u%] Privacy Data Cleanup       %c%^|%u%
-echo                             %c%^|%u% [%c%3%u%] Account ^& Cloud Sync      %c%^|%u% [%c%8%u%] Advanced Security          %c%^|%u%
-echo                             %c%^|%u% [%c%4%u%] Location ^& Sensor Privacy %c%^|%u% [%c%9%u%] DNS ^& Hosts Protection     %c%^|%u%
-echo                             %c%^|%u% [%c%5%u%] App Permissions           %c%^|%u% [%c%10%u%] Complete Privacy Audit    %c%^|%u%
-echo %c%                            +===============================+================================+
+call :DexHeader "Privacy"
 echo.
-echo                              %u%[%c%11%u%] Colour Presets   [%c%12%u%] Back to Main   [%red%X%u%] Exit Application
+call :DexTableHead
+call :DexRow 1 "Telemetry & Data Blocker" "Diagnostics and collection tasks" HIGH
+call :DexRow 2 "Cortana & Search Privacy" "Removes Cortana and web search" HIGH
+call :DexRow 3 "Account & Cloud Sync" "Limits Microsoft account sync" HIGH
+call :DexRow 4 "Location & Sensor Privacy" "Location, maps, sensors" MOD
+call :DexRow 5 "App Permissions" "Camera, mic, background access" MOD
+call :DexRow 6 "Advertising & Style" "Ad ID and suggestions off" LOW
+call :DexRow 7 "Privacy Data Cleanup" "Clears caches and traces (expert)" HIGH
 echo.
-echo.
-set /p M="%c%Choose an option >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "M="
+set /p M=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!M!"=="1" goto TelemetryBlocker
 if "!M!"=="2" goto CortanaPrivacy
 if "!M!"=="3" goto AccountPrivacy
@@ -11019,16 +11115,12 @@ if "!M!"=="4" goto LocationPrivacy
 if "!M!"=="5" goto AppPermissions
 if "!M!"=="6" goto AdvertisingPrivacy
 if "!M!"=="7" goto PrivacyDataCleanup
-if "!M!"=="8" set "COMINGSOON_BACK=PrivacyMenu" & goto Comingsoon
-if "!M!"=="9" set "COMINGSOON_BACK=PrivacyMenu" & goto Comingsoon
-if "!M!"=="10" set "COMINGSOON_BACK=PrivacyMenu" & goto Comingsoon
-if "!M!"=="11" goto Presets
-if "!M!"=="12" goto menu
-if "!M!"=="X" goto Destruct
-if "!M!"=="x" goto Destruct
-cls
-echo %underline%%red%Invalid Input. Press any key to continue.%u%
-pause >nul
+if "!M!"=="0" goto menu
+if /I "!M!"=="H" goto menu
+if /I "!M!"=="C" goto GlobalSearch
+if /I "!M!"=="X" goto Destruct
+if /I "!M!"=="Quit" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto PrivacyMenu
 
 :PrivacyDataCleanup
@@ -12069,34 +12161,24 @@ goto PrivacyMenu
 
 :AdvancedMenu
 :GameBoosters
-cls
+call :SetupConsole
+call :DexHeader "Advanced"
 echo.
-echo        %c%######+ #######+##+  ##+ %u%%white%########+ ##+       ##+#######+ #####+ ##+  ##+ ######+
-echo        %c%##+==##+##+====++##+##++ %u%%white%+==##+==+ ##^|  ##+  ##^|##+====+##+==##+##^| ##++##+====+
-echo        %c%##^|  ##^|#####+   +###++  %u%%white%   ##^|    +##+####+##++#####+  #######^|#####=+ +#####+
-echo        %c%##^|  ##^|##+==+   ##+##+  %u%%white%   ##^|     ####+=####^| ##+==+  ##+==##^|##+=##+  +===##+
-echo        %c%######++#######+##+++##+ %u%%white%   ##^|     +##++ +##++ #######+##^|  ##^|##^| +##+######++
-echo        %c%+=====+ +======++=+  +=+ %u%%white%   +=+      +=+   +=+  +======++=+  +=++=+  +=++=====+
+call :DexTableHead
+call :DexRow 1 "Dex Toolbox" "Install apps via Chocolatey" NONE
+call :DexRow 2 "Game Boosters" "Per-game tweaks" NONE
+call :DexRow 3 "Scheduled Tasks" "Disables background tasks" HIGH
+call :DexRow 4 "Interrupt & Scheduling Lab" "MSI mode and CPU affinity" HIGH
+call :DexRow 5 "Program Debloat" "Startup and cache of common apps" MOD
+call :DexRow 6 "DirectX Optimization" "Rendering and graphics latency" MOD
+call :DexRow 7 "OBS Optimizer" "Encoder and quality settings" NONE
+call :DexRow 8 "Capture Priority Tool" "Game and capture priority" MOD
+call :DexRow P "Performance Toolkit" "Startup apps, temps, maintenance" NONE
 echo.
-echo %c%                       +==================================================+%u%
-echo                        %c%^|%u%           [%c%1%u%] Dex Toolbox                        %c%^|%u%
-echo                        %c%^|%u%           [%c%2%u%] Game Boosters                      %c%^|%u%
-echo                        %c%^|%u%           [%c%3%u%] Scheduled Tasks                    %c%^|%u%
-echo                        %c%^|%u%           [%c%4%u%] Interrupt %u%^&%c% Scheduling Lab         %c%^|%u%
-echo                        %c%^|%u%           [%c%5%u%] Program Debloat                    %c%^|%u%
-echo                        %c%^|%u%           [%c%6%u%] DirectX Optimization               %c%^|%u%
-echo                        %c%^|%u%           [%c%7%u%] OBS Optimizer                      %c%^|%u%
-echo                        %c%^|%u%           [%c%8%u%] Capture Priority Tool              %c%^|%u%
-echo                        %c%^|%u%           [%c%P%u%] Performance Toolkit                %c%^|%u%
-echo %c%                       +==================================================+
-echo                        %c%^|%u%        [%c%9%u%] Theme Presets    [%c%0%u%] Go Back          %c%^|%u%
-echo                        %c%^|%u%                  %u% [%c%Quit%u%] Leave                   %c%^|%u%
-echo %c%                       +==================================================+%u%
-echo %u%                                %u%User %c%%username% %u%- Date %c%%date% %u%
-echo.
-echo.
-echo.
-set /p M="%c%Choose an option >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "M="
+set /p M=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!M!"=="1" goto Toolbox
 if "!M!"=="2" goto Boosters
 if "!M!"=="3" goto ScheduledTasks
@@ -12106,13 +12188,12 @@ if "!M!"=="6" goto DirectXOptimization
 if "!M!"=="7" goto OBSOptimizer
 if "!M!"=="8" goto CapturePriorityTool
 if /I "!M!"=="P" goto PerformanceToolkit
-if "!M!"=="9" goto Presets
 if "!M!"=="0" goto menu
-if "!M!"=="Quit" goto Destruct
-if "!M!"=="quit" goto Destruct
-cls
-echo %underline%%red%Invalid Input. Press any key to continue.%u%
-pause >nul
+if /I "!M!"=="H" goto menu
+if /I "!M!"=="C" goto GlobalSearch
+if /I "!M!"=="X" goto Destruct
+if /I "!M!"=="Quit" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto AdvancedMenu
 
 :PerformanceToolkit
@@ -14680,7 +14761,9 @@ exit /b
 :DashboardCenter
 call :SetupConsole
 call :RefreshDashboardCache
-call :DisplayCompactDashboard
+call :DexHeader "Dashboard"
+echo.
+echo  %grey%Power%u%  !DEX_POWER!    %grey%Managed backups%u%  !DEX_BACKUP_COUNT!
 echo.
 echo  [R] Refresh status       [B] Backup manager       [H] System health
 echo  [P] Profiles             [S] Settings             [0] Main menu
@@ -14696,8 +14779,7 @@ goto DashboardCenter
 
 :SettingsCenter
 call :SetupConsole
-echo.
-echo %c%DEX SETTINGS%u%
+call :DexHeader "Settings"
 echo.
 echo  [1] Change interface color
 echo  [2] Export current dashboard report
@@ -14746,8 +14828,7 @@ exit /b
 
 :ProfilesCenter
 call :SetupConsole
-echo.
-echo %c%OPTIMIZATION PROFILES%u%
+call :DexHeader "Profiles"
 echo.
 echo  [1] Safe         Security, updates and compatibility first
 echo  [2] Balanced     Gaming improvements without disabling protection
@@ -14833,17 +14914,22 @@ exit /b
 
 :ReviewQueue
 call :SetupConsole
+call :DexHeader "Review: %DEX_SELECTED_PROFILE%"
 echo.
-echo %c%CHANGE PREVIEW - %DEX_SELECTED_PROFILE%%u%
+echo  %c%%bold%%DEX_DOT% Preview%u%%grey%   %DEX_DOTO% Check   %DEX_DOTO% Snapshot   %DEX_DOTO% Apply   %DEX_DOTO% Verify   %DEX_DOTO% Log%u%
 echo.
 call :RunCompatibilityPreflight
 echo.
+echo  %grey%RISK   CHANGE%u%
 for /f "usebackq eol=# delims=" %%Q in ("%DEX_QUEUE%") do call :DescribeChange "%%Q"
 echo.
-echo A managed snapshot will be created before changes are applied.
-echo Security protection is never disabled by these recommended profiles.
+echo %grey%%DEX_RULE%%u%
+echo  A managed snapshot will be created before changes are applied.
+echo  Security protection is never disabled by these recommended profiles.
+echo %grey%%DEX_RULE%%u%
+echo  %c%[A]%u% Apply    %c%[C]%u% Cancel    %c%[0]%u% Main menu
 echo.
-call :DexChoice "AC0" "[A] Apply  [C] Cancel  [0] Main menu: " "/N"
+call :DexChoice "AC0" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
 if errorlevel 3 goto menu
 if errorlevel 2 goto ProfilesCenter
 if errorlevel 1 (
@@ -14902,22 +14988,22 @@ if /I "%~1"=="HAGS_OFF" if not "!DEX_CAP_HAGS!"=="1" exit /b 1
 exit /b 0
 
 :DescribeChange
-if /I "%~1"=="DEFENDER_ON"  echo  [SAFE] Enable and verify Microsoft Defender protections
-if /I "%~1"=="UPDATES_ON"   echo  [SAFE] Keep Windows Update and BITS available
-if /I "%~1"=="SEARCH_ON"    echo  [SAFE] Keep Windows Search available
-if /I "%~1"=="SEARCH_OFF"   echo  [MED ] Disable Windows Search indexing service
-if /I "%~1"=="GM_ON"        echo  [SAFE] Enable Windows Game Mode and disable background capture
-if /I "%~1"=="HAGS_ON"      echo  [MED ] Request Hardware Accelerated GPU Scheduling
-if /I "%~1"=="HAGS_OFF"     echo  [MED ] Disable Hardware Accelerated GPU Scheduling
-if /I "%~1"=="PWR_BAL"      echo  [SAFE] Activate the Windows Balanced power plan
-if /I "%~1"=="PWR_HIGH"     echo  [MED ] Activate the Windows High Performance power plan
-if /I "%~1"=="VFX_AUTO"     echo  [SAFE] Let Windows choose visual effects
-if /I "%~1"=="VFX_PERF"     echo  [LOW ] Prefer performance over visual effects
-if /I "%~1"=="TELEMETRY_SAFE" echo [LOW ] Set diagnostics to the lowest supported policy level
-if /I "%~1"=="ADS_OFF"      echo  [SAFE] Disable the advertising identifier
-if /I "%~1"=="ACTIVITY_OFF" echo  [SAFE] Disable activity history publication and upload
-if /I "%~1"=="DELIVERY_OFF" echo  [SAFE] Disable peer-to-peer Windows Update delivery
-if /I "%~1"=="BGAPPS_OFF"   echo  [LOW ] Restrict background application activity
+if /I "%~1"=="DEFENDER_ON" call :DexChangeLine LOW "Enable and verify Microsoft Defender protections"
+if /I "%~1"=="UPDATES_ON" call :DexChangeLine LOW "Keep Windows Update and BITS available"
+if /I "%~1"=="SEARCH_ON" call :DexChangeLine LOW "Keep Windows Search available"
+if /I "%~1"=="SEARCH_OFF" call :DexChangeLine MOD "Disable Windows Search indexing service"
+if /I "%~1"=="GM_ON" call :DexChangeLine LOW "Enable Windows Game Mode and disable background capture"
+if /I "%~1"=="HAGS_ON" call :DexChangeLine MOD "Request Hardware Accelerated GPU Scheduling" restart
+if /I "%~1"=="HAGS_OFF" call :DexChangeLine MOD "Disable Hardware Accelerated GPU Scheduling" restart
+if /I "%~1"=="PWR_BAL" call :DexChangeLine LOW "Activate the Windows Balanced power plan"
+if /I "%~1"=="PWR_HIGH" call :DexChangeLine MOD "Activate the Windows High Performance power plan"
+if /I "%~1"=="VFX_AUTO" call :DexChangeLine LOW "Let Windows choose visual effects"
+if /I "%~1"=="VFX_PERF" call :DexChangeLine LOW "Prefer performance over visual effects"
+if /I "%~1"=="TELEMETRY_SAFE" call :DexChangeLine LOW "Set diagnostics to the lowest supported policy level"
+if /I "%~1"=="ADS_OFF" call :DexChangeLine LOW "Disable the advertising identifier"
+if /I "%~1"=="ACTIVITY_OFF" call :DexChangeLine LOW "Disable activity history publication and upload"
+if /I "%~1"=="DELIVERY_OFF" call :DexChangeLine LOW "Disable peer-to-peer Windows Update delivery"
+if /I "%~1"=="BGAPPS_OFF" call :DexChangeLine LOW "Restrict background application activity"
 exit /b
 
 :ApplyQueue
@@ -15167,8 +15253,7 @@ goto menu
 :ChangeCenter
 call :SetupConsole
 call :CollectManagedChangeState
-echo.
-echo %c%MANAGED CHANGE CENTER%u%
+call :DexHeader "Change Center"
 echo.
 echo  Game Mode: %DEX_GM_STATE%  ^| HAGS: %DEX_HAGS_STATE%  ^| Search: %DEX_SEARCH_STATE%
 echo  Power: %DEX_POWER%  ^| Defender: %DEX_DEFENDER%
@@ -15357,8 +15442,7 @@ exit /b
 
 :BackupManager
 call :SetupConsole
-echo.
-echo %c%BACKUP AND RESTORE MANAGER%u%
+call :DexHeader "Backup / Restore"
 echo.
 echo  [1] Create managed settings snapshot
 echo  [2] Restore latest managed snapshot
@@ -15613,8 +15697,7 @@ exit /b
 
 :HealthCenter
 call :SetupConsole
-echo.
-echo %c%SYSTEM HEALTH CENTER%u%
+call :DexHeader "System Health"
 echo.
 echo  [1] Quick health check
 echo  [2] Full Windows repair ^(DISM and SFC^)
@@ -15711,8 +15794,7 @@ exit /b
 
 :BenchmarkCenter
 call :SetupConsole
-echo.
-echo %c%BEFORE / AFTER BENCHMARK%u%
+call :DexHeader "Benchmark"
 echo.
 echo  [1] Capture baseline
 echo  [2] Capture current result
@@ -15805,8 +15887,7 @@ exit /b
 
 :GlobalSearch
 call :SetupConsole
-echo.
-echo %c%GLOBAL SEARCH%u%
+call :DexHeader "Global Search"
 echo.
 echo Search examples: GPU, restore, Defender, streaming, disk, services
 echo Leave empty to return.
@@ -15846,8 +15927,7 @@ goto GlobalSearch
 
 :HistoryCenter
 call :SetupConsole
-echo.
-echo %c%HISTORY AND LOGS%u%
+call :DexHeader "History"
 echo.
 echo  Current session: "%DEX_LOG%"
 echo.
@@ -15893,8 +15973,7 @@ exit /b
 :RestartCenter
 call :SetupConsole
 call :RefreshDashboardCache
-echo.
-echo %c%RESTART CENTER%u%
+call :DexHeader "Restart Center"
 echo.
 echo  Restart status: %DEX_REBOOT_STATUS%
 echo.

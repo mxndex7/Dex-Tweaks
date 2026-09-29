@@ -45,6 +45,8 @@ Recursos dependentes de edicao/hardware (HAGS, Hyper-V, Sandbox, BitLocker, Syst
 
 Funcoes de Perfis e Central de Alteracoes seguem sempre: fila -> previa -> checagem de compatibilidade -> snapshot -> aplicacao -> verificacao -> registro. BCD e desativar o Defender exigem Modo Especialista (confirmacao dupla + snapshot + backup do BCD + Ponto de Restauracao).
 
+Nos menus (Optimizations, Hardware, Windows, Privacy, Advanced) cada item mostra um selo colorido com o risco: `LOW` (verde), `MOD` (amarelo), `HIGH` (laranja) e `CRIT` (vermelho). O selo mostra o pior caso do item; itens sem alteracao de risco (inventarios, diagnosticos, instaladores) mostram `-`. Na tela de previa de perfis o selo aparece em cada mudanca da fila, com o aviso `restart` quando ela pede reinicializacao.
+
 ## Painel principal
 
 | Opcao | Area | Intencao |
@@ -64,6 +66,8 @@ Funcoes de Perfis e Central de Alteracoes seguem sempre: fila -> previa -> checa
 | `D` | History | Consultar e exportar logs |
 | `E` | Restart Center | Administrar reinicializacoes pendentes |
 | `X` | Exit | Encerrar o painel |
+
+Todas as telas usam o mesmo cabecalho: secao atual, Windows/build e uma linha de estado (Defender, rede, reinicializacao pendente e ultimo perfil, com indicador verde/amarelo/vermelho). Os cinco submenus (Optimizations, Hardware, Windows, Privacy, Advanced) tem o mesmo rodape: `0` volta ao menu principal, `H` menu principal, `C` busca global, `X` sai. Uma opcao invalida apenas redesenha a tela com um aviso. A cor da interface fica em Dashboard > Settings > Change interface color.
 
 ## Perfis
 
@@ -98,7 +102,6 @@ Rotinas tradicionais do projeto - em geral mais agressivas que os Perfis gerenci
 | Debloater | Remove apps e componentes por categoria (Store, Xbox, Edge, OneDrive, Copilot...) | Alto |
 | Custom Power Plan | Plano de energia coerente por tipo de equipamento | Moderado |
 | Browser Config | Reduz rastreamento preservando updates de seguranca, Safe Browsing e SSL | Moderado |
-| Colour Presets | Cor da interface | - |
 
 ## Hardware
 
@@ -136,7 +139,7 @@ Rotinas tradicionais do projeto - em geral mais agressivas que os Perfis gerenci
 | App Permissions | Restringe camera, microfone, contatos, notificacoes, segundo plano | Moderado |
 | Advertising & Style | Desativa ID de publicidade e sugestoes | Baixo |
 | Privacy Data Cleanup | Apaga caches, historicos e rastros locais | Moderado |
-| Advanced Security, DNS & Hosts Protection, Complete Privacy Audit | Aparecem no menu mas ainda sao `Coming soon` | - |
+| Advanced Security, DNS & Hosts Protection, Complete Privacy Audit | Ainda nao implementados; ficam ocultos do menu | - |
 
 ## Ferramentas avancadas
 
@@ -150,7 +153,6 @@ Rotinas tradicionais do projeto - em geral mais agressivas que os Perfis gerenci
 | Affinity | Distribui interrupcoes de GPU/rede/USB entre nucleos logicos | Moderado/Alto |
 | DirectX Optimization | Renderizacao e latencia grafica | Moderado |
 | OBS Optimizer | Configuracao de encoder (NVENC/AMF/x264) e qualidade | - |
-| Theme Presets | Cor da interface | - |
 | Stream Optimizer | Prioriza o jogo e reduz custo de ferramentas de streaming | Alto |
 
 ## Central de alteracoes
