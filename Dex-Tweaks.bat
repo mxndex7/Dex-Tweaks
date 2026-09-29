@@ -364,7 +364,10 @@ rem Usage: call :DexHeader "Section name"   (shared header used by every screen)
 set "_dxhp=%~1                                        "
 set "_dxhp=!_dxhp:~0,30!"
 echo.
-echo  %c%%bold%DEX TWEAKS%u% %grey%%DEX_ARROW%%u% %c%!_dxhp!%u%%grey%!DEX_OS_NAME! build !_OS_BUILD_NUM!%u%
+rem DEX_ARROW holds a greater-than sign. Percent expansion happens before
+rem redirections are parsed, so the header line became a redirection and
+rem failed. Delayed expansion runs after that step and prints the sign.
+echo  %c%%bold%DEX TWEAKS%u% %grey%!DEX_ARROW!%u% %c%!_dxhp!%u%%grey%!DEX_OS_NAME! build !_OS_BUILD_NUM!%u%
 echo %grey%%DEX_RULE%%u%
 call :DexStatusLine
 echo %grey%%DEX_RULE%%u%
