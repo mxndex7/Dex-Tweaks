@@ -1482,12 +1482,12 @@ echo ^|                         DESKTOP ULTIMATE PERFORMANCE PLAN               
 echo +==============================================================================+%u%
 echo.
 echo %c%Desktop power plan features:%u%
-echo %c%- Maximum CPU performance ^(100%% minimum, no throttling^)%u%
-echo %c%- AMD Ryzen Precision Boost and Core Performance Boost enabled%u%
-echo %c%- All power saving features disabled%u%
+echo %c%- Maximum CPU performance ^(100%% minimum processor state, core parking off^)%u%
+echo %c%- Aggressive boost mode ^(Intel Turbo / AMD Precision Boost^)%u%
+echo %c%- CPU idle states stay enabled ^(disabling them lowers boost headroom^)%u%
+echo %c%- Most other power saving features disabled%u%
 echo %c%- USB and PCI power management off%u%
 echo %c%- Display and sleep timeouts disabled%u%
-echo %c%- Aggressive CPU boost and turbo modes%u%
 echo %c%- Maximum GPU performance preference%u%
 echo %c%- Hidden Windows performance tweaks enabled%u%
 echo %c%- Advanced latency and responsiveness optimizations%u%
@@ -1497,8 +1497,8 @@ echo.
 echo %red%%underline%Desktop Notice:%u%
 echo %c%This plan prioritizes maximum performance over power efficiency.%u%
 echo %c%Power consumption will be high - designed for desktop gaming PCs.%u%
-echo %c%Includes secret Windows performance tweaks not available in GUI.%u%
-echo %c%AMD Ryzen CPUs will boost to maximum frequencies under load.%u%
+echo %c%Also unhides advanced power settings so they show in Power Options.%u%
+echo %c%CPUs boost to their maximum under load, limited by cooling and BIOS power limits.%u%
 echo %orange%The monitor will never turn off by itself - if it is OLED, a static%u%
 echo %orange%image left on screen for hours raises the risk of burn-in.%u%
 echo.
@@ -1539,8 +1539,13 @@ goto :eof
 :POWER_Step2_CreateScheme
 echo %c%[2/10] Creating optimized power scheme...%u%
 
-echo %c%  -^> Duplicating Ultimate Performance base scheme...%u%
-powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c %CUSTOM_GUID% >nul 2>&1
+echo %c%  -^> Duplicating the Ultimate Performance base scheme...%u%
+rem e9a42b02-... is Ultimate Performance; 8c5e7fda-... is High Performance.
+powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 %CUSTOM_GUID% >nul 2>&1
+if errorlevel 1 (
+    echo %c%  -^> Ultimate Performance not available here, using High Performance as base...%u%
+    powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c %CUSTOM_GUID% >nul 2>&1
+)
 
 echo %c%  -^> Setting scheme name and description...%u%
 powercfg /changename %CUSTOM_GUID% "%SCHEME_NAME%" "%SCHEME_DESC%" >nul 2>&1
@@ -1555,7 +1560,7 @@ echo %c%  -^> Setting power plan personality to High Performance...%u%
 powercfg /setacvalueindex %CUSTOM_GUID% fea3413e-7e05-4911-9a71-700331f1c294 245d8541-3943-4422-b025-13a784f679b7 1 >nul 2>&1
 powercfg /setdcvalueindex %CUSTOM_GUID% fea3413e-7e05-4911-9a71-700331f1c294 245d8541-3943-4422-b025-13a784f679b7 1 >nul 2>&1
 
-echo %c%  -^> Configuring AMD Ryzen Precision Boost and Core Performance Boost...%u%
+echo %c%  -^> Setting processor boost mode to Aggressive...%u%
 powercfg /setacvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 2 >nul 2>&1
 powercfg /setdcvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 2 >nul 2>&1
 
@@ -1563,15 +1568,21 @@ echo %c%  -^> Setting maximum CPU performance state ^(100%%^)...%u%
 powercfg /setacvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec 100 >nul 2>&1
 powercfg /setdcvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec 100 >nul 2>&1
 
-echo %c%  -^> Configuring aggressive CPU performance mode...%u%
-powercfg /setacvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 5 >nul 2>&1
-powercfg /setdcvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 5 >nul 2>&1
+echo %c%  -^> Setting minimum processor state to 100%%...%u%
+powercfg /setacvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 100 >nul 2>&1
+powercfg /setdcvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 100 >nul 2>&1
 
-echo %c%  -^> Disabling CPU idle states for maximum responsiveness...%u%
+echo %c%  -^> Setting energy/performance preference to performance...%u%
+powercfg /setacvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 36687f9e-e3a5-4dbf-b1dc-15eb381c6863 0 >nul 2>&1
+powercfg /setdcvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 36687f9e-e3a5-4dbf-b1dc-15eb381c6863 0 >nul 2>&1
+
+echo %c%  -^> Keeping CPU idle states enabled ^(value 0 = idle allowed^)...%u%
 powercfg /setacvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 5d76a2ca-e8c0-402f-a133-2158492d58ad 0 >nul 2>&1
 powercfg /setdcvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 5d76a2ca-e8c0-402f-a133-2158492d58ad 0 >nul 2>&1
 
-echo %c%  -^> Optimizing CPU core parking ^(disable parking^)...%u%
+echo %c%  -^> Disabling core parking ^(minimum and maximum cores 100%%^)...%u%
+powercfg /setacvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 0cc5b647-c1df-4637-891a-dec35c318583 100 >nul 2>&1
+powercfg /setdcvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 0cc5b647-c1df-4637-891a-dec35c318583 100 >nul 2>&1
 powercfg /setacvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 ea062031-0e34-4ff1-9b6d-eb1059334028 100 >nul 2>&1
 powercfg /setdcvalueindex %CUSTOM_GUID% 54533251-82be-4824-96c1-47b60b740d00 ea062031-0e34-4ff1-9b6d-eb1059334028 100 >nul 2>&1
 
@@ -1885,9 +1896,9 @@ if exist "%temp%\desktop_plan_created" (
     echo %c%Desktop Plan Configuration:%u%
     echo %c%- Name: Dex Desktop Ultimate%u%
     echo %c%- Type: Maximum performance for desktop gaming%u%
-    echo %c%- CPU: 100%% minimum, no throttling, all cores active%u%
+    echo %c%- CPU: 100%% minimum state, aggressive boost, core parking off, idle states kept%u%
     echo %c%- GPU: Maximum performance preference%u%
-    echo %c%- Power Saving: All features disabled%u%
+    echo %c%- Power Saving: Most features disabled%u%
     echo %c%- Display/Sleep: Never turn off%u%
     echo %c%- USB/PCI: Power management disabled%u%
     echo.
@@ -1936,7 +1947,6 @@ echo %c%- Windows and user temporary files, system caches%u%
 echo %c%- Browser caches: Chrome, Edge, Firefox, Opera, Opera GX, Brave, Vivaldi%u%
 echo %c%- Game and app caches: Steam, Epic, Riot, Battle.net, EA, Ubisoft, GOG,%u%
 echo %c%  Discord, Slack, Teams, Zoom, Spotify, VS Code, Minecraft%u%
-echo %c%- GPU driver shader caches ^(NVIDIA, AMD, Intel^) and DirectX shader cache%u%
 echo %c%- Explorer thumbnail/icon cache, font cache and Windows Store cache%u%
 echo %c%- Windows Error Reporting queue, DNS resolver cache and Recycle Bin%u%
 echo %c%- Registry MRU entries and history%u%
@@ -1944,6 +1954,8 @@ echo.
 echo %c%This will NOT touch:%u%
 echo %c%- Your personal documents, pictures, downloads or any user files%u%
 echo %c%- Saved passwords, bookmarks or browser history%u%
+echo %c%- GPU/DirectX shader caches ^(unless you opt in below^): deleting them forces%u%
+echo %c%  every game to recompile shaders, which causes stutter and longer first loads%u%
 echo %c%- Prefetch, pending Windows Update files or CBS/driver crash logs%u%
 echo %c%  ^(kept intentionally so update and driver issues can still be diagnosed^)%u%
 echo.
@@ -1954,6 +1966,12 @@ echo.
 echo.
 call :DexChoice "YN" "%c%Proceed with premium system cleanup? (Y/N)%u%"
 if errorlevel 2 goto TweaksMenu
+
+echo.
+echo %c%Shader caches are rebuilt by every game after deletion ^(stutter and slower loads%u%
+echo %c%until they are rebuilt^). Clear them only after a driver change or to fix glitches.%u%
+call :DexChoice "YN" "%c%Also clear GPU/DirectX shader caches? (Y/N)%u%"
+if errorlevel 2 (set "CLN_SHADERS=0") else (set "CLN_SHADERS=1")
 
 echo.
 echo %c%+==============================================================================+
@@ -2006,16 +2024,18 @@ del /s /f /q "%LocalAppData%\Vivaldi\User Data\Default\Cache\*.*" 2>nul
 del /s /f /q "%LocalAppData%\Vivaldi\User Data\Default\Code Cache\*.*" 2>nul
 del /s /f /q "%LocalAppData%\Vivaldi\User Data\Default\GPUCache\*.*" 2>nul
 
-echo %c%[4/14] Cleaning GPU Driver and DirectX Shader Caches...%u%
-del /s /f /q "%USERPROFILE%\AppData\LocalLow\NVIDIA\PerDriverVersion\DXCache\*.*" 2>nul
-del /s /f /q "%USERPROFILE%\AppData\Local\NVIDIA\DXCache\*.*" 2>nul
-del /s /f /q "%USERPROFILE%\AppData\Local\NVIDIA\GLCache\*.*" 2>nul
-del /s /f /q "%USERPROFILE%\AppData\Local\AMD\DxCache\*.*" 2>nul
-del /s /f /q "%USERPROFILE%\AppData\Local\AMD\DxcCache\*.*" 2>nul
-del /s /f /q "%USERPROFILE%\AppData\Local\AMD\VkCache\*.*" 2>nul
-del /s /f /q "%USERPROFILE%\AppData\LocalLow\AMD\DxCache\*.*" 2>nul
-del /s /f /q "%USERPROFILE%\AppData\Local\Intel\ShaderCache\*.*" 2>nul
-del /s /f /q "%LocalAppData%\D3DSCache\*.*" 2>nul
+echo %c%[4/14] GPU Driver and DirectX Shader Caches...%u%
+if not "!CLN_SHADERS!"=="1" echo %c%  -^> Shader caches kept ^(no stutter after the cleanup^)%u%
+if "!CLN_SHADERS!"=="1" del /s /f /q "%USERPROFILE%\AppData\LocalLow\NVIDIA\PerDriverVersion\DXCache\*.*" 2>nul
+if "!CLN_SHADERS!"=="1" del /s /f /q "%USERPROFILE%\AppData\Local\NVIDIA\DXCache\*.*" 2>nul
+if "!CLN_SHADERS!"=="1" del /s /f /q "%USERPROFILE%\AppData\Local\NVIDIA\GLCache\*.*" 2>nul
+if "!CLN_SHADERS!"=="1" del /s /f /q "%USERPROFILE%\AppData\Local\AMD\DxCache\*.*" 2>nul
+if "!CLN_SHADERS!"=="1" del /s /f /q "%USERPROFILE%\AppData\Local\AMD\DxcCache\*.*" 2>nul
+if "!CLN_SHADERS!"=="1" del /s /f /q "%USERPROFILE%\AppData\Local\AMD\VkCache\*.*" 2>nul
+if "!CLN_SHADERS!"=="1" del /s /f /q "%USERPROFILE%\AppData\LocalLow\AMD\DxCache\*.*" 2>nul
+if "!CLN_SHADERS!"=="1" del /s /f /q "%USERPROFILE%\AppData\Local\Intel\ShaderCache\*.*" 2>nul
+if "!CLN_SHADERS!"=="1" del /s /f /q "%LocalAppData%\D3DSCache\*.*" 2>nul
+if "!CLN_SHADERS!"=="1" echo %c%  + Shader caches cleared%u%
 
 echo %c%[5/14] Cleaning Game and Communication App Caches...%u%
 del /s /f /q "%AppData%\discord\Cache\*.*" 2>nul
@@ -2025,7 +2045,7 @@ del /s /f /q "%ProgramFiles(x86)%\Steam\appcache\httpcache\*.*" 2>nul
 del /s /f /q "%ProgramFiles(x86)%\Steam\logs\*.*" 2>nul
 del /s /f /q "%ProgramFiles(x86)%\Steam\dumps\*.*" 2>nul
 del /s /f /q "%ProgramFiles(x86)%\Steam\steamapps\temp\*.*" 2>nul
-del /s /f /q "%ProgramFiles(x86)%\Steam\steamapps\shadercache\*.*" 2>nul
+if "!CLN_SHADERS!"=="1" del /s /f /q "%ProgramFiles(x86)%\Steam\steamapps\shadercache\*.*" 2>nul
 del /s /f /q "%USERPROFILE%\AppData\Local\Steam\htmlcache\*.*" 2>nul
 del /s /f /q "%USERPROFILE%\AppData\Local\Steam\logs\*.*" 2>nul
 del /s /f /q "%LocalAppData%\EpicGamesLauncher\Saved\Logs\*.*" 2>nul
@@ -2120,7 +2140,7 @@ echo %c%Summary:%u%
 echo %c%- Windows and user temporary files removed%u%
 echo %c%- Browser data cleaned across 7 supported browsers%u%
 echo %c%- Game, chat and productivity app caches cleared%u%
-echo %c%- GPU driver and DirectX shader caches purged%u%
+if "!CLN_SHADERS!"=="1" (echo %c%- GPU driver and DirectX shader caches purged%u%) else (echo %c%- GPU/DirectX shader caches kept ^(avoids stutter after cleanup^)%u%)
 echo %c%- Explorer thumbnail/icon cache and font cache rebuilt%u%
 echo %c%- Windows Error Reporting queue and DNS cache cleared%u%
 echo %c%- Windows Store cache reset and Recycle Bin emptied%u%
@@ -2383,7 +2403,9 @@ echo.
 echo %c%[CHECK] Detecting device type...%u%
 set "_ct="
 for /F "tokens=*" %%c in ('powershell -Command "(Get-CimInstance -ClassName Win32_SystemEnclosure).ChassisTypes[0]" 2^>nul') do set /A "_ct=%%c" 2>nul
-if defined _ct if %_ct% gtr 7 (
+set "_isPortable="
+for %%t in (8 9 10 11 14 30 31 32) do if "!_ct!"=="%%t" set "_isPortable=1"
+if defined _isPortable (
     echo.
     echo %red%+==============================================================================+
     echo ^|                       PORTABLE DEVICE DETECTED                               ^|
@@ -2532,14 +2554,16 @@ echo %c%+=======================================================================
 echo ^|                          %red%AMD%u%%c% GPU PERFORMANCE OPTIMIZER                       ^|
 echo +==============================================================================+%u%
 echo.
-echo %c%This will apply documented, reversible AMD optimizations:%u%
-echo %c%- Enable Resizable BAR ^(ReBAR^) if your GPU/motherboard support it%u%
-echo %c%- Disable telemetry services and unnecessary background tasks%u%
-echo %c%- Enable Hardware-Accelerated GPU Scheduling and game-priority scheduling%u%
+echo %c%What this does:%u%
+echo %c%- Turn off AMD crash-report service and updater task ^(no measurable FPS change^)%u%
+echo %c%- Optional: Hardware-Accelerated GPU Scheduling ^(about 0%% FPS gain^)%u%
+echo %c%- Remove registry values that older versions wrote for Resizable BAR%u%
 echo.
 echo %orange%%underline%What this will NOT do:%u%
+echo %c%- Will not enable Resizable BAR: that is a BIOS option ^(Above 4G Decoding +%u%
+echo %c%  Resizable BAR / Smart Access Memory^) and the registry cannot turn it on%u%
 echo %c%- Will not disable Radeon Chill/Anti-Lag or thermal throttling protection%u%
-echo %c%- Will not disable Resizable BAR, FSR/RSR, or ray tracing%u%
+echo %c%- Will not disable FSR/RSR or ray tracing%u%
 echo.
 echo %c%Tip:%u% Advanced ^> Performance Toolkit ^> Driver Restore Point before installing or%u%
 echo %c%     replacing your GPU driver.%u%
@@ -2548,18 +2572,19 @@ call :DexChoice "YN" "%c%Apply AMD GPU optimizations? (Y/N)%u%"
 if errorlevel 2 goto C
 
 echo.
-echo %c%[1/2] Locating AMD GPU registry entry for ReBAR...%u%
+echo %c%[1/2] Removing Resizable BAR registry values written by older versions...%u%
 call :AMD_SelectGPUIndex
 if errorlevel 1 (
-    echo %yellow%Skipping ReBAR - continuing with vendor-neutral optimizations only.%u%
+    echo %yellow%No AMD GPU registry entry selected - nothing to clean up.%u%
 ) else (
-    reg add "!AMD_GPU_CLASS_KEY!" /v "KMD_EnableReBarForLegacyASIC" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "!AMD_GPU_CLASS_KEY!" /v "KMD_RebarControlMode" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "!AMD_GPU_CLASS_KEY!" /v "KMD_RebarControlSupport" /t REG_DWORD /d "1" /f >nul 2>&1
-    echo %green%  + Resizable BAR enabled for: !_amd_confirm_desc!%u%
+    call :DexRegDelIfEq "!AMD_GPU_CLASS_KEY!" KMD_EnableReBarForLegacyASIC 0x1
+    call :DexRegDelIfEq "!AMD_GPU_CLASS_KEY!" KMD_RebarControlMode 0x1
+    call :DexRegDelIfEq "!AMD_GPU_CLASS_KEY!" KMD_RebarControlSupport 0x1
+    echo %green%  + Cleaned for: !_amd_confirm_desc!%u%
 )
+echo %c%  -^> To use ReBAR: enable it in BIOS, then check AMD Software ^> Performance ^> Tuning%u%
 
-echo %c%[2/2] Applying telemetry removal and scheduling optimizations...%u%
+echo %c%[2/2] Running the shared GPU optimizer...%u%
 set "GPU_RETURN=C"
 goto GPUOptimizer
 
@@ -3760,8 +3785,8 @@ echo                            ^|                                ^|
 echo                            ^|    [0] Return to Main Menu     ^|
 echo                            +================================+%u%
 echo.
-echo %c%Note: Processor-specific optimizations provide better performance%u%
-echo %c%by targeting your CPU's unique architecture and features.%u%
+echo %c%Note: all three options apply the same power-plan and scheduling settings.%u%
+echo %c%The Intel and AMD screens only add vendor-specific notes and BIOS hints.%u%
 echo.
 set /p choice="%c%Select your CPU type >%u% "
 if "!choice!"=="0" goto TweaksMenu
@@ -3788,17 +3813,18 @@ echo %c%+=======================================================================
 echo ^|                         %blue%INTEL%c% CPU PERFORMANCE OPTIMIZER                      ^|
 echo +==============================================================================+%u%
 echo.
-echo %c%Intel-specific optimizations include:%u%
-echo %c%- Intel Turbo Boost and SpeedStep configuration%u%
-echo %c%- C-States and P-States optimization for performance%u%
-echo %c%- E-Core scheduling and thread director settings%u%
-echo %c%- Spectre/Meltdown mitigation adjustments%u%
-echo %c%- CPU affinity and CSRSS priority optimization%u%
-echo %c%- Dynamic timer resolution based on CPU performance%u%
+echo %c%What this applies ^(to the ACTIVE power plan, plugged in / AC only^):%u%
+echo %c%- Minimum processor state 100%% ^(CPU keeps full clocks, no ramp-up delay^)%u%
+echo %c%- Boost mode Aggressive and boost policy 100%u%
+echo %c%- Energy/performance preference 0 ^(needs Intel HWP, skipped if unsupported^)%u%
+echo %c%- Core parking off ^(all cores stay available^)%u%
+echo %c%- Windows Power Throttling off, MMCSS "Games" task priority raised%u%
+echo %c%- Spectre/Meltdown mitigations are NOT touched%u%
 echo.
 echo %red%%underline%Intel Notice:%u%
-echo %c%These optimizations disable power saving for maximum performance.%u%
-echo %c%CPU temperatures may increase and power consumption will rise.%u%
+echo %c%Real gain is small: 0-5%% in CPU-bound games, mostly steadier frame times.%u%
+echo %c%Idle power and CPU temperature will rise. Battery ^(DC^) settings are untouched.%u%
+echo %c%Undo: Power Options ^> Change plan settings ^> Restore default settings.%u%
 echo.
 echo.
 call :DexChoice "YN" "%c%Apply Intel CPU optimizations? (Y/N)%u%"
@@ -3808,152 +3834,17 @@ echo.
 echo %c%+==============================================================================+
 echo ^|                       %blue%INTEL%c% OPTIMIZATION IN PROGRESS                         ^|
 echo +==============================================================================+%u%
-
-echo.
-echo %c%[1/12] Detecting CPU Specifications...%u%
-
-set "NumberOfCores=6"
-set "MaxClockSpeed=3000"
-set "CPU_SCORE=18000"
-
-call :DexGetCPUInfo
-set "temp_cores=!DEX_CPU_CORES!"
-if defined temp_cores (
-    for /f "tokens=* delims= " %%b in ("!temp_cores!") do set "temp_cores=%%b"
-    if not "!temp_cores!"=="" (
-        set /a "test_cores=!temp_cores!" 2>nul
-        if !test_cores! GEQ 1 if !test_cores! LEQ 32 set "NumberOfCores=!test_cores!"
-    )
-)
-
-set "temp_speed=!DEX_CPU_MAXCLOCK!"
-if defined temp_speed (
-    for /f "tokens=* delims= " %%b in ("!temp_speed!") do set "temp_speed=%%b"
-    if not "!temp_speed!"=="" (
-        set /a "test_speed=!temp_speed!" 2>nul
-        if !test_speed! GEQ 1000 if !test_speed! LEQ 8000 set "MaxClockSpeed=!test_speed!"
-    )
-)
-
-set /a "CPU_SCORE=%NumberOfCores% * %MaxClockSpeed%" 2>nul
-if %CPU_SCORE% LEQ 0 set "CPU_SCORE=18000"
-
-echo %c%CPU detected   %NumberOfCores% cores at %MaxClockSpeed% MHz ^(Score   %CPU_SCORE%^)%u%
-
-echo %c%[2/12] Configuring Intel Power Management...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c" /v "ValueMax" /t REG_DWORD /d "100" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c\DefaultPowerSchemeValues\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c" /v "ValueMax" /t REG_DWORD /d "100" /f >nul 2>&1
-
-echo %c%[3/12] Disabling Intel C-States for Performance...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583" /v "ValueMin" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583" /v "ValueMax" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\SYSTEM\ControlSet001\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583" /v "ValueMax" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\SYSTEM\ControlSet001\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583" /v "ValueMin" /t REG_DWORD /d "0" /f >nul 2>&1
-
-echo %c%[4/12] Optimizing Intel Turbo Boost and SpeedStep...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "ValueMax" /t REG_DWORD /d "2" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\45bcc044-d885-43e2-8605-ee0ec6e96b59" /v "ValueMax" /t REG_DWORD /d "100" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\45bcc044-d885-43e2-8605-ee0ec6e96b59" /v "ValueMin" /t REG_DWORD /d "100" /f >nul 2>&1
-
-echo %c%[5/12] Preserving Spectre/Meltdown Mitigations...%u%
-rem This tool never disables CPU speculative-execution vulnerability
-rem mitigations (FeatureSettingsOverride/Mask). No realistic FPS gain
-rem justifies reopening a known CPU security hole.
-
-echo %c%[6/12] Optimizing System Responsiveness...%u%
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d "10" /f >nul 2>&1
-
-echo %c%[7/12] Configuring CPU-Based Timer Resolution...%u%
-if %CPU_SCORE% LEQ 8000 (
-    echo %c%Low-end CPU detected - Using conservative timer settings%u%
-    reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "TimerResolution" /f >nul 2>&1
-) else (
-    if %CPU_SCORE% LEQ 12000 (
-        echo %c%Mid-range CPU detected - Using moderate timer resolution%u%
-        reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "TimerResolution" /t REG_DWORD /d "5" /f >nul 2>&1
-    ) else (
-        if %CPU_SCORE% LEQ 18000 (
-            echo %c%High-end CPU detected - Using fast timer resolution%u%
-            reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "TimerResolution" /t REG_DWORD /d "2" /f >nul 2>&1
-        ) else (
-            echo %c%Ultra high-end CPU detected - Using maximum timer resolution%u%
-            reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "TimerResolution" /t REG_DWORD /d "1" /f >nul 2>&1
-        )
-    )
-)
-
-echo %c%[8/12] Setting CPU-Based Cursor Update Interval...%u%
-if %CPU_SCORE% LEQ 10000 (
-    reg add "HKLM\SOFTWARE\Microsoft\Input\Settings\ControllerProcessor\CursorSpeed" /v "CursorUpdateInterval" /t REG_DWORD /d "5" /f >nul 2>&1
-) else (
-    if %CPU_SCORE% LEQ 15000 (
-        reg add "HKLM\SOFTWARE\Microsoft\Input\Settings\ControllerProcessor\CursorSpeed" /v "CursorUpdateInterval" /t REG_DWORD /d "2" /f >nul 2>&1
-    ) else (
-        reg add "HKLM\SOFTWARE\Microsoft\Input\Settings\ControllerProcessor\CursorSpeed" /v "CursorUpdateInterval" /t REG_DWORD /d "1" /f >nul 2>&1
-    )
-)
-
-echo %c%[9/12] Optimizing Power Throttling and Thread Management...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v "PowerThrottlingOff" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" /v "ThreadDpcEnable" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" /v "DpcTimeout" /t REG_DWORD /d "0" /f >nul 2>&1
-
-echo %c%[10/12] Configuring CPU Affinity and CSRSS Priority...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d "38" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "4" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions" /v "IoPriority" /t REG_DWORD /d "3" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "4" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions" /v "IoPriority" /t REG_DWORD /d "3" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\dwm.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "4" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\dwm.exe\PerfOptions" /v "IoPriority" /t REG_DWORD /d "3" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\dwm.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "4" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\dwm.exe\PerfOptions" /v "IoPriority" /t REG_DWORD /d "3" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\lsass.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\lsass.exe\PerfOptions" /v "IoPriority" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\lsass.exe\PerfOptions" /v "PagePriority" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\lsass.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\lsass.exe\PerfOptions" /v "IoPriority" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\svchost.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\svchost.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\SearchIndexer.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\SearchIndexer.exe\PerfOptions" /v "IoPriority" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\TrustedInstaller.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\TrustedInstaller.exe\PerfOptions" /v "IoPriority" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\wuauclt.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\wuauclt.exe\PerfOptions" /v "IoPriority" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\audiodg.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "3" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\MsMpEng.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\MsMpEngCP.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "ClearPageFileAtShutdown" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "DisablePagingExecutive" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "LargeSystemCache" /t REG_DWORD /d "1" /f >nul 2>&1
-
-echo %c%[12/12] Applying Intel Gaming and Multimedia Optimizations...%u%
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "CPU Priority" /t REG_DWORD /d "6" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Scheduling Category" /t REG_SZ /d "High" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "SFIO Priority" /t REG_SZ /d "High" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Affinity" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Background Only" /t REG_SZ /d "False" /f >nul 2>&1
+call :DexCpuOptimizeCore
 
 echo.
 echo %c%+==============================================================================+
 echo ^|                       %blue%INTEL%c% OPTIMIZATION COMPLETED                           ^|
 echo +==============================================================================+%u%
 echo.
-echo %c%Intel CPU optimizations have been successfully applied.%u%
-echo.
-echo %c%Applied Optimizations:%u%
-echo %c%- CPU detected   %NumberOfCores% cores at %MaxClockSpeed% MHz ^(Score   %CPU_SCORE%^)%u%
-echo %c%- Intel power management configured for performance%u%
-echo %c%- C-States disabled to prevent CPU parking%u%
-echo %c%- Turbo Boost and SpeedStep optimized%u%
-echo %c%- Spectre/Meltdown mitigations adjusted for Intel%u%
-echo %c%- System responsiveness improved ^(10%% reserve^)%u%
-echo %c%- Timer resolution optimized for CPU performance%u%
-echo %c%- Power throttling disabled%u%
-echo %c%- CSRSS priority and CPU affinity optimized%u%
-echo %c%- Cache and memory management enhanced%u%
-echo %c%- Gaming task priorities configured%u%
+call :DexCpuSummary
+echo %red%%underline%Important Notes:%u%
+echo %c%- Intel XTU / BIOS limits ^(PL1, PL2, ICCMAX^) decide sustained boost, not Windows%u%
+echo %c%- Monitor temperatures with HWiNFO64 after applying%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
@@ -3967,125 +3858,39 @@ echo %c%+=======================================================================
 echo ^|                         %red%AMD%c% RYZEN PERFORMANCE OPTIMIZER                      ^|
 echo +==============================================================================+%u%
 echo.
-echo %c%AMD Ryzen-specific optimizations include:%u%
-echo %c%- AMD Precision Boost and Core Performance Boost registry settings%u%
-echo %c%- Essential AMD services preserved for frequency scaling%u%
-echo %c%- Enhanced C-States and P-States registry configuration%u%
-echo %c%- CPU affinity and CSRSS priority optimization%u%
-echo %c%- Dynamic timer resolution based on CPU performance%u%
-echo %c%- AMD-specific boost and thermal settings%u%
+echo %c%What this applies ^(to the ACTIVE power plan, plugged in / AC only^):%u%
+echo %c%- Minimum processor state 100%% ^(CPU keeps full clocks, no ramp-up delay^)%u%
+echo %c%- Boost mode Aggressive and boost policy 100%u%
+echo %c%- Energy/performance preference 0 ^(needs AMD CPPC, skipped if unsupported^)%u%
+echo %c%- Core parking off ^(all cores stay available^)%u%
+echo %c%- Windows Power Throttling off, MMCSS "Games" task priority raised%u%
+echo %c%- No AMD driver or service keys are written%u%
 echo.
 echo %red%%underline%Ryzen Notice:%u%
-echo %c%These optimizations configure registry settings for boost support.%u%
-echo %c%Use with Desktop Ultimate Performance power plan for full effect.%u%
+echo %c%Real gain is small: 0-5%% in CPU-bound games, mostly steadier frame times.%u%
+echo %c%Idle power and CPU temperature will rise. Battery ^(DC^) settings are untouched.%u%
+echo %c%PBO, Curve Optimizer and EXPO are BIOS settings; Windows cannot change them.%u%
+echo %c%Undo: Power Options ^> Change plan settings ^> Restore default settings.%u%
 echo.
 echo.
-call :DexChoice "YN" "%c%Apply AMD Ryzen registry optimizations? (Y/N)%u%"
+call :DexChoice "YN" "%c%Apply AMD Ryzen CPU optimizations? (Y/N)%u%"
 if errorlevel 2 goto E
 
 echo.
 echo %c%+==============================================================================+
 echo ^|                       %red%RYZEN%c% OPTIMIZATION IN PROGRESS                         ^|
 echo +==============================================================================+%u%
-
-echo.
-echo %c%[1/12] Detecting CPU Specifications...%u%
-call :DexGetCPUInfo
-set "NumberOfCores="
-if defined DEX_CPU_CORES set /a "NumberOfCores=!DEX_CPU_CORES!" >nul 2>&1
-set "MaxClockSpeed="
-if defined DEX_CPU_MAXCLOCK set /a "MaxClockSpeed=!DEX_CPU_MAXCLOCK!" >nul 2>&1
-set "CPUName=!DEX_CPU_NAME!"
-if not defined NumberOfCores set NumberOfCores=4
-if not defined MaxClockSpeed set MaxClockSpeed=3000
-set /a "CPU_SCORE=%NumberOfCores%*%MaxClockSpeed%"
-
-echo %c%[2/12] Configuring AMD Precision Boost Registry Settings...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "ValueMax" /t REG_DWORD /d "2" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "ValueMin" /t REG_DWORD /d "2" /f >nul 2>&1
-
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec" /v "ValueMax" /t REG_DWORD /d "100" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec" /v "ValueMin" /t REG_DWORD /d "100" /f >nul 2>&1
-
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c" /v "ValueMax" /t REG_DWORD /d "100" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c" /v "ValueMin" /t REG_DWORD /d "5" /f >nul 2>&1
-
-echo %c%[3/12] Optimizing C-States Registry for Boost Compatibility...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583" /v "ValueMin" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583" /v "ValueMax" /t REG_DWORD /d "1" /f >nul 2>&1
-
-echo %c%[4/12] Preserving Essential AMD Services for Boost...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\AmdPPM" /v "Start" /t REG_DWORD /d "3" /f >nul 2>&1
-reg query "HKLM\SYSTEM\CurrentControlSet\Services\AMDRyzenMasterDriverV19" >nul 2>&1 && reg add "HKLM\SYSTEM\CurrentControlSet\Services\AMDRyzenMasterDriverV19" /v "Start" /t REG_DWORD /d "3" /f >nul 2>&1
-
-echo %c%[5/12] Configuring Frequency Scaling Registry Policies...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\75b0ae3f-bce0-45a7-8c89-c9611c25e100" /v "ValueMax" /t REG_DWORD /d "3" /f >nul 2>&1
-
-echo %c%[6/12] Disabling Power Throttling While Preserving Boost...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v "PowerThrottlingOff" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000" /v "PP_ThermalAutoThrottlingEnable" /t REG_DWORD /d "0" /f >nul 2>&1
-
-echo %c%[7/12] Optimizing System Responsiveness...%u%
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d "10" /f >nul 2>&1
-
-echo %c%[8/12] Configuring CPU-Based Timer Resolution...%u%
-if %CPU_SCORE% LEQ 8000 (
-    reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "TimerResolution" /f >nul 2>&1
-) else if %CPU_SCORE% LEQ 12000 (
-    reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "TimerResolution" /t REG_DWORD /d "5" /f >nul 2>&1
-) else if %CPU_SCORE% LEQ 18000 (
-    reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "TimerResolution" /t REG_DWORD /d "2" /f >nul 2>&1
-) else (
-    reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "TimerResolution" /t REG_DWORD /d "1" /f >nul 2>&1
-)
-
-echo %c%[9/12] Setting CPU-Based Cursor Update Interval...%u%
-if %CPU_SCORE% LEQ 10000 (
-    reg add "HKLM\SOFTWARE\Microsoft\Input\Settings\ControllerProcessor\CursorSpeed" /v "CursorUpdateInterval" /t REG_DWORD /d "5" /f >nul 2>&1
-) else if %CPU_SCORE% LEQ 15000 (
-    reg add "HKLM\SOFTWARE\Microsoft\Input\Settings\ControllerProcessor\CursorSpeed" /v "CursorUpdateInterval" /t REG_DWORD /d "2" /f >nul 2>&1
-) else (
-    reg add "HKLM\SOFTWARE\Microsoft\Input\Settings\ControllerProcessor\CursorSpeed" /v "CursorUpdateInterval" /t REG_DWORD /d "1" /f >nul 2>&1
-)
-
-echo %c%[10/12] Configuring CPU Affinity and CSRSS Priority...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d "38" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "4" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions" /v "IoPriority" /t REG_DWORD /d "3" /f >nul 2>&1
-
-echo %c%[11/12] Optimizing Memory Controller for Boost Performance...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "DisablePagingExecutive" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "LargeSystemCache" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "SecondLevelDataCache" /t REG_DWORD /d "1024" /f >nul 2>&1
-rem Spectre/Meltdown mitigations (FeatureSettingsOverride/Mask) are never
-rem disabled here - no realistic FPS gain justifies reopening a known CPU
-rem security hole.
-
-echo %c%[12/12] Configuring AMD-Specific Boost Settings...%u%
-reg add "HKLM\SOFTWARE\AMD\CN" /v "PowerScheme" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\AMD\CN" /v "CorePerformanceBoost" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\AMD\CN" /v "ThermalLimit" /t REG_DWORD /d "90" /f >nul 2>&1
+call :DexCpuOptimizeCore
 
 echo.
 echo %c%+==============================================================================+
 echo ^|                       %red%RYZEN%c% OPTIMIZATION COMPLETED                           ^|
 echo +==============================================================================+%u%
 echo.
-echo %c%AMD Ryzen registry optimizations have been successfully applied.%u%
-echo.
-echo %c%Applied Optimizations:%u%
-echo %c%AMD Precision Boost and Core Performance Boost registry configured%u%
-echo %c%C-States optimized for boost compatibility%u%
-echo %c%Essential AMD services preserved for frequency scaling%u%
-echo %c%Frequency scaling policies configured%u%
-echo %c%Power throttling disabled while preserving boost%u%
-echo %c%System responsiveness improved%u%
-echo %c%Memory controller optimized%u%
-echo %c%AMD-specific boost settings configured%u%
-echo.
+call :DexCpuSummary
 echo %red%%underline%Important Notes:%u%
-echo %c%- Use Desktop Ultimate Performance power plan for CPU boost%u%
-echo %c%- Enable PBO in BIOS for additional boost capability%u%
+echo %c%- Install the AMD chipset driver so Windows can use CPPC preferred cores%u%
+echo %c%- Enable PBO / EXPO in BIOS for extra boost and memory speed%u%
 echo %c%- Monitor with HWiNFO64 or Ryzen Master%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
@@ -4100,12 +3905,17 @@ echo %c%+=======================================================================
 echo ^|                        UNIVERSAL CPU PERFORMANCE OPTIMIZER                   ^|
 echo +==============================================================================+%u%
 echo.
-echo %c%Universal CPU optimizations include:%u%
-echo %c%- Generic power management improvements%u%
-echo %c%- CPU scheduling and priority optimizations%u%
-echo %c%- Memory management and cache tweaks%u%
-echo %c%- Dynamic timer resolution based on CPU%u%
-echo %c%- System responsiveness improvements%u%
+echo %c%What this applies ^(to the ACTIVE power plan, plugged in / AC only^):%u%
+echo %c%- Minimum processor state 100%% ^(CPU keeps full clocks, no ramp-up delay^)%u%
+echo %c%- Boost mode Aggressive and boost policy 100%u%
+echo %c%- Energy/performance preference 0 ^(skipped if unsupported^)%u%
+echo %c%- Core parking off ^(all cores stay available^)%u%
+echo %c%- Windows Power Throttling off, MMCSS "Games" task priority raised%u%
+echo.
+echo %red%%underline%Notice:%u%
+echo %c%Real gain is small: 0-5%% in CPU-bound games, mostly steadier frame times.%u%
+echo %c%Idle power and CPU temperature will rise. Battery ^(DC^) settings are untouched.%u%
+echo %c%Undo: Power Options ^> Change plan settings ^> Restore default settings.%u%
 echo.
 echo.
 call :DexChoice "YN" "%c%Apply universal CPU optimizations? (Y/N)%u%"
@@ -4115,65 +3925,118 @@ echo.
 echo %c%+==============================================================================+
 echo ^|                     UNIVERSAL OPTIMIZATION IN PROGRESS                       ^|
 echo +==============================================================================+%u%
-
-echo.
-echo %c%[1/6] Detecting CPU Specifications...%u%
-call :DexGetCPUInfo
-set "NumberOfCores="
-if defined DEX_CPU_CORES set /a "NumberOfCores=!DEX_CPU_CORES!" >nul 2>&1
-set "MaxClockSpeed="
-if defined DEX_CPU_MAXCLOCK set /a "MaxClockSpeed=!DEX_CPU_MAXCLOCK!" >nul 2>&1
-if not defined NumberOfCores set NumberOfCores=4
-if not defined MaxClockSpeed set MaxClockSpeed=3000
-set /a "CPU_SCORE=%NumberOfCores%*%MaxClockSpeed%"
-
-echo %c%[2/6] Configuring General Power Management...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c" /v "ValueMax" /t REG_DWORD /d "100" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583" /v "ValueMax" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d "10" /f >nul 2>&1
-
-echo %c%[3/6] Optimizing CPU Scheduling and Priorities...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d "38" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" /v "ThreadDpcEnable" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "4" /f >nul 2>&1
-
-echo %c%[4/6] Configuring CPU-Based Timer Resolution...%u%
-if %CPU_SCORE% LEQ 8000 (
-    reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "TimerResolution" /f >nul 2>&1
-) else if %CPU_SCORE% LEQ 12000 (
-    reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "TimerResolution" /t REG_DWORD /d "5" /f >nul 2>&1
-) else if %CPU_SCORE% LEQ 18000 (
-    reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "TimerResolution" /t REG_DWORD /d "2" /f >nul 2>&1
-) else (
-    reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "TimerResolution" /t REG_DWORD /d "1" /f >nul 2>&1
-)
-
-echo %c%[5/6] Configuring Memory Management...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "DisablePagingExecutive" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v "PowerThrottlingOff" /t REG_DWORD /d "1" /f >nul 2>&1
-
-echo %c%[6/6] Applying Gaming Optimizations...%u%
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "CPU Priority" /t REG_DWORD /d "6" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Scheduling Category" /t REG_SZ /d "High" /f >nul 2>&1
+call :DexCpuOptimizeCore
 
 echo.
 echo %c%+==============================================================================+
 echo ^|                    UNIVERSAL OPTIMIZATION COMPLETED                          ^|
 echo +==============================================================================+%u%
 echo.
-echo %c%Universal CPU optimizations have been successfully applied.%u%
-echo.
-echo %c%Applied Optimizations:%u%
-echo %c%- CPU detected: %NumberOfCores% cores at %MaxClockSpeed% MHz%u%
-echo %c%- General power management optimized%u%
-echo %c%- CPU scheduling and priorities enhanced%u%
-echo %c%- Dynamic timer resolution configured%u%
-echo %c%- Memory management improved%u%
-echo %c%- Gaming task priorities optimized%u%
-echo.
+call :DexCpuSummary
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 goto TweaksMenu
+
+:DexCpuOptimizeCore
+rem Shared by the Intel, Ryzen and Universal CPU optimizers.
+rem Only settings with a documented effect are written. Older versions of
+rem this tool also wrote values that do nothing or are harmful (Real-time
+rem priority for csrss/dwm, Idle priority for svchost/lsass/Defender, edited
+rem power-setting ranges, DpcTimeout, GPU driver keys); step 4 removes them.
+set "DEX_CPU_PWR_OK=0"
+set "DEX_CPU_PWR_SKIP=0"
+echo.
+echo %c%[1/4] Detecting CPU...%u%
+call :DexGetCPUInfo
+if not defined DEX_CPU_NAME set "DEX_CPU_NAME=Unknown CPU"
+echo     %c%!DEX_CPU_NAME!%u%
+if defined DEX_CPU_CORES if defined DEX_CPU_THREADS echo     %grey%!DEX_CPU_CORES! cores / !DEX_CPU_THREADS! threads%u%
+echo.
+echo %c%[2/4] Applying CPU settings to the active power plan ^(AC^)...%u%
+call :DexCpuPcfg PROCTHROTTLEMIN 100 "Minimum processor state = 100 percent"
+call :DexCpuPcfg PROCTHROTTLEMAX 100 "Maximum processor state = 100 percent"
+call :DexCpuPcfg PERFBOOSTMODE 2 "Processor boost mode = Aggressive"
+call :DexCpuPcfg PERFBOOSTPOL 100 "Processor boost policy = 100"
+call :DexCpuPcfg 36687f9e-e3a5-4dbf-b1dc-15eb381c6863 0 "Energy/performance preference = 0, performance"
+call :DexCpuPcfg CPMINCORES 100 "Core parking minimum cores = 100 percent"
+powercfg /setactive SCHEME_CURRENT >nul 2>&1
+echo.
+echo %c%[3/4] Configuring Windows scheduling...%u%
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v "PowerThrottlingOff" /t REG_DWORD /d "1" /f >nul 2>&1
+echo     %sok%%DEX_DOT%%u% Windows Power Throttling off
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d "10" /f >nul 2>&1
+echo     %sok%%DEX_DOT%%u% MMCSS system responsiveness = 10 ^(multimedia reserve 10%%^)
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Priority" /t REG_DWORD /d "6" /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Scheduling Category" /t REG_SZ /d "High" /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "SFIO Priority" /t REG_SZ /d "High" /f >nul 2>&1
+echo     %sok%%DEX_DOT%%u% MMCSS "Games" task: Priority 6, Scheduling Category High
+echo.
+echo %c%[4/4] Removing leftovers written by older versions...%u%
+call :DexCpuLegacyRepair
+echo     %sok%%DEX_DOT%%u% Legacy values restored to Windows defaults ^(only if they were ours^)
+call :LogEvent "OK" "CPU optimizer applied: !DEX_CPU_PWR_OK! power settings, !DEX_CPU_PWR_SKIP! skipped"
+exit /b 0
+
+:DexCpuPcfg
+rem %1 = SUB_PROCESSOR alias or GUID, %2 = value, %3 = label (no percent signs)
+powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR %~1 %~2 >nul 2>&1
+if errorlevel 1 (
+    echo     %swn%%DEX_DOT%%u% %~3 - not supported here, skipped
+    set /a DEX_CPU_PWR_SKIP+=1
+) else (
+    echo     %sok%%DEX_DOT%%u% %~3
+    set /a DEX_CPU_PWR_OK+=1
+)
+exit /b 0
+
+:DexCpuSummary
+echo %c%Result: !DEX_CPU_PWR_OK! power settings applied, !DEX_CPU_PWR_SKIP! skipped ^(unsupported^).%u%
+echo %c%Settings take effect immediately; no restart needed.%u%
+echo.
+exit /b 0
+
+:DexRegDelIfEq
+rem %1 = key, %2 = value name, %3 = hex DWORD (e.g. 0x4).
+rem Deletes the value only when it still equals what an older version wrote.
+reg query %1 /v %2 2>nul | findstr /r /c:"REG_DWORD *%~3$" >nul
+if not errorlevel 1 reg delete %1 /v %2 /f >nul 2>&1
+exit /b 0
+
+:DexCpuLegacyRepair
+set "_dxIfeo=Microsoft\Windows NT\CurrentVersion\Image File Execution Options"
+for %%h in (SOFTWARE SOFTWARE\WOW6432Node) do (
+    for %%x in (csrss dwm) do (
+        call :DexRegDelIfEq "HKLM\%%h\!_dxIfeo!\%%x.exe\PerfOptions" CpuPriorityClass 0x4
+        call :DexRegDelIfEq "HKLM\%%h\!_dxIfeo!\%%x.exe\PerfOptions" IoPriority 0x3
+    )
+    for %%x in (lsass SearchIndexer TrustedInstaller wuauclt) do (
+        call :DexRegDelIfEq "HKLM\%%h\!_dxIfeo!\%%x.exe\PerfOptions" CpuPriorityClass 0x1
+        call :DexRegDelIfEq "HKLM\%%h\!_dxIfeo!\%%x.exe\PerfOptions" IoPriority 0x0
+    )
+    for %%x in (svchost MsMpEng MsMpEngCP) do (
+        call :DexRegDelIfEq "HKLM\%%h\!_dxIfeo!\%%x.exe\PerfOptions" CpuPriorityClass 0x1
+    )
+    call :DexRegDelIfEq "HKLM\%%h\!_dxIfeo!\audiodg.exe\PerfOptions" CpuPriorityClass 0x3
+    call :DexRegDelIfEq "HKLM\%%h\!_dxIfeo!\lsass.exe\PerfOptions" PagePriority 0x0
+)
+set "_dxIfeo="
+rem Kernel watchdog and invalid MMCSS value
+call :DexRegDelIfEq "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" DpcTimeout 0x0
+call :DexRegDelIfEq "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" "CPU Priority" 0x6
+rem AMD GPU driver key that older versions wrote from the CPU path
+call :DexRegDelIfEq "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000" PP_ThermalAutoThrottlingEnable 0x0
+rem Power-setting ranges: ValueMin/ValueMax only bound what the UI accepts.
+set "_dxPp=HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00"
+for %%g in (893dee8e-2bef-41e0-89c6-b55d0929964c bc5038f7-23e0-4960-96da-33abaf5935ec 0cc5b647-c1df-4637-891a-dec35c318583 45bcc044-d885-43e2-8605-ee0ec6e96b59) do (
+    reg add "!_dxPp!\%%g" /v "ValueMin" /t REG_DWORD /d "0" /f >nul 2>&1
+    reg add "!_dxPp!\%%g" /v "ValueMax" /t REG_DWORD /d "100" /f >nul 2>&1
+)
+reg delete "!_dxPp!\893dee8e-2bef-41e0-89c6-b55d0929964c\DefaultPowerSchemeValues\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c" /v "ValueMax" /f >nul 2>&1
+call :DexRegDelIfEq "!_dxPp!\be337238-0d82-4146-a960-4f3749d470c7" ValueMin 0x2
+reg query "!_dxPp!\75b0ae3f-bce0-45a7-8c89-c9611c25e100" /v ValueMax 2>nul | findstr /r /c:"REG_DWORD *0x3$" >nul
+if not errorlevel 1 reg add "!_dxPp!\75b0ae3f-bce0-45a7-8c89-c9611c25e100" /v "ValueMax" /t REG_DWORD /d "0xFFFFFFFF" /f >nul 2>&1
+set "_dxPp="
+exit /b 0
 
 :F
 rem Delayed expansion is already enabled globally.
@@ -6592,13 +6455,14 @@ call :DexHeader "Hardware"
 echo.
 call :DexTableHead
 call :DexRow 1 "Hardware Information" "Read-only inventory" NONE
-call :DexRow 2 "GPU Driver & Performance" "Driver services, telemetry, overlay" HIGH
+call :DexRow 2 "GPU Driver & Performance" "Telemetry, optional HAGS, cleanup" MOD
 call :DexRow 3 "Storage Acceleration" "TRIM, drive cache, defrag" MOD
 call :DexRow 4 "Memory (XMP/EXPO Check)" "Memory profile check" NONE
 call :DexRow 5 "Audio Optimization" "Lower audio latency" MOD
 call :DexRow 6 "USB Optimization" "Fewer USB suspend delays" MOD
 call :DexRow 7 "Monitor / Display Optimization" "Display latency and power" MOD
 call :DexRow 8 "Hardware Security Center" "BitLocker, Core Isolation, TPM" NONE
+call :DexRow 9 "Performance Check" "Read-only checks and tips" NONE
 echo.
 call :DexRiskLegend
 call :DexFooter
@@ -6612,6 +6476,7 @@ if "!M!"=="5" goto AudioOptimization
 if "!M!"=="6" goto USBOptimization
 if "!M!"=="7" goto MonitorOptimization
 if "!M!"=="8" goto HardwareSecurityCenter
+if "!M!"=="9" goto PerformanceCheck
 if "!M!"=="0" goto menu
 if /I "!M!"=="H" goto menu
 if /I "!M!"=="C" goto GlobalSearch
@@ -6619,6 +6484,64 @@ if /I "!M!"=="X" goto Destruct
 if /I "!M!"=="Quit" goto Destruct
 set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto HardwareMenu
+
+:PerformanceCheck
+rem Read-only. Reads settings that affect game performance and prints hints.
+rem Nothing here writes to the registry, services or power plans.
+call :SetupConsole
+call :DexHeader "Performance Check"
+echo.
+echo %c%Read-only: this screen only reads settings. Nothing is changed.%u%
+echo %c%Reading settings, this takes a few seconds...%u%
+echo.
+set "PC_WARN=0"
+set "PC_ROWS=0"
+echo %c%Power and Windows%u%
+for /f "tokens=1-4 delims=|" %%a in ('powershell -NoProfile -Command "$o=@();function Row($s,$l,$v,$h){$script:o+=($s+'|'+$l+'|'+$v+'|'+$h)};$g=(powercfg /getactivescheme) -join ' ';$id=[regex]::Match($g,'[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}').Value.ToLower();$nm=[regex]::Match($g,'\((.*)\)').Groups[1].Value;function PQ($a){$t=(powercfg /query SCHEME_CURRENT SUB_PROCESSOR $a) -join ' ';$m=[regex]::Matches($t,'0x[0-9a-fA-F]{8}');if($m.Count -ge 2){[Convert]::ToInt32($m[$m.Count-2].Value,16)}else{-1}};$st='INFO';$h='-';if($id -eq 'e9a42b02-d5df-448d-aa00-03f14749eb61' -or $id -eq '8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c' -or $id -like '44444444*'){$st='OK'}elseif($id -eq '381b4222-f694-41f0-9685-ff5bb260df2e' -or $id -eq 'a1841308-3541-4fab-bc81-f71556f20b4a'){$st='WARN';$h='Balanced and Power saver can hold clocks back in games on a desktop PC'};Row $st 'Power plan' $nm $h;$v=PQ PROCTHROTTLEMIN;if($v -ge 100){Row OK 'Min processor state (AC)' '100 percent' '-'}elseif($v -ge 0){Row INFO 'Min processor state (AC)' ([string]$v+' percent') 'Below 100 lets the CPU idle down; the CPU optimizer sets 100 at the cost of idle power'};$b=PQ PERFBOOSTMODE;$bn=@('Disabled','Enabled','Aggressive','Efficient enabled','Efficient aggressive','Aggressive at guaranteed','Efficient aggressive at guaranteed');if($b -eq 0){Row WARN 'CPU boost mode (AC)' 'Disabled' 'Turbo / Precision Boost is off, so the CPU cannot reach its top clocks'}elseif($b -gt 0 -and $b -lt 7){Row INFO 'CPU boost mode (AC)' $bn[$b] '-'};$c=PQ CPMINCORES;if($c -ge 0){Row INFO 'Core parking min cores (AC)' ([string]$c+' percent') '-'};$hw=(Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers' -ErrorAction SilentlyContinue).HwSchMode;$hv='Default (driver decides)';if($hw -eq 2){$hv='On'}elseif($hw -eq 1){$hv='Off'};Row INFO 'Hardware GPU scheduling' $hv 'Average FPS change is about 0 percent; some frame-generation features need it on';$gm=(Get-ItemProperty -Path 'HKCU:\Software\Microsoft\GameBar' -ErrorAction SilentlyContinue).AutoGameModeEnabled;if($gm -eq 0){Row INFO 'Windows Game Mode' 'Off' 'On is the Windows default and helps keep background work away from the game'}else{Row OK 'Windows Game Mode' 'On' '-'};$d=Get-CimInstance -Namespace 'root\Microsoft\Windows\DeviceGuard' -ClassName Win32_DeviceGuard -ErrorAction SilentlyContinue;if($d){if($d.VirtualizationBasedSecurityStatus -eq 2){$x='Running';if($d.SecurityServicesRunning -contains 2){$x='Running, memory integrity on'};Row INFO 'VBS / Core Isolation' $x 'Security feature that can cost a few percent in some games. Change it only in Hardware Security Center'}else{Row OK 'VBS / Core Isolation' 'Off' '-'}};$lg=0;$ifeo='HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\';foreach($p in 'csrss','dwm'){if((Get-ItemProperty -Path ($ifeo+$p+'.exe\PerfOptions') -ErrorAction SilentlyContinue).CpuPriorityClass -eq 4){$lg++}};foreach($p in 'svchost','lsass','MsMpEng'){if((Get-ItemProperty -Path ($ifeo+$p+'.exe\PerfOptions') -ErrorAction SilentlyContinue).CpuPriorityClass -eq 1){$lg++}};if((Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel' -ErrorAction SilentlyContinue).DpcTimeout -eq 0){$lg++};if(Select-String -Path ($env:windir+'\System32\drivers\etc\hosts') -Pattern 'telemetry.gfe.nvidia.com','telemetry.amd.com','survey.amd.com' -Quiet -ErrorAction SilentlyContinue){$lg++};if($lg -gt 0){Row WARN 'Leftovers from old Dex versions' ([string]$lg+' found') 'Run the CPU optimizer and GPU Driver and Performance to restore Windows defaults'}else{Row OK 'Leftovers from old Dex versions' 'None' '-'};$o" 2^>nul') do (
+    set "PC_S=%%a"
+    set "PC_L=%%b"
+    set "PC_V=%%c"
+    set "PC_H=%%d"
+    call :DexPcRow
+)
+echo.
+echo %c%Hardware%u%
+for /f "tokens=1-4 delims=|" %%a in ('powershell -NoProfile -Command "$o=@();function Row($s,$l,$v,$h){$script:o+=($s+'|'+$l+'|'+$v+'|'+$h)};$m=@(Get-CimInstance -ClassName Win32_PhysicalMemory -ErrorAction SilentlyContinue);if($m.Count -gt 0){$rated=($m | Measure-Object -Property Speed -Maximum).Maximum;$cur=($m | Measure-Object -Property ConfiguredClockSpeed -Maximum).Maximum;if($cur -gt 0 -and $rated -gt 0){if($cur + 50 -lt $rated){Row WARN 'Memory speed' ([string]$cur+' MHz, rated '+[string]$rated+' MHz') 'Likely below its rated speed. Enable XMP / EXPO in the BIOS'}else{Row OK 'Memory speed' ([string]$cur+' MHz') '-'}};if($m.Count -eq 1){Row WARN 'Memory modules' 'Single module' 'One stick usually means single-channel; a matching second stick doubles bandwidth'}else{Row OK 'Memory modules' ([string]$m.Count+' installed') '-'}};$vc=@(Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Where-Object{$_.Name -notmatch 'Microsoft|Remote|Virtual'});foreach($x in $vc){$age=-1;$dd='unknown date';if($x.DriverDate){$age=((Get-Date) - $x.DriverDate).Days;$dd=$x.DriverDate.ToString('yyyy-MM-dd')};$hint='-';$st='INFO';if($age -gt 365){$st='WARN';$hint='Driver is over a year old; check the vendor site for a newer one'}elseif($age -ge 0){$st='OK'};Row $st ('GPU driver: '+$x.Name) ($x.DriverVersion+', '+$dd) $hint;if($x.CurrentRefreshRate){Row INFO 'Refresh rate' ([string]$x.CurrentRefreshRate+' Hz') 'Set the highest rate your monitor supports in Windows display settings'}};$o" 2^>nul') do (
+    set "PC_S=%%a"
+    set "PC_L=%%b"
+    set "PC_V=%%c"
+    set "PC_H=%%d"
+    call :DexPcRow
+)
+echo.
+echo %grey%%DEX_RULE%%u%
+if "!PC_ROWS!"=="0" (
+    echo %swn%%DEX_DOT%%u% %c%Could not read the settings on this system.%u%
+) else if "!PC_WARN!"=="0" (
+    echo %sok%%DEX_DOT%%u% %c%Nothing needs attention.%u%
+) else (
+    echo %swn%%DEX_DOT%%u% %c%!PC_WARN! item^(s^) worth a look. The hints above say what to change.%u%
+)
+echo.
+echo %grey%Not readable from Windows: Resizable BAR / Above 4G Decoding, PBO and BIOS power%u%
+echo %grey%limits. Check them in the BIOS or with GPU-Z / HWiNFO64.%u%
+echo %c%Real FPS gains come from the driver, in-game settings, cooling, XMP / EXPO and the%u%
+echo %c%right power plan - not from registry tweaks.%u%
+echo.
+echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
+pause >nul
+goto HardwareMenu
+
+:DexPcRow
+set /a PC_ROWS+=1
+set "_pcd=%grey%"
+if /I "!PC_S!"=="OK" set "_pcd=%sok%"
+if /I "!PC_S!"=="WARN" (set "_pcd=%swn%" & set /a PC_WARN+=1)
+set "_pcl=!PC_L!                                  "
+set "_pcl=!_pcl:~0,32!"
+echo  !_pcd!%DEX_DOT%%u% %c%!_pcl!%u%!PC_V!
+if not "!PC_H!"=="-" echo      %grey%!PC_H!%u%
+exit /b 0
 
 :MonitorOptimization
 call :SetupConsole
@@ -7913,7 +7836,7 @@ set "GPU_VENDOR=NONE"
 set "GPU_NAME="
 for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name" 2^>nul') do (
     echo(%%i| findstr /i "NVIDIA" >nul && (set "GPU_VENDOR=NVIDIA" & set "GPU_NAME=%%i")
-    echo(%%i| findstr /i "AMD Radeon" >nul && (set "GPU_VENDOR=AMD" & set "GPU_NAME=%%i")
+    echo(%%i| findstr /i "AMD Radeon" >nul && if not "!GPU_VENDOR!"=="NVIDIA" (set "GPU_VENDOR=AMD" & set "GPU_NAME=%%i")
 )
 
 if "!GPU_VENDOR!"=="NONE" (
@@ -7924,16 +7847,23 @@ if "!GPU_VENDOR!"=="NONE" (
 )
 echo.
 
-echo %c%This will apply only documented, reversible optimizations:%u%
-echo %c%- Disable vendor telemetry services and scheduled tasks%u%
-echo %c%- Enable Hardware-Accelerated GPU Scheduling ^(official Windows feature^)%u%
-echo %c%- Prioritize the foreground game in the Windows multimedia scheduler%u%
-echo %c%- Block known telemetry domains for your GPU vendor%u%
+echo %c%What this does:%u%
+echo %c%- Turn off vendor telemetry and crash-report services/tasks ^(less background%u%
+echo %c%  activity; no measurable FPS change^)%u%
+echo %c%- Optional: stop GeForce Experience / NVIDIA App from starting with Windows%u%
+echo %c%- Optional: Hardware-Accelerated GPU Scheduling ^(HAGS^). Average FPS gain is about%u%
+echo %c%  0%%; it is only needed by some frame-generation features%u%
+echo %c%- Offer to remove hosts-file blocks added by older versions of this tool%u%
 echo.
 echo %orange%%underline%What this will NOT do:%u%
+echo %c%- Will not edit the hosts file to block domains ^(that breaks GeForce Experience login^)%u%
+echo %c%- Will not disable NVIDIA display services or the NVIDIA Control Panel container%u%
 echo %c%- Will not download or install any driver from a third party%u%
 echo %c%- Will not force the GPU to run at maximum clock 24/7%u%
 echo %c%- Will not disable driver crash recovery ^(TDR^) or PCIe protections%u%
+echo.
+echo %c%Real FPS gains come from the driver version, GPU settings in the game, ReBAR in BIOS%u%
+echo %c%and keeping the GPU cool - not from registry tweaks.%u%
 echo.
 call :DexChoice "YN" "%c%Apply GPU optimizations? (Y/N)%u%"
 if errorlevel 2 (
@@ -7943,8 +7873,12 @@ if errorlevel 2 (
 )
 
 echo.
-call :DexChoice "YN" "%c%Also disable the companion app overlay/ShadowPlay and its auto-start? (Y/N)%u%"
+call :DexChoice "YN" "%c%Also stop the companion app from starting with Windows? (Y/N)%u%"
 if errorlevel 2 (set "GPU_DISABLE_APP=false") else (set "GPU_DISABLE_APP=true")
+
+echo.
+call :DexChoice "YN" "%c%Enable Hardware-Accelerated GPU Scheduling - no FPS gain, needs restart? (Y/N)%u%"
+if errorlevel 2 (set "GPU_HAGS=false") else (set "GPU_HAGS=true")
 
 echo.
 echo %c%+==============================================================================+
@@ -7961,12 +7895,14 @@ if "!GPU_VENDOR!"=="AMD" echo %c%  Official downloads: https://www.amd.com/en/su
 
 echo.
 echo %c%[2/5] Disabling telemetry services and tasks...%u%
+rem NVDisplay.ContainerLocalSystem and NvContainerLocalSystem host the NVIDIA
+rem Control Panel and display features, so only the telemetry container is touched.
 if "!GPU_VENDOR!"=="NVIDIA" (
-    for %%S in (nvcontainer NVDisplay.Container NvContainerLocalSystem NVDisplay.ContainerLocalSystem NvTelemetryContainer) do (
+    for %%S in (NvTelemetryContainer) do (
         sc query "%%S" >nul 2>&1 && (
             sc stop "%%S" >nul 2>&1
             sc config "%%S" start= disabled >nul 2>&1
-            echo %c%  -^> Disabled: %%S%u%
+            echo %c%  -^> Disabled: %%S ^(undo: sc config %%S start= auto^)%u%
         )
     )
     for %%T in ("NvTmRep_CrashReport1_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}" "NvTmRep_CrashReport2_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}" "NvTmRep_CrashReport3_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}" "NvTmRep_CrashReport4_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}") do (
@@ -7976,20 +7912,18 @@ if "!GPU_VENDOR!"=="NVIDIA" (
     reg add "HKLM\SOFTWARE\NVIDIA Corporation\Global\FTS" /v "EnableRID44231" /t REG_DWORD /d "0" /f >nul 2>&1
 )
 if "!GPU_VENDOR!"=="AMD" (
-    for %%S in ("AMD Crash Defender Service" "AMD External Events Utility" "AMD Log Utility") do (
+    for %%S in ("AMD Crash Defender Service") do (
         sc query %%S >nul 2>&1 && (
             sc stop %%S >nul 2>&1
             sc config %%S start= demand >nul 2>&1
             echo %c%  -^> Set to manual: %%S%u%
         )
     )
-    for %%T in (AMDLinkUpdate StartCN StartDVR) do (
+    for %%T in (AMDLinkUpdate) do (
         schtasks /query /tn "%%T" >nul 2>&1 && schtasks /change /tn "%%T" /disable >nul 2>&1
     )
-    reg add "HKLM\SOFTWARE\AMD\Install" /v AUEP /t REG_DWORD /d 0 /f >nul 2>&1
-    reg add "HKLM\SOFTWARE\AMD\Install" /v UsageTracking /t REG_DWORD /d 0 /f >nul 2>&1
 )
-echo %c%  + Telemetry services and tasks disabled%u%
+if "!GPU_VENDOR!"=="NONE" (echo %c%  -^> No NVIDIA or AMD GPU detected, nothing to change%u%) else (echo %c%  + Telemetry services and tasks handled%u%)
 
 echo.
 echo %c%[3/5] Managing companion app ^(GeForce Experience / AMD Software^)...%u%
@@ -8003,14 +7937,12 @@ if "!GPU_DISABLE_APP!"=="true" (
                 reg delete "%%R" /v %%V /f >nul 2>&1
             )
         )
-        reg add "HKCU\SOFTWARE\NVIDIA Corporation\NVIDIA GeForce Experience\ShadowPlay" /v "ShadowPlayEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
-        reg add "HKCU\SOFTWARE\NVIDIA Corporation\NVIDIA App\NVIDIAOverlay" /v "OverlayEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
-        echo %c%  + Overlay/ShadowPlay disabled; app kept installed but no longer auto-starts%u%
+        echo %c%  + App kept installed; it no longer starts with Windows%u%
+        echo %c%  -^> Turn the overlay/ShadowPlay off inside the app ^(Settings^) if you do not use it%u%
     )
     if "!GPU_VENDOR!"=="AMD" (
-        reg add "HKLM\SOFTWARE\AMD\Install" /v AutoUpdate /t REG_DWORD /d 0 /f >nul 2>&1
-        echo %c%  -^> AMD Software Service kept active so the control panel still works%u%
-        echo %c%  + Auto-update disabled%u%
+        echo %c%  -^> AMD Software has no safe off switch here; it was left untouched%u%
+        echo %c%  -^> Turn the overlay and auto-update off inside AMD Software settings%u%
     )
     if "!GPU_VENDOR!"=="NONE" echo %c%  -^> No vendor companion app detected%u%
 ) else (
@@ -8018,43 +7950,28 @@ if "!GPU_DISABLE_APP!"=="true" (
 )
 
 echo.
-echo %c%[4/5] Applying documented Windows GPU performance settings...%u%
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" /v "HwSchMode" /t REG_DWORD /d "2" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "GPU Priority" /t REG_DWORD /d "8" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Priority" /t REG_DWORD /d "6" /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Scheduling Category" /t REG_SZ /d "High" /f >nul 2>&1
-echo %c%  + Hardware-Accelerated GPU Scheduling enabled%u%
-echo %c%  + Foreground game prioritized in the Windows multimedia scheduler%u%
+echo %c%[4/5] Hardware-Accelerated GPU Scheduling ^(HAGS^)...%u%
+if "!GPU_HAGS!"=="true" (
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" /v "HwSchMode" /t REG_DWORD /d "2" /f >nul 2>&1
+    echo %c%  + HAGS enabled ^(Windows ignores it if the GPU or driver does not support it^)%u%
+    call :MarkRebootRequired "GPU optimizer enabled HAGS"
+) else (
+    echo %c%  -^> HAGS left unchanged%u%
+)
 
 echo.
-echo %c%[5/5] Blocking known telemetry domains...%u%
-set "hosts_file=%windir%\System32\drivers\etc\hosts"
-set "gpu_domains="
-if "!GPU_VENDOR!"=="NVIDIA" set "gpu_domains=telemetry.gfe.nvidia.com services.gfe.nvidia.com events.gfe.nvidia.com telemetry-web.gfe.nvidia.com"
-if "!GPU_VENDOR!"=="AMD" set "gpu_domains=telemetry.amd.com content-delivery.amd.com survey.amd.com"
-if defined gpu_domains (
-    for %%d in (!gpu_domains!) do (
-        findstr /C:"%%d" "%hosts_file%" >nul 2>&1 || (
-            echo 0.0.0.0 %%d >> "%hosts_file%" 2>nul
-            echo %c%  -^> Blocked: %%d%u%
-        )
-    )
-    echo %c%  + Telemetry domains blocked%u%
-) else (
-    echo %c%  -^> No vendor detected, nothing to block%u%
-)
+echo %c%[5/5] Checking the hosts file for blocks added by older versions...%u%
+call :DexGpuHostsCleanup
 
 echo.
 echo %c%+==============================================================================+
 echo ^|                        GPU OPTIMIZATION COMPLETED                            ^|
 echo +==============================================================================+%u%
 echo.
-echo %c%Applied ^(documented and reversible^):%u%
-echo %c%- Telemetry services and scheduled tasks disabled%u%
-echo %c%- Hardware-Accelerated GPU Scheduling enabled%u%
-echo %c%- Foreground game prioritized in the Windows scheduler%u%
-echo %c%- Vendor telemetry domains blocked%u%
-if "!GPU_DISABLE_APP!"=="true" echo %c%- Companion app overlay and auto-start disabled%u%
+echo %c%Applied:%u%
+echo %c%- Vendor telemetry services and scheduled tasks handled%u%
+if "!GPU_DISABLE_APP!"=="true" echo %c%- Companion app no longer starts with Windows%u%
+if "!GPU_HAGS!"=="true" echo %c%- Hardware-Accelerated GPU Scheduling enabled%u%
 echo.
 echo %c%Not touched, by design:%u%
 echo %c%- Driver crash recovery ^(TDR^) and PCIe protections%u%
@@ -8062,13 +7979,60 @@ echo %c%- GPU clock/power state management - use MSI Afterburner or the vendor%u
 echo %c%  app for that, where the change is visible and reversible%u%
 echo %c%- No third-party driver was downloaded or installed%u%
 echo.
-echo %orange%A restart is recommended for HAGS to take full effect.%u%
+if "!GPU_HAGS!"=="true" echo %orange%A restart is required for HAGS to take effect.%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
 pause >nul
 set "GPU_JUMP=!GPU_RETURN!"
 set "GPU_RETURN="
 goto !GPU_JUMP!
+
+rem ---------------------------------------------------------------------------
+rem Older versions appended "0.0.0.0 <domain>" lines for GPU vendor telemetry.
+rem That also blocks GeForce Experience login/updates, so offer to remove them.
+rem ---------------------------------------------------------------------------
+:DexGpuHostsCleanup
+set "_dxHosts=%windir%\System32\drivers\etc\hosts"
+set "_dxPatFile=%TEMP%\dex_gpu_hosts_patterns.txt"
+> "!_dxPatFile!" (
+    echo 0.0.0.0 telemetry.gfe.nvidia.com
+    echo 0.0.0.0 services.gfe.nvidia.com
+    echo 0.0.0.0 events.gfe.nvidia.com
+    echo 0.0.0.0 telemetry-web.gfe.nvidia.com
+    echo 0.0.0.0 telemetry.amd.com
+    echo 0.0.0.0 content-delivery.amd.com
+    echo 0.0.0.0 survey.amd.com
+)
+findstr /l /g:"!_dxPatFile!" "!_dxHosts!" >nul 2>&1
+if errorlevel 1 (
+    echo %c%  -^> No leftover blocks found%u%
+    del /q "!_dxPatFile!" >nul 2>&1
+    exit /b 0
+)
+echo %c%  Found GPU telemetry domain blocks written by an older version of this tool.%u%
+echo %c%  They can break GeForce Experience / AMD Software login and updates.%u%
+call :DexChoice "YN" "%c%Remove those lines from the hosts file? (Y/N)%u%"
+if errorlevel 2 (
+    echo %c%  -^> hosts file left unchanged%u%
+    del /q "!_dxPatFile!" >nul 2>&1
+    exit /b 0
+)
+copy /y "!_dxHosts!" "!_dxHosts!.dexbak" >nul 2>&1
+findstr /v /l /g:"!_dxPatFile!" "!_dxHosts!" > "!_dxHosts!.dextmp" 2>nul
+if errorlevel 1 (
+    echo %swn%%DEX_DOT%%u% Could not rewrite the hosts file, nothing changed
+) else (
+    copy /y "!_dxHosts!.dextmp" "!_dxHosts!" >nul 2>&1
+    if errorlevel 1 (
+        echo %swn%%DEX_DOT%%u% Could not write the hosts file, nothing changed
+    ) else (
+        echo %sok%%DEX_DOT%%u% Blocks removed ^(backup: hosts.dexbak in the same folder^)
+        call :LogEvent "OK" "Removed legacy GPU telemetry blocks from hosts"
+    )
+)
+del /q "!_dxHosts!.dextmp" >nul 2>&1
+del /q "!_dxPatFile!" >nul 2>&1
+exit /b 0
 
 :StorageAcceleration
 call :SetupConsole
@@ -15876,6 +15840,7 @@ exit /b
 :BuildSearchCatalog
 > "%DEX_CATALOG%" echo OPT Optimizations - cleanup, CPU, GPU, network, memory and services
 >>"%DEX_CATALOG%" echo HW Hardware - information, storage, monitor, audio, USB and drivers
+>>"%DEX_CATALOG%" echo PERF Performance Check - read-only power plan, HAGS, VBS, XMP and driver age checks
 >>"%DEX_CATALOG%" echo WIN Windows - features, registry, Explorer, Defender and Search
 >>"%DEX_CATALOG%" echo PRIV Privacy - data cleanup, telemetry, permissions and advertising
 >>"%DEX_CATALOG%" echo ADV Advanced - toolbox, games, tasks, MSI, affinity, DirectX and OBS
@@ -15914,6 +15879,7 @@ set /p "DEX_SEARCH_CODE=Code: "
 if /I "!DEX_SEARCH_CODE!"=="0" goto menu
 if /I "!DEX_SEARCH_CODE!"=="OPT" goto TweaksMenu
 if /I "!DEX_SEARCH_CODE!"=="HW" goto HardwareMenu
+if /I "!DEX_SEARCH_CODE!"=="PERF" goto PerformanceCheck
 if /I "!DEX_SEARCH_CODE!"=="WIN" goto WindowsMenu
 if /I "!DEX_SEARCH_CODE!"=="PRIV" goto PrivacyMenu
 if /I "!DEX_SEARCH_CODE!"=="ADV" goto AdvancedMenu
