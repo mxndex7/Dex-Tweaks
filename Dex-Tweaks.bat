@@ -523,7 +523,14 @@ if defined c if not defined DEX_COLOR_LOADED (
     >"%DEX_COLOR_FILE%" echo(!c!
     set "DEX_COLOR_LOADED=1"
 )
-call :RefreshDashboardCache
+rem The status values cost a PowerShell start, so they are refreshed only on
+rem the first visit, after coming back from a screen that can change the
+rem system (every entry below except Benchmark and History clears the flag,
+rem and so does Global Search, which can lead anywhere), or on R.
+if not defined DEX_DASH_READY (
+    call :RefreshDashboardCache
+    set "DEX_DASH_READY=1"
+)
 set "_dxrb="
 if /I "!DEX_REBOOT_STATUS!"=="Required" set "_dxrb=  %swn%reboot pending%u%"
 call :DexHeader "Control Panel"
@@ -537,24 +544,25 @@ echo  %c%[9]%u% Backup / Restore      %c%[6]%u% Privacy               %c%[D]%u% 
 echo                            %c%[7]%u% Advanced              %c%[E]%u% Restart Center!_dxrb!
 echo.
 echo %grey%%DEX_RULE%%u%
-echo  %red%[X]%u% Exit
+echo  %c%[R]%u% Refresh status    %red%[X]%u% Exit
 echo.
-call :DexChoice "123456789ABCDEX" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+call :DexChoice "123456789ABCDEXR" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+if errorlevel 16 set "DEX_DASH_READY=" & goto menu
 if errorlevel 15 goto Destruct
-if errorlevel 14 goto RestartCenter
+if errorlevel 14 set "DEX_DASH_READY=" & goto RestartCenter
 if errorlevel 13 goto HistoryCenter
-if errorlevel 12 goto GlobalSearch
+if errorlevel 12 set "DEX_DASH_READY=" & goto GlobalSearch
 if errorlevel 11 goto BenchmarkCenter
-if errorlevel 10 goto HealthCenter
-if errorlevel 9 goto BackupManager
-if errorlevel 8 goto ChangeCenter
-if errorlevel 7 goto AdvancedMenu
-if errorlevel 6 goto PrivacyMenu
-if errorlevel 5 goto WindowsMenu
-if errorlevel 4 goto HardwareMenu
-if errorlevel 3 goto TweaksMenu
-if errorlevel 2 goto ProfilesCenter
-if errorlevel 1 goto DashboardCenter
+if errorlevel 10 set "DEX_DASH_READY=" & goto HealthCenter
+if errorlevel 9 set "DEX_DASH_READY=" & goto BackupManager
+if errorlevel 8 set "DEX_DASH_READY=" & goto ChangeCenter
+if errorlevel 7 set "DEX_DASH_READY=" & goto AdvancedMenu
+if errorlevel 6 set "DEX_DASH_READY=" & goto PrivacyMenu
+if errorlevel 5 set "DEX_DASH_READY=" & goto WindowsMenu
+if errorlevel 4 set "DEX_DASH_READY=" & goto HardwareMenu
+if errorlevel 3 set "DEX_DASH_READY=" & goto TweaksMenu
+if errorlevel 2 set "DEX_DASH_READY=" & goto ProfilesCenter
+if errorlevel 1 set "DEX_DASH_READY=" & goto DashboardCenter
 goto menu
 
 :Comingsoon
@@ -15827,6 +15835,7 @@ exit /b
 exit /b
 
 :GlobalSearch
+set "DEX_DASH_READY="
 call :SetupConsole
 call :DexHeader "Global Search"
 echo.
