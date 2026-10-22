@@ -405,7 +405,12 @@ echo  %c%!_dxk!%u%!_dxn!%grey%!_dxd!%u%!_dxb!
 exit /b
 
 :DexTableHead
-echo  %grey%KEY  TWEAK                         WHAT IT DOES                       RISK%u%
+rem Usage: call :DexTableHead ["COLUMN"]   (default TWEAK; screens that are not tweak lists pass ACTION, ITEM...)
+set "_dxth=%~1"
+if not defined _dxth set "_dxth=TWEAK"
+set "_dxth=!_dxth!                              "
+set "_dxth=!_dxth:~0,30!"
+echo  %grey%KEY  !_dxth!WHAT IT DOES                       RISK%u%
 exit /b
 
 :DexRiskLegend
@@ -416,8 +421,36 @@ echo  %grey%The badge shows the worst case of each tweak.%u%
 exit /b
 
 :DexFooter
+rem Usage: call :DexFooter [KEYS] [key "Label" ...]
+rem   KEYS  standard keys to show, any of 0 H C X (default 0HCX); - shows none.
+rem         Leave out a key the screen already uses for something else, so the
+rem         footer never advertises a function that key does not have there.
+rem   key "Label"  extra keys of the screen, printed on a line above the
+rem         standard keys; a "/" in place of a key starts a new line.
+set "_dxfk=%~1"
+if not defined _dxfk set "_dxfk=0HCX"
+set "_dxfx="
+set "_dxfl="
 echo %grey%%DEX_RULE%%u%
-echo  %c%[0]%u% Back    %c%[H]%u% Main menu    %c%[C]%u% Search    %red%[X]%u% Exit
+:DexFooterExtra
+if "%~2"=="" goto DexFooterKeys
+if "%~2"=="/" (
+    if defined _dxfx echo  !_dxfx!
+    set "_dxfx="
+    shift /2
+    goto DexFooterExtra
+)
+set "_dxfx=!_dxfx!%c%[%~2]%u% %~3    "
+shift /2
+shift /2
+goto DexFooterExtra
+:DexFooterKeys
+if defined _dxfx echo  !_dxfx!
+if not "!_dxfk:0=!"=="!_dxfk!" set "_dxfl=!_dxfl!%c%[0]%u% Back    "
+if not "!_dxfk:H=!"=="!_dxfk!" set "_dxfl=!_dxfl!%c%[H]%u% Main menu    "
+if not "!_dxfk:C=!"=="!_dxfk!" set "_dxfl=!_dxfl!%c%[C]%u% Search    "
+if not "!_dxfk:X=!"=="!_dxfk!" set "_dxfl=!_dxfl!%red%[X]%u% Exit"
+if defined _dxfl echo  !_dxfl!
 if defined DEX_NOTE echo  %red%!DEX_NOTE!%u%
 set "DEX_NOTE="
 echo.
@@ -469,7 +502,8 @@ if not defined DEX_CPU_IS_INTEL if defined DEX_CPU_MANUFACTURER echo(!DEX_CPU_MA
 set "DEX_CPU_CACHED=1"
 goto :eof
 
-:DisplayBanner
+:DexHardwareNames
+rem Sets CPUName and GPUName (once) for Hardware Information.
 if not defined CPUName (
     call :DexGetCPUInfo
     if defined DEX_CPU_NAME set "CPUName=!DEX_CPU_NAME!"
@@ -481,25 +515,6 @@ if not defined GPUName (
         if not "%%G"=="" set "GPUName=%%G"
     )
 )
-
-:GotGPU
-echo.
-echo        %c%######+ #######+##+  ##+ %u%%white%########+ ##+       ##+#######+ #####+ ##+  ##+ ######+
-echo        %c%##+==##+##+====++##+##++ %u%%white%+==##+==+ ##^|  ##+  ##^|##+====+##+==##+##^| ##++##+====+
-echo        %c%##^|  ##^|#####+   +###++  %u%%white%   ##^|    +##+####+##++#####+  #######^|#####=+ +#####+
-echo        %c%##^|  ##^|##+==+   ##+##+  %u%%white%   ##^|     ####+=####^| ##+==+  ##+==##^|##+=##+  +===##+
-echo        %c%######++#######+##+++##+ %u%%white%   ##^|     +##++ +##++ #######+##^|  ##^|##^| +##+######++
-echo        %c%+=====+ +======++=+  +=+ %u%%white%   +=+      +=+   +=+  +======++=+  +=++=+  +=++=====+
-echo.
-echo.
-echo                                 %c%User:%u%%white% %username%%u%     %c%Date:%u%%white% %date%%u%
-echo.
-echo.
-echo                   %c%GPU:%u%%white% %GPUName% %u%    %c%CPU:%u%%white% %CPUName%%u%
-echo.
-echo.
-echo                                %c%Dex%u%%white% Tweaks%u%%c% is a batch script that optimizes your system%u%
-echo                                      %c%to provide the best gaming experience possible%u%
 goto :eof
 
 :menu
@@ -508,7 +523,14 @@ if defined c if not defined DEX_COLOR_LOADED (
     >"%DEX_COLOR_FILE%" echo(!c!
     set "DEX_COLOR_LOADED=1"
 )
-call :RefreshDashboardCache
+rem The status values cost a PowerShell start, so they are refreshed only on
+rem the first visit, after coming back from a screen that can change the
+rem system (every entry below except Benchmark and History clears the flag,
+rem and so does Global Search, which can lead anywhere), or on R.
+if not defined DEX_DASH_READY (
+    call :RefreshDashboardCache
+    set "DEX_DASH_READY=1"
+)
 set "_dxrb="
 if /I "!DEX_REBOOT_STATUS!"=="Required" set "_dxrb=  %swn%reboot pending%u%"
 call :DexHeader "Control Panel"
@@ -522,39 +544,36 @@ echo  %c%[9]%u% Backup / Restore      %c%[6]%u% Privacy               %c%[D]%u% 
 echo                            %c%[7]%u% Advanced              %c%[E]%u% Restart Center!_dxrb!
 echo.
 echo %grey%%DEX_RULE%%u%
-echo  %red%[X]%u% Exit
+echo  %c%[R]%u% Refresh status    %red%[X]%u% Exit
 echo.
-call :DexChoice "123456789ABCDEX" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+call :DexChoice "123456789ABCDEXR" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+if errorlevel 16 set "DEX_DASH_READY=" & goto menu
 if errorlevel 15 goto Destruct
-if errorlevel 14 goto RestartCenter
+if errorlevel 14 set "DEX_DASH_READY=" & goto RestartCenter
 if errorlevel 13 goto HistoryCenter
-if errorlevel 12 goto GlobalSearch
+if errorlevel 12 set "DEX_DASH_READY=" & goto GlobalSearch
 if errorlevel 11 goto BenchmarkCenter
-if errorlevel 10 goto HealthCenter
-if errorlevel 9 goto BackupManager
-if errorlevel 8 goto ChangeCenter
-if errorlevel 7 goto AdvancedMenu
-if errorlevel 6 goto PrivacyMenu
-if errorlevel 5 goto WindowsMenu
-if errorlevel 4 goto HardwareMenu
-if errorlevel 3 goto TweaksMenu
-if errorlevel 2 goto ProfilesCenter
-if errorlevel 1 goto DashboardCenter
+if errorlevel 10 set "DEX_DASH_READY=" & goto HealthCenter
+if errorlevel 9 set "DEX_DASH_READY=" & goto BackupManager
+if errorlevel 8 set "DEX_DASH_READY=" & goto ChangeCenter
+if errorlevel 7 set "DEX_DASH_READY=" & goto AdvancedMenu
+if errorlevel 6 set "DEX_DASH_READY=" & goto PrivacyMenu
+if errorlevel 5 set "DEX_DASH_READY=" & goto WindowsMenu
+if errorlevel 4 set "DEX_DASH_READY=" & goto HardwareMenu
+if errorlevel 3 set "DEX_DASH_READY=" & goto TweaksMenu
+if errorlevel 2 set "DEX_DASH_READY=" & goto ProfilesCenter
+if errorlevel 1 set "DEX_DASH_READY=" & goto DashboardCenter
 goto menu
 
 :Comingsoon
 call :SetupConsole
-call :DisplayBanner
+call :DexHeader "Coming Soon"
 echo.
+echo  %c%This function is not available yet.%u%
+echo  %grey%It will be available soon in a future update.%u%
 echo.
-echo                              %c%This function is not available yet.%u%
-echo.
-echo                              %c%It will be available soon in a future update.%u%
-echo.
-echo.
-echo.
-echo.
-echo                                                 %red%[ Press any key to go back ]
+echo %grey%%DEX_RULE%%u%
+echo  %grey%Press any key to go back.%u%
 pause >nul
 if defined COMINGSOON_BACK (
     set "COMINGSOON_TARGET=%COMINGSOON_BACK%"
@@ -565,28 +584,26 @@ goto menu
 
 :More
 call :SetupConsole
-call :DisplayBanner
+call :DexHeader "More"
 echo.
+call :DexTableHead "ITEM"
+call :DexRow 1 "About" "Who makes Dex Tweaks" NONE
+call :DexRow 2 "Disclaimer" "Use at your own risk" NONE
+call :DexRow 3 "Updates" "Opens the release page" NONE
+call :DexRow 4 "Back" "Return to the main menu" NONE
 echo.
-echo                                                 [%c%1%u%] About     [%c%2%u%] Disclaimer
-echo.
-echo                                                 [%c%3%u%] Updates   [%c%4%u%] Back
-echo.
-echo.
-echo.
-echo.
-echo                                                       %c%[ X to close ]%u%
-echo.
-set /p M="%c%Choose an option >%u% "
-set choice=%errorlevel%
+call :DexFooter
+set "M="
+set /p M=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!M!"=="1" goto about
 if "!M!"=="2" goto disclaimer
 if "!M!"=="3" goto changelog
 if "!M!"=="4" goto menu
-if "!M!"=="X" goto Destruct
-if "!M!"=="x" goto Destruct
-echo %red%Invalid selection. Please try again.%u%
-pause >nul
+if "!M!"=="0" goto menu
+if /I "!M!"=="H" goto menu
+if /I "!M!"=="C" goto GlobalSearch
+if /I "!M!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto More
 
 :about
@@ -671,7 +688,7 @@ goto More
 :Backup
 goto BackupManager
 call :SetupConsole
-call :DisplayBanner
+call :DexHeader "Backup"
 echo.
 echo.
 echo.
@@ -1419,40 +1436,25 @@ goto TweaksMenu
 
 :K
 call :SetupConsole
+call :DexHeader "Custom Power Plan"
 echo.
+call :DexTableHead "PLAN"
+call :DexRow 1 "Desktop Power Plan" "Gaming PCs: max performance" MOD
+call :DexRow 2 "Laptop Power Plan" "Laptops: balanced, saves battery" MOD
+call :DexRow 3 "View Current Plan" "Shows the active plan" NONE
 echo.
-echo %c%+==============================================================================+
-echo ^|                           CUSTOM POWER PLAN OPTIMIZER                        ^|
-echo +==============================================================================+%u%
-echo.
-echo %c%Choose your power plan optimization type:%u%
-echo.
-echo %c%                           +================================+
-echo                            ^|      [1] Desktop Power Plan    ^|
-echo                            ^|      [2] Laptop Power Plan     ^|
-echo                            ^|      [3] View Current Plan     ^|
-echo                            ^|                                ^|
-echo                            ^|      [0] Return to Main Menu   ^|
-echo                            +================================+%u%
-echo.
-echo %c%Desktop Plan: Maximum performance, no power saving ^(recommended for gaming PCs^)%u%
-echo %c%Laptop Plan: Balanced performance with battery optimization ^(recommended for laptops^)%u%
-echo.
-set /p choice="%c%Select your power plan type >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "choice="
+set /p choice=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!choice!"=="0" goto TweaksMenu
 if "!choice!"=="1" goto DesktopPowerPlan
 if "!choice!"=="2" goto LaptopPowerPlan
 if "!choice!"=="3" goto ViewCurrentPlan
-cls
-echo.
-echo %red%+==============================================================================+
-echo ^|                                INVALID INPUT                                 ^|
-echo +==============================================================================+%u%
-echo.
-echo %c%Please select a valid option [0-3] from the menu.%u%
-echo.
-echo %c%========================== PRESS ANY KEY TO RETRY ==========================%u%
-pause >nul
+if /I "!choice!"=="H" goto menu
+if /I "!choice!"=="C" goto GlobalSearch
+if /I "!choice!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto K
 
 :ViewCurrentPlan
@@ -2273,40 +2275,27 @@ goto TweaksMenu
 
 :C
 call :SetupConsole
+call :DexHeader "GPU Optimizations"
 echo.
+echo  %grey%Each option applies tweaks tailored to that GPU vendor.%u%
 echo.
-echo %c%+==============================================================================+
-echo ^|                            GPU PERFORMANCE OPTIMIZER                         ^|
-echo +==============================================================================+%u%
+call :DexTableHead "VENDOR"
+call :DexRow 1 "AMD Graphics Card" "Radeon-specific tweaks" MOD
+call :DexRow 2 "NVIDIA Graphics Card" "Standard or experimental tweaks" HIGH
+call :DexRow 3 "Intel Graphics Card" "Intel-specific tweaks" MOD
 echo.
-echo %c%Select your graphics card manufacturer for optimized performance tweaks:%u%
-echo.
-echo %c%                           +================================+
-echo                            ^|    [1] %red%AMD%u%%c% Graphics Card       ^|
-echo                            ^|    [2] %green%NVIDIA%u%%c% Graphics Card    ^|
-echo                            ^|    [3] %blue%Intel%u%%c% Graphics Card     ^|
-echo                            ^|                                ^|
-echo                            ^|    [0] Return to Main Menu     ^|
-echo                            +================================+%u%
-echo.
-echo %c%Note: These optimizations are specifically tailored for each GPU vendor%u%
-echo %c%and will apply manufacturer-specific performance enhancements.%u%
-echo.
-set /p choice="%c%Select your GPU manufacturer >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "choice="
+set /p choice=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!choice!"=="0" goto TweaksMenu
 if "!choice!"=="1" goto AMDGPU
 if "!choice!"=="2" goto NVIDIAGPU
 if "!choice!"=="3" goto INTELGPU
-cls
-echo.
-echo %red%+==============================================================================+
-echo ^|                                INVALID INPUT                                 ^|
-echo +==============================================================================+%u%
-echo.
-echo %c%Please select a valid option [0-3] from the menu.%u%
-echo.
-echo %c%========================== PRESS ANY KEY TO RETRY ==========================%u%
-pause >nul
+if /I "!choice!"=="H" goto menu
+if /I "!choice!"=="C" goto GlobalSearch
+if /I "!choice!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto C
 
 :INTELGPU
@@ -2319,33 +2308,28 @@ goto GPUOptimizer
 
 :NVIDIAGPU
 call :SetupConsole
+call :DexHeader "NVIDIA GPU"
 echo.
+echo  %grey%Tip: Advanced ^> Performance Toolkit ^> Driver Restore Point before installing%u%
+echo  %grey%or replacing a GPU driver, on top of the automatic Expert Mode snapshot.%u%
 echo.
-echo %c%+==============================================================================+
-echo ^|                         %green%NVIDIA%u%%c% GPU PERFORMANCE OPTIMIZER                     ^|
-echo +==============================================================================+%u%
+call :DexTableHead "MODE"
+call :DexRow 1 "Standard Optimizations" "Profile Inspector, driver, latency" MOD
+call :DexRow 2 "Maximum Performance DWORDs" "No power management, more heat" HIGH
+call :DexRow 3 "Revert Experimental DWORDs" "Undoes option 2" LOW
 echo.
-echo %c%                        +==========================================+
-echo                         ^|  [1] Standard NVIDIA Optimizations      ^|
-echo                         ^|  [2] Maximum Performance DWORDs         ^|
-echo                         ^|      %red%^(Experimental - High risk^)%u%%c%         ^|
-echo                         ^|  [3] Revert Experimental DWORDs         ^|
-echo                         ^|                                         ^|
-echo                         ^|  [0] Back to GPU Menu                   ^|
-echo                         +==========================================+%u%
-echo.
-echo %c%Standard:%u% Profile Inspector + driver tweaks + latency optimizations
-echo %c%Experimental:%u% %red%Disables ALL NVIDIA power management. Higher heat + power draw.%u%
-echo %c%Tip:%u% Advanced ^> Performance Toolkit ^> Driver Restore Point before installing or%u%
-echo %c%     replacing your GPU driver, in addition to the automatic Expert Mode snapshot.%u%
-echo.
-set /p NvChoice="%c%Choose an option >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "NvChoice="
+set /p NvChoice=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!NvChoice!"=="0" goto C
 if "!NvChoice!"=="1" goto NVIDIAGPUStandard
 if "!NvChoice!"=="2" goto NVIDIAGPUExperimental
 if "!NvChoice!"=="3" goto NVIDIAGPURevert
-echo %red%Invalid option. Please try again.%u%
-call :DexSleep 1
+if /I "!NvChoice!"=="H" goto menu
+if /I "!NvChoice!"=="C" goto GlobalSearch
+if /I "!NvChoice!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto NVIDIAGPU
 
 :NVIDIAGPUStandard
@@ -2679,40 +2663,25 @@ exit /b 0
 
 :D
 call :SetupConsole
+call :DexHeader "Network Tweaks"
 echo.
+call :DexTableHead "CONNECTION"
+call :DexRow 1 "Wi-Fi Optimization" "Wireless-specific tweaks" MOD
+call :DexRow 2 "Ethernet Optimization" "Wired-specific tweaks" MOD
+call :DexRow 3 "Universal Tweaks" "Any connection type" MOD
 echo.
-echo %c%+==============================================================================+
-echo ^|                           NETWORK PERFORMANCE OPTIMIZER                      ^|
-echo +==============================================================================+%u%
-echo.
-echo %c%Select your network connection type for optimized performance tweaks:%u%
-echo.
-echo %c%                         +================================+
-echo                          ^|    [1] Wi-Fi Optimization      ^|
-echo                          ^|    [2] Ethernet Optimization   ^|
-echo                          ^|    [3] Universal Tweaks        ^|
-echo                          ^|                                ^|
-echo                          ^|    [0] Return to Main Menu     ^|
-echo                          +================================+%u%
-echo.
-echo %c%Note: Each option applies connection-specific optimizations%u%
-echo %c%for maximum performance on your preferred network type.%u%
-echo.
-set /p choice="%c%Select your network type >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "choice="
+set /p choice=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!choice!"=="0" goto TweaksMenu
 if "!choice!"=="1" goto WiFiOptimization
 if "!choice!"=="2" goto EthernetOptimization
 if "!choice!"=="3" goto UniversalTweaks
-cls
-echo.
-echo %red%+==============================================================================+
-echo ^|                                INVALID INPUT                                 ^|
-echo +==============================================================================+%u%
-echo.
-echo %c%Please select a valid option [0-3] from the menu.%u%
-echo.
-echo %c%========================== PRESS ANY KEY TO RETRY ==========================%u%
-pause >nul
+if /I "!choice!"=="H" goto menu
+if /I "!choice!"=="C" goto GlobalSearch
+if /I "!choice!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto D
 
 :WiFiOptimization
@@ -3769,40 +3738,27 @@ goto D
 
 :E
 call :SetupConsole
+call :DexHeader "CPU Optimizations"
 echo.
+echo  %grey%All three apply the same power-plan and scheduling settings.%u%
 echo.
-echo %c%+==============================================================================+
-echo ^|                           CPU PERFORMANCE OPTIMIZER                          ^|
-echo +==============================================================================+%u%
+call :DexTableHead "PROCESSOR"
+call :DexRow 1 "Intel Processor" "Adds Intel notes and BIOS hints" MOD
+call :DexRow 2 "AMD Ryzen Processor" "Adds Ryzen notes and BIOS hints" MOD
+call :DexRow 3 "Universal CPU Tweaks" "Power plan and scheduling" MOD
 echo.
-echo %c%Select your CPU manufacturer for processor-specific optimizations:%u%
-echo.
-echo %c%                           +================================+
-echo                            ^|    [1] %blue%Intel%c% Processor         ^|
-echo                            ^|    [2] %red%AMD%c% Ryzen Processor     ^|
-echo                            ^|    [3] Universal CPU Tweaks    ^|
-echo                            ^|                                ^|
-echo                            ^|    [0] Return to Main Menu     ^|
-echo                            +================================+%u%
-echo.
-echo %c%Note: all three options apply the same power-plan and scheduling settings.%u%
-echo %c%The Intel and AMD screens only add vendor-specific notes and BIOS hints.%u%
-echo.
-set /p choice="%c%Select your CPU type >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "choice="
+set /p choice=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!choice!"=="0" goto TweaksMenu
 if "!choice!"=="1" goto IntelOptimization
 if "!choice!"=="2" goto RyzenOptimization
 if "!choice!"=="3" goto UniversalCPU
-cls
-echo.
-echo %red%+==============================================================================+
-echo ^|                                INVALID INPUT                                 ^|
-echo +==============================================================================+%u%
-echo.
-echo %c%Please select a valid option [0-3] from the menu.%u%
-echo.
-echo %c%========================== PRESS ANY KEY TO RETRY ==========================%u%
-pause >nul
+if /I "!choice!"=="H" goto menu
+if /I "!choice!"=="C" goto GlobalSearch
+if /I "!choice!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto E
 
 :IntelOptimization
@@ -4524,25 +4480,25 @@ echo.
 call :DexChoice "YN" "%c%Proceed with comprehensive service optimization? (Y/N)%u%"
 if errorlevel 2 goto TweaksMenu
 
-call :SetupConsole
-echo.
-echo.
-echo %c%+==============================================================================+
-echo ^|                          SELECT OPTIMIZATION MODE                            ^|
-echo +==============================================================================+%u%
-echo.
-echo %c%   [1] Quick Mode    - 10 category prompts ^(fast, group-based^)%u%
-echo %c%   [2] Advanced Mode - Individual per-service control%u%
-echo %c%   [0] Return to Menu%u%
-echo.
 :ISelectMode
+call :SetupConsole
+call :DexHeader "Service Tweaks"
+echo.
+call :DexTableHead "MODE"
+call :DexRow 1 "Quick Mode" "10 category prompts, group-based" HIGH
+call :DexRow 2 "Advanced Mode" "Individual per-service control" HIGH
+echo.
+call :DexRiskLegend
+call :DexFooter
 set "svc_mode="
-set /p "svc_mode=Select mode (1/2/0): "
+set /p "svc_mode= %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!svc_mode!"=="1" goto IQuickMode
 if "!svc_mode!"=="2" goto IAdvanced
 if "!svc_mode!"=="0" goto TweaksMenu
-echo %red%Invalid option. Please try again.%u%
-call :DexSleep 1
+if /I "!svc_mode!"=="H" goto menu
+if /I "!svc_mode!"=="C" goto GlobalSearch
+if /I "!svc_mode!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto ISelectMode
 
 :IQuickMode
@@ -4922,24 +4878,24 @@ exit /b
 
 :IAdvanced
 call :SetupConsole
+call :DexHeader "Service Tweaks: Advanced"
 echo.
-echo %c%+==============================================================================+
-echo ^|                        ADVANCED SERVICE CONTROL                               ^|
-echo ^|                                                                               ^|
-echo ^|    [1]  Category Mode    Configure each service group  ^(11 quick choices^)     ^|
-echo ^|    [2]  Disable All      Disable all optional services  ^(no prompts^)          ^|
-echo ^|    [0]  Back                                                                  ^|
-echo +==============================================================================+%u%
+call :DexTableHead "MODE"
+call :DexRow 1 "Category Mode" "Each service group, 11 choices" HIGH
+call :DexRow 2 "Disable All" "All optional services, no prompts" HIGH
 echo.
-:IAdvMenu
+call :DexRiskLegend
+call :DexFooter
 set "IA_MODE="
-set /p "IA_MODE=%c%Choose >%u% "
+set /p "IA_MODE= %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!IA_MODE!"=="1" goto IAdv_CategoryMode
 if "!IA_MODE!"=="2" goto IAdv_DisableAll
 if "!IA_MODE!"=="0" goto TweaksMenu
-echo %red%Invalid option. Please try again.%u%
-call :DexSleep 1
-goto IAdvMenu
+if /I "!IA_MODE!"=="H" goto menu
+if /I "!IA_MODE!"=="C" goto GlobalSearch
+if /I "!IA_MODE!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
+goto IAdvanced
 
 :IAdv_DisableAll
 call :RequireExpertMode "Disabling every optional service can remove networking, security, backup, printing and device capabilities."
@@ -6842,11 +6798,7 @@ goto HardwareMenu
 
 :HardwareSecurityCenter
 call :SetupConsole
-echo.
-echo.
-echo %c%+===============================================================================+
-echo ^|                           HARDWARE SECURITY CENTER                            ^|
-echo +===============================================================================+%u%
+call :DexHeader "Hardware Security"
 echo.
 echo %c%Analyzing hardware security configuration...%u%
 echo.
@@ -6879,6 +6831,7 @@ powershell -Command "if (Get-BitLockerVolume -ErrorAction SilentlyContinue) { Wr
 set /p bitlocker_status=<"%temp%\bitlocker_status.txt"
 
 call :SetupConsole
+call :DexHeader "Hardware Security"
 echo.
 echo %c%+===============================================================================+
 echo ^|                           HARDWARE SECURITY STATUS                            ^|
@@ -7011,9 +6964,9 @@ echo %c%is real hardening, but it can cost gaming performance and has been known
 echo %c%conflict with some kernel-level anti-cheats and GPU overclocking tools. Only%u%
 echo %c%enable them if you actually need that security posture on this machine.%u%
 echo.
-echo %c%              [R] Refresh Status   [B] Back to Hardware Menu   [X] Exit%u%
-echo.
-set /p "choice=%c%Choose an option >%u% "
+call :DexFooter HCX R "Refresh status" B "Back to Hardware menu"
+set "choice="
+set /p "choice= %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 
 if /i "!choice!"=="1" goto EnableWindowsHello
 if /i "!choice!"=="2" goto ConfigureBitLocker
@@ -7028,10 +6981,10 @@ if /i "!choice!"=="0" goto AutomatedSecuritySetup
 if /i "!choice!"=="R" goto HardwareSecurityCenter
 if /i "!choice!"=="B" goto HardwareMenu
 if /i "!choice!"=="X" goto Destruct
+if /i "!choice!"=="H" goto menu
+if /i "!choice!"=="C" goto GlobalSearch
 
-cls
-echo %red%Invalid choice. Please try again.%u%
-call :DexSleep 2
+set "DEX_NOTE=Invalid option. Use a key from the list, or R, B, H, C or X."
 goto HardwareSecurityCenter
 
 :ConfigureBitLocker
@@ -7541,10 +7494,7 @@ goto HardwareSecurityCenter
 
 :ConfigureSmartCard
 call :SetupConsole
-echo.
-echo %c%+===============================================================================+
-echo ^|                       SMART CARD AUTHENTICATION SETUP                        ^|
-echo +===============================================================================+%u%
+call :DexHeader "Smart Card Setup"
 echo.
 echo %c%Configuring Smart Card and Certificate Authentication...%u%
 echo.
@@ -7627,10 +7577,9 @@ echo %c%[6] Configure EFS with Smart Card%u%
 echo %c%[7] View Smart Card Status%u%
 echo %c%[8] Import Certificate from Smart Card%u%
 echo.
-echo %c%[B] Back to Hardware Security Center%u%
-echo.
-
-set /p "sc_choice=%c%Choose an option >%u% "
+call :DexFooter HCX B "Back to Security Center"
+set "sc_choice="
+set /p "sc_choice= %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 
 if "!sc_choice!"=="1" (
     echo %c%Opening Certificate Manager...%u%
@@ -7708,9 +7657,11 @@ if "!sc_choice!"=="8" (
 )
 
 if /i "!sc_choice!"=="B" goto HardwareSecurityCenter
+if /i "!sc_choice!"=="H" goto menu
+if /i "!sc_choice!"=="C" goto GlobalSearch
+if /i "!sc_choice!"=="X" goto Destruct
 
-echo %red%Invalid choice. Please try again.%u%
-call :DexSleep 2
+set "DEX_NOTE=Invalid option. Use a key from the list, or B, H, C or X."
 goto ConfigureSmartCard
 
 echo.
@@ -8807,6 +8758,7 @@ if !totalmem! geq 64 (
     set "ram_rating=Insufficient"
 )
 
+call :DexHardwareNames
 echo %c%- Analyzing CPU performance...%u%
 
 set "cpu_score=0"
@@ -9463,35 +9415,22 @@ goto WindowsMenu
 
 :WindowsFeaturesManager
 call :SetupConsole
+call :DexHeader "Windows Features"
 echo.
-echo %c%Detected: !DEX_OS_NAME! build !_OS_BUILD_NUM!. Feature availability varies by edition.%u%
-echo %c%Unavailable optional features are left unchanged.%u%
+echo  %grey%Availability varies by edition; unavailable features are left unchanged.%u%
 echo.
-echo %c%+===============================================================================+
-echo ^|                           WINDOWS FEATURES MANAGER                           ^|
-echo +===============================================================================+%u%
+call :DexTableHead "MODE"
+call :DexRow 1 "Gaming Optimization" "Gaming features on, bloat off" MOD
+call :DexRow 2 "Performance Optimization" "Disables resource-heavy features" MOD
+call :DexRow 3 "Privacy Optimization" "Removes telemetry features" MOD
+call :DexRow 4 "Developer Features" "Development and advanced features" MOD
+call :DexRow 5 "View Current Features" "Enabled and disabled features" NONE
+call :DexRow 6 "Custom Feature Manager" "Manual feature selection" NONE
 echo.
-echo %c%Choose your Windows Features management option:%u%
-echo.
-echo %c%                           +================================+
-echo                            ^|  [1] Gaming Optimization       ^|
-echo                            ^|  [2] Performance Optimization  ^|
-echo                            ^|  [3] Privacy Optimization      ^|
-echo                            ^|  [4] Developer Features        ^|
-echo                            ^|  [5] View Current Features     ^|
-echo                            ^|  [6] Custom Feature Manager    ^|
-echo                            ^|                                ^|
-echo                            ^|  [0] Return to Windows Menu    ^|
-echo                            +================================+%u%
-echo.
-echo %c%[1] Gaming: Enable gaming features, disable bloat%u%
-echo %c%[2] Performance: Disable resource-heavy features%u%
-echo %c%[3] Privacy: Remove telemetry and tracking features%u%
-echo %c%[4] Developer: Enable development and advanced features%u%
-echo %c%[5] View: Display currently enabled/disabled features%u%
-echo %c%[6] Custom: Manual feature selection%u%
-echo.
-set /p choice="%c%Select optimization type >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "choice="
+set /p choice=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!choice!"=="0" goto WindowsMenu
 if "!choice!"=="1" goto GamingFeatures
 if "!choice!"=="2" goto PerformanceFeatures
@@ -9499,9 +9438,10 @@ if "!choice!"=="3" goto PrivacyFeatures
 if "!choice!"=="4" goto DeveloperFeatures
 if "!choice!"=="5" goto ViewFeatures
 if "!choice!"=="6" goto CustomFeatures
-cls
-echo %red%Invalid selection. Please try again.%u%
-call :DexSleep 2
+if /I "!choice!"=="H" goto menu
+if /I "!choice!"=="C" goto GlobalSearch
+if /I "!choice!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto WindowsFeaturesManager
 
 :GamingFeatures
@@ -9909,28 +9849,22 @@ goto WindowsFeaturesManager
 
 :CustomFeatures
 call :SetupConsole
+call :DexHeader "Custom Features"
 echo.
+call :DexTableHead "FEATURE"
+call :DexRow 1 "Hyper-V Features" "Enable, disable or check status" MOD
+call :DexRow 2 "WSL and Linux Features" "Enable, disable or check status" MOD
+call :DexRow 3 "Media Features" "Enable, disable or check status" MOD
+call :DexRow 4 ".NET Framework" "Enable, disable or check status" MOD
+call :DexRow 5 "Internet Explorer" "Enable, disable or check status" MOD
+call :DexRow 6 "Container Features" "Enable, disable or check status" MOD
+call :DexRow 7 "Print Features" "Enable, disable or check status" MOD
+call :DexRow 8 "Legacy Components" "Enable, disable or check status" MOD
 echo.
-echo %c%+===============================================================================+
-echo ^|                            CUSTOM FEATURE MANAGER                            ^|
-echo +===============================================================================+%u%
-echo.
-echo %c%Select features to manage individually:%u%
-echo.
-echo %c%                           +================================+
-echo                            ^|  [1] Hyper-V Features          ^|
-echo                            ^|  [2] WSL and Linux Features    ^|
-echo                            ^|  [3] Media Features            ^|
-echo                            ^|  [4] .NET Framework            ^|
-echo                            ^|  [5] Internet Explorer         ^|
-echo                            ^|  [6] Container Features        ^|
-echo                            ^|  [7] Print Features            ^|
-echo                            ^|  [8] Legacy Components         ^|
-echo                            ^|                                ^|
-echo                            ^|  [0] Back to Features Menu     ^|
-echo                            +================================+%u%
-echo.
-set /p choice="%c%Select feature category >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "choice="
+set /p choice=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!choice!"=="0" goto WindowsFeaturesManager
 if "!choice!"=="1" goto ManageHyperV
 if "!choice!"=="2" goto ManageWSL
@@ -9940,6 +9874,10 @@ if "!choice!"=="5" goto ManageIE
 if "!choice!"=="6" goto ManageContainers
 if "!choice!"=="7" goto ManagePrint
 if "!choice!"=="8" goto ManageLegacy
+if /I "!choice!"=="H" goto menu
+if /I "!choice!"=="C" goto GlobalSearch
+if /I "!choice!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto CustomFeatures
 
 :ManageHyperV
@@ -10774,34 +10712,25 @@ goto WindowsMenu
 
 :DefenderOptimizer
 call :SetupConsole
+call :DexHeader "Defender Optimizer"
 echo.
+call :DexTableHead "LEVEL"
+call :DexRow 1 "Gaming Optimization" "Less scan load, protection stays on" MOD
+call :DexRow 2 "Performance Optimization" "Real-time protection off" CRIT
+call :DexRow 3 "Complete Removal" "Blocked to protect Windows" NONE
 echo.
-echo %c%+===============================================================================+
-echo ^|                         WINDOWS DEFENDER OPTIMIZER                           ^|
-echo +===============================================================================+%u%
-echo.
-echo %c%Choose your Windows Defender optimization level:%u%
-echo.
-echo %c%                           +================================+
-echo                            ^|  [1] Gaming Optimization       ^|
-echo                            ^|  [2] Performance Optimization  ^|
-echo                            ^|  [3] Complete Removal ^(blocked^) ^|
-echo                            ^|                                ^|
-echo                            ^|  [0] Return to Windows Menu    ^|
-echo                            +================================+%u%
-echo.
-echo %c%[1] Gaming: Reduce scan load while keeping active protection%u%
-echo %c%[2] Performance: Disable real-time protection, configure exclusions%u%
-echo %c%[3] Complete Removal: blocked to protect Windows servicing and recovery%u%
-echo.
-set /p choice="%c%Select optimization level >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "choice="
+set /p choice=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!choice!"=="0" goto WindowsMenu
 if "!choice!"=="1" goto DefenderGaming
 if "!choice!"=="2" goto DefenderPerformance
 if "!choice!"=="3" goto DefenderRemoval
-cls
-echo %red%Invalid selection. Please try again.%u%
-call :DexSleep 2
+if /I "!choice!"=="H" goto menu
+if /I "!choice!"=="C" goto GlobalSearch
+if /I "!choice!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto DefenderOptimizer
 
 :DefenderGaming
@@ -12165,24 +12094,27 @@ goto AdvancedMenu
 
 :PerformanceToolkit
 call :SetupConsole
+call :DexHeader "Performance Toolkit"
 echo.
+call :DexTableHead "TOOL"
+call :DexRow 1 "Startup App Manager" "View and disable auto-start apps" LOW
+call :DexRow 2 "Temperature Snapshot" "Best-effort CPU/GPU sensor reading" NONE
+call :DexRow 3 "Scheduled Auto-Maintenance" "Weekly unattended check, cleanup" MOD
+call :DexRow 4 "Driver Restore Point" "Checkpoint before driver changes" NONE
 echo.
-echo %c%+==============================================================================+
-echo ^|                            PERFORMANCE TOOLKIT                               ^|
-echo +==============================================================================+%u%
-echo.
-echo  [1] Startup App Manager - view and disable programs that auto-start with Windows
-echo  [2] CPU / GPU Temperature Snapshot - quick best-effort sensor reading
-echo  [3] Scheduled Auto-Maintenance - run a weekly health check and cleanup unattended
-echo  [4] Driver Restore Point - dedicated checkpoint before installing/changing GPU drivers
-echo  [0] Back
-echo.
-set /p PT="%c%Choose an option >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "PT="
+set /p PT=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
+if "!PT!"=="0" goto AdvancedMenu
 if "!PT!"=="1" goto StartupManager
 if "!PT!"=="2" goto TempSnapshot
 if "!PT!"=="3" goto ScheduledMaintenanceSetup
 if "!PT!"=="4" goto DriverRestorePoint
-if "!PT!"=="0" goto AdvancedMenu
+if /I "!PT!"=="H" goto menu
+if /I "!PT!"=="C" goto GlobalSearch
+if /I "!PT!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto PerformanceToolkit
 
 :StartupManager
@@ -12517,20 +12449,20 @@ goto AdvancedMenu
 
 :ProgramDebloat
 call :SetupConsole
-call :DisplayBanner
-echo %c%                       +=============================================+ %u%
-echo                        %c%^|%u%           [%c%1%u%] Program Debloat ^(VS / Nvidia / etc^)   %c%^|%u%
-echo                        %c%^|%u%           [%c%2%u%] Discord Debloat                        %c%^|%u%
-echo                        %c%^|%u%           [%c%3%u%] Steam Debloat                          %c%^|%u%
-echo                        %c%^|%u%           [%c%4%u%] Spotify Debloat                        %c%^|%u%
-echo                        %c%^|%u%           [%c%5%u%] Firefox Debloat                        %c%^|%u%
-echo                        %c%^|%u%           [%c%6%u%] Chrome Debloat                         %c%^|%u%
-echo %c%                       +=============================================+
-echo %c%                                   ^|  %u%[%c%0%u%] Go Back    [%red%X%u%] Exit%c%  ^|%u%
-echo %c%                                   +===============================+%u%
+call :DexHeader "Program Debloat"
 echo.
+call :DexTableHead
+call :DexRow 1 "Program Debloat" "VS, NVIDIA and other apps" MOD
+call :DexRow 2 "Discord Debloat" "Startup, telemetry and cache" MOD
+call :DexRow 3 "Steam Debloat" "Startup, telemetry and cache" MOD
+call :DexRow 4 "Spotify Debloat" "Startup, telemetry and cache" MOD
+call :DexRow 5 "Firefox Debloat" "Telemetry and tracking prefs" MOD
+call :DexRow 6 "Chrome Debloat" "Reporting policies, keeps updates" MOD
 echo.
-set /p M="%c%Choose an option >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "M="
+set /p M=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!M!"=="0" goto AdvancedMenu
 if "!M!"=="1" goto debloatprogram
 if "!M!"=="2" goto debloatdiscord
@@ -12538,11 +12470,10 @@ if "!M!"=="3" goto debloatsteam
 if "!M!"=="4" goto debloatspotify
 if "!M!"=="5" goto debloatfirefox
 if "!M!"=="6" goto debloatchrome
-if "!M!"=="X" goto Destruct
-if "!M!"=="x" goto Destruct
-cls
-echo %underline%%red%Invalid Input. Press any key to continue.%u%
-pause >nul
+if /I "!M!"=="H" goto menu
+if /I "!M!"=="C" goto GlobalSearch
+if /I "!M!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto ProgramDebloat
 
 :debloatchrome
@@ -12939,28 +12870,31 @@ goto ProgramDebloat
 
 :InterruptSchedulingLab
 call :SetupConsole
+call :DexHeader "Interrupt & Scheduling Lab"
 echo.
+echo  %c%Applies the "HoneCtrl" interrupt-routing tweak in one pass:%u%
+echo  %grey%- MSI Mode: enables Message-Signaled Interrupts for USB/GPU/Network/IDE%u%
+echo  %grey%- IRQ Affinity: steers GPU/USB/Network interrupts away from CPU core 0%u%
+echo  %grey%- Hyper-Threading systems get extra affinity tuning for USB/GPU/Network%u%
+echo  %grey%A revert snapshot of every key touched is captured before anything changes.%u%
 echo.
-echo %c%+==============================================================================+
-echo ^|                    INTERRUPT %u%^&%c% SCHEDULING LAB                              ^|
-echo +==============================================================================+%u%
+call :DexTableHead "ACTION"
+call :DexRow 1 "Apply" "MSI mode and IRQ affinity" HIGH
+call :DexRow 2 "Revert last snapshot" "Restores the keys saved before" LOW
 echo.
-echo %c%Applies the "HoneCtrl" interrupt-routing tweak in one pass:%u%
-echo %c%- MSI Mode: enables Message-Signaled Interrupts for USB/GPU/Network/IDE%u%
-echo %c%- IRQ Affinity: steers GPU/USB/Network interrupts away from CPU core 0%u%
-echo %c%- Hyper-Threading systems get extra affinity tuning for USB/GPU/Network%u%
-echo.
-echo %c%This edits low-level hardware interrupt registry keys. A revert snapshot%u%
-echo %c%of every key touched is captured automatically before anything changes.%u%
-echo.
-echo  [1] Apply
-echo  [2] Revert last snapshot
-echo  [0] Back
-echo.
-set /p M="%c%Choose an option >%u% "
+call :DexRiskLegend
+call :DexFooter
+set "M="
+set /p M=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!M!"=="0" goto AdvancedMenu
 if "!M!"=="2" goto InterruptLabRevert
-if not "!M!"=="1" goto InterruptSchedulingLab
+if /I "!M!"=="H" goto menu
+if /I "!M!"=="C" goto GlobalSearch
+if /I "!M!"=="X" goto Destruct
+if not "!M!"=="1" (
+    set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
+    goto InterruptSchedulingLab
+)
 
 call :RequireExpertMode "Interrupt and Scheduling Lab (MSI Mode + IRQ Affinity)"
 if errorlevel 1 (
@@ -13261,20 +13195,19 @@ goto :GameBoosters
 
 :Boosters
 call :SetupConsole
-call :DisplayBanner
-echo %c%                       +==================================================+ %u%
-echo                        %c%^|%u%           [%c%1%u%] Valorant                           %c%^|%u%
-echo                        %c%^|%u%           [%c%2%u%] Counter-Strike 2                   %c%^|%u%
-echo                        %c%^|%u%           [%c%3%u%] Minecraft                          %c%^|%u%
-echo                        %c%^|%u%           [%c%4%u%] Fortnite                           %c%^|%u%
-echo                        %c%^|%u%           [%c%5%u%] Warzone                            %c%^|%u%
-echo                        %c%^|%u%           [%c%6%u%] Select your Own Game               %c%^|%u%
-echo %c%                       +==================================================+
-echo %c%                                   ^|  %u%[%c%0%u%] Go Back    [%red%X%u%] Exit%c%  ^|%u%
-echo %c%                                   +===============================+%u%
+call :DexHeader "Game Boosters"
 echo.
+call :DexTableHead "GAME"
+call :DexRow 1 "Valorant" "Game-specific settings" NONE
+call :DexRow 2 "Counter-Strike 2" "Game-specific settings" NONE
+call :DexRow 3 "Minecraft" "Game-specific settings" NONE
+call :DexRow 4 "Fortnite" "Game-specific settings" NONE
+call :DexRow 5 "Warzone" "Game-specific settings" NONE
+call :DexRow 6 "Select your Own Game" "Toggle tweaks for any .exe" NONE
 echo.
-set /p M="%c%Choose an option >%u% "
+call :DexFooter
+set "M="
+set /p M=" %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if "!M!"=="0" goto AdvancedMenu
 if "!M!"=="1" goto Valorant
 if "!M!"=="2" goto CS2
@@ -13282,11 +13215,10 @@ if "!M!"=="3" goto Minecraft
 if "!M!"=="4" goto Fortnite
 if "!M!"=="5" goto Warzone
 if "!M!"=="6" goto SelectGame
-if "!M!"=="X" goto Destruct
-if "!M!"=="x" goto Destruct
-cls
-echo %underline%%red%Invalid Input. Press any key to continue.%u%
-pause >nul
+if /I "!M!"=="H" goto menu
+if /I "!M!"=="C" goto GlobalSearch
+if /I "!M!"=="X" goto Destruct
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto Boosters
 
 :SelectGame
@@ -13632,17 +13564,13 @@ goto Boosters
 
 :Toolbox
 call :SetupConsole
-call :DisplayBanner
-echo %c%+==============================================================================+
-echo ^|                              Dex TOOLBOX                                   ^|
-echo +==============================================================================+%u%
+call :DexHeader "Dex Toolbox"
 echo.
-echo                                 %c%Dex Toolbox allows you to install any app or software!%u%
+echo  %c%Dex Toolbox allows you to install any app or software.%u%
+echo  %grey%Uses Chocolatey for 159 automatic packages plus 49 guided/manual entries.%u%
 echo.
-echo                 %c%Uses Chocolatey for 159 automatic packages plus 49 guided/manual entries.%u%
-echo.
-echo.
-echo                                          %c%Press any key to start Dex Toolbox!%u%
+echo %grey%%DEX_RULE%%u%
+echo  %grey%Press any key to start Dex Toolbox.%u%
 pause >nul
 
 call :EnsureChoco
@@ -13707,22 +13635,22 @@ exit /b
 
 :START
 call :SetupConsole
-call :DisplayBanner
-echo %c%                       +==================================================+ %u%
-echo                        %c%^|%u%           [%c%1%u%] Page 1  - Browsers / VPN / Security   %c%^|%u%
-echo                        %c%^|%u%           [%c%2%u%] Page 2  - Productivity / Messaging     %c%^|%u%
-echo                        %c%^|%u%           [%c%3%u%] Page 3  - System Tools / Runtimes      %c%^|%u%
-echo                        %c%^|%u%           [%c%4%u%] Page 4  - Design / Game / DevOps        %c%^|%u%
-echo                        %c%^|%u%           [%c%S%u%] Search  - Find specific software       %c%^|%u%
-echo                        %c%^|%u%           [%c%U%u%] Uninstall software                     %c%^|%u%
-echo                        %c%^|%u%           [%c%I%u%] Installed apps / available updates     %c%^|%u%
-echo %c%                       +==================================================+
-echo %c%                                   ^|  %u%[%red%X%u%] Exit Toolbox%c%        ^|%u%
-echo %c%                                   +===============================+%u%
+call :DexHeader "Dex Toolbox"
 echo.
-echo                     %c%208 catalog entries: 159 automatic and 49 web/manual guidance%u%
+call :DexTableHead "SECTION"
+call :DexRow 1 "Page 1" "Browsers, VPN, security, office" NONE
+call :DexRow 2 "Page 2" "Productivity, messaging" NONE
+call :DexRow 3 "Page 3" "System tools, runtimes" NONE
+call :DexRow 4 "Page 4" "Design, game, DevOps" NONE
+call :DexRow S "Search" "Find specific software" NONE
+call :DexRow U "Uninstall" "Remove installed software" NONE
+call :DexRow I "Installed apps" "Installed apps and updates" NONE
 echo.
-set /p "mainChoice=%c%Choose an option >%u% "
+echo  %grey%208 catalog entries: 159 automatic and 49 web/manual guidance%u%
+echo.
+call :DexFooter 0HC X "Exit Toolbox"
+set "mainChoice="
+set /p "mainChoice= %grey%Choose an option%u% %c%%DEX_ARROW%%u% "
 if /I "!mainChoice!"=="1" goto PAGE1
 if /I "!mainChoice!"=="2" goto PAGE2
 if /I "!mainChoice!"=="3" goto PAGE3
@@ -13731,18 +13659,18 @@ if /I "!mainChoice!"=="S" goto SEARCH
 if /I "!mainChoice!"=="U" goto UNINSTALL
 if /I "!mainChoice!"=="I" goto SoftwareStatus
 if /I "!mainChoice!"=="X" goto menu
-if /I "!mainChoice!"=="x" goto menu
-cls
-echo %underline%%red%Invalid Input. Press any key to continue.%u%
-pause >nul
+if "!mainChoice!"=="0" goto AdvancedMenu
+if /I "!mainChoice!"=="H" goto menu
+if /I "!mainChoice!"=="C" goto GlobalSearch
+set "DEX_NOTE=Invalid option. Use a key from the list, or 0, H, C or X."
 goto START
 
 :PAGE1
 call :SetupConsole
 title Dex Toolbox - Page 1 of 4 (Items 1-52)
-echo %c%+==============================================================================+
-echo ^|               PAGE 1 OF 4  -  Browsers / VPN / Security / Office  ^(1-52^)      ^|
-echo +==============================================================================+%u%
+call :DexHeader "Toolbox: Page 1 of 4"
+echo.
+echo  %grey%Browsers / VPN / Security / Office  ^(1-52^)%u%
 echo.
 echo       %c%[Browsers]%u%                    %c%[VPN]%u%                       %c%[Security]%u%                   %c%[Office]%u%
 echo.
@@ -13760,12 +13688,15 @@ echo   11. Opera GX                  24. CyberGhost              37. Webroot    
 echo   12. Yandex Browser            25. IPVanish                38. Comodo Antivirus         51. OpenOffice
 echo   13. Chromium                  26. Betternet               39. Spybot Free              52. OneDrive
 echo.
-echo %c%[N]%u% Next Page ^(53-104^)   %c%[M]%u% Main Menu   %red%[X]%u% Exit
-set /p "p1Choice=%c%Choose an option >%u% "
+call :DexFooter 0HC N "Next page (53-104)" M "Toolbox menu" X "Exit to Toolbox"
+set "p1Choice="
+set /p "p1Choice= %grey%Type an item number or option%u% %c%%DEX_ARROW%%u% "
 if /I "!p1Choice!"=="N" goto PAGE2
 if /I "!p1Choice!"=="M" goto START
 if /I "!p1Choice!"=="X" goto START
-if /I "!p1Choice!"=="x" goto START
+if "!p1Choice!"=="0" goto START
+if /I "!p1Choice!"=="H" goto menu
+if /I "!p1Choice!"=="C" goto GlobalSearch
 
 call :InstallSoftware "!p1Choice!" "PAGE1"
 goto PAGE1
@@ -13773,9 +13704,9 @@ goto PAGE1
 :PAGE2
 call :SetupConsole
 title Dex Toolbox - Page 2 of 4 (Items 53-104)
-echo %c%+==============================================================================+
-echo ^|             PAGE 2 OF 4  -  Productivity / Messaging / Media / Dev  ^(53-104^)   ^|
-echo +==============================================================================+%u%
+call :DexHeader "Toolbox: Page 2 of 4"
+echo.
+echo  %grey%Productivity / Messaging / Media / Dev  ^(53-104^)%u%
 echo.
 echo       %c%[Productivity]%u%                %c%[Messaging]%u%                 %c%[Media]%u%                       %c%[Development]%u%
 echo.
@@ -13793,13 +13724,16 @@ echo   63. OneNote                   76. WeChat                  89. PotPlayer  
 echo   64. Zoho Notebook             77. QQ                      90. Audacity                 103. Code::Blocks
 echo   65. Miro                      78. Line                    91. OBS Studio               104. phpStorm
 echo.
-echo %c%[P]%u% Previous ^(1-52^)   %c%[N]%u% Next ^(105-156^)   %c%[M]%u% Main Menu   %red%[X]%u% Exit
-set /p "p2Choice=%c%Choose an option >%u% "
+call :DexFooter 0HC P "Previous (1-52)" N "Next (105-156)" "/" M "Toolbox menu" X "Exit to Toolbox"
+set "p2Choice="
+set /p "p2Choice= %grey%Type an item number or option%u% %c%%DEX_ARROW%%u% "
 if /I "!p2Choice!"=="P" goto PAGE1
 if /I "!p2Choice!"=="N" goto PAGE3
 if /I "!p2Choice!"=="M" goto START
 if /I "!p2Choice!"=="X" goto START
-if /I "!p2Choice!"=="x" goto START
+if "!p2Choice!"=="0" goto START
+if /I "!p2Choice!"=="H" goto menu
+if /I "!p2Choice!"=="C" goto GlobalSearch
 
 call :InstallSoftware "!p2Choice!" "PAGE2"
 goto PAGE2
@@ -13807,9 +13741,9 @@ goto PAGE2
 :PAGE3
 call :SetupConsole
 title Dex Toolbox - Page 3 of 4 (Items 105-156)
-echo %c%+==============================================================================+
-echo ^|           PAGE 3 OF 4  -  System Tools / File Tools / Runtimes / Misc ^(105-156^) ^|
-echo +==============================================================================+%u%
+call :DexHeader "Toolbox: Page 3 of 4"
+echo.
+echo  %grey%System Tools / File Tools / Runtimes / Misc  ^(105-156^)%u%
 echo.
 echo        %c%[System Tools]%u%               %c%[File Tools]%u%                %c%[Runtimes]%u%                   %c%[Misc]%u%
 echo.
@@ -13827,13 +13761,16 @@ echo   115. Partition Wizard        128. ImgBurn                141. MS SQL CLI 
 echo   116. Macrium Reflect         129. UltraISO               142. Oracle Instant Cl.      155. Qbittorrent
 echo   117. Clonezilla              130. FreeCommander          143. PHP                     156. OpenToonz
 echo.
-echo %c%[P]%u% Previous ^(53-104^)   %c%[N]%u% Next ^(157-208^)   %c%[M]%u% Main Menu   %red%[X]%u% Exit
-set /p "p3Choice=%c%Choose an option >%u% "
+call :DexFooter 0HC P "Previous (53-104)" N "Next (157-208)" "/" M "Toolbox menu" X "Exit to Toolbox"
+set "p3Choice="
+set /p "p3Choice= %grey%Type an item number or option%u% %c%%DEX_ARROW%%u% "
 if /I "!p3Choice!"=="P" goto PAGE2
 if /I "!p3Choice!"=="N" goto PAGE4
 if /I "!p3Choice!"=="M" goto START
 if /I "!p3Choice!"=="X" goto START
-if /I "!p3Choice!"=="x" goto START
+if "!p3Choice!"=="0" goto START
+if /I "!p3Choice!"=="H" goto menu
+if /I "!p3Choice!"=="C" goto GlobalSearch
 
 call :InstallSoftware "!p3Choice!" "PAGE3"
 goto PAGE3
@@ -13841,9 +13778,9 @@ goto PAGE3
 :PAGE4
 call :SetupConsole
 title Dex Toolbox - Page 4 of 4 (Items 157-208)
-echo %c%+==============================================================================+
-echo ^|          PAGE 4 OF 4  -  Design Tools / Game Tools / Comm / DevOps ^(157-208^)   ^|
-echo +==============================================================================+%u%
+call :DexHeader "Toolbox: Page 4 of 4"
+echo.
+echo  %grey%Design Tools / Game Tools / Comm / DevOps  ^(157-208^)%u%
 echo.
 echo        %c%[Design Tools]%u%               %c%[Game Tools]%u%                %c%[Extra Comm]%u%                 %c%[DevOps Tools]%u%
 echo.
@@ -13861,12 +13798,15 @@ echo   167. Scribus                 180. unrealengine           193. miranda-ng 
 echo   168. piskel                  181. unityhub               194. guilded                 207. helm
 echo   169. pencil2d                182. gamemakerstudio        195. teamspeak               208. OpenToonz
 echo.
-echo %c%[P]%u% Previous ^(105-156^)   %c%[M]%u% Main Menu   %red%[X]%u% Exit
-set /p "p4Choice=%c%Choose an option >%u% "
+call :DexFooter 0HC P "Previous (105-156)" M "Toolbox menu" X "Exit to Toolbox"
+set "p4Choice="
+set /p "p4Choice= %grey%Type an item number or option%u% %c%%DEX_ARROW%%u% "
 if /I "!p4Choice!"=="P" goto PAGE3
 if /I "!p4Choice!"=="M" goto START
 if /I "!p4Choice!"=="X" goto START
-if /I "!p4Choice!"=="x" goto START
+if "!p4Choice!"=="0" goto START
+if /I "!p4Choice!"=="H" goto menu
+if /I "!p4Choice!"=="C" goto GlobalSearch
 
 call :InstallSoftware "!p4Choice!" "PAGE4"
 goto PAGE4
@@ -14234,8 +14174,7 @@ goto START
 
 :SoftwareStatus
 call :SetupConsole
-echo.
-echo %c%INSTALLED SOFTWARE AND UPDATES%u%
+call :DexHeader "Installed Software"
 echo.
 where choco >nul 2>&1
 if errorlevel 1 (
@@ -14251,11 +14190,11 @@ echo Available updates:
 echo.
 choco outdated --limit-output
 echo.
-echo  [U] Update all outdated Chocolatey packages
-echo  [R] Refresh this list
-echo  [0] Back
-echo.
-call :DexChoice "UR0" "Choose an option: " "/N"
+call :DexFooter 0HCX U "Update all outdated packages" R "Refresh this list"
+call :DexChoice "UR0HCX" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+if errorlevel 6 goto Destruct
+if errorlevel 5 goto GlobalSearch
+if errorlevel 4 goto menu
 if errorlevel 3 goto START
 if errorlevel 2 goto SoftwareStatus
 if errorlevel 1 (
@@ -14732,10 +14671,10 @@ call :DexHeader "Dashboard"
 echo.
 echo  %grey%Power%u%  !DEX_POWER!    %grey%Managed backups%u%  !DEX_BACKUP_COUNT!
 echo.
-echo  [R] Refresh status       [B] Backup manager       [H] System health
-echo  [P] Profiles             [S] Settings             [0] Main menu
-echo.
-call :DexChoice "RBHPS0" "Choose an option: " "/N"
+call :DexFooter 0CX R "Refresh status" B "Backup manager" H "System health" "/" P "Profiles" S "Settings"
+call :DexChoice "RBHPS0CX" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+if errorlevel 8 goto Destruct
+if errorlevel 7 goto GlobalSearch
 if errorlevel 6 goto menu
 if errorlevel 5 goto SettingsCenter
 if errorlevel 4 goto ProfilesCenter
@@ -14748,13 +14687,17 @@ goto DashboardCenter
 call :SetupConsole
 call :DexHeader "Settings"
 echo.
-echo  [1] Change interface color
-echo  [2] Export current dashboard report
-echo  [3] Open Dex data folder
-echo  [4] Reset cached profile and reboot flags
-echo  [0] Back
+call :DexTableHead "SETTING"
+call :DexRow 1 "Change interface color" "Pick the panel accent color" NONE
+call :DexRow 2 "Export dashboard report" "Save a status report to Reports" NONE
+call :DexRow 3 "Open Dex data folder" "Backups, logs, reports, state" NONE
+call :DexRow 4 "Reset cached flags" "Forget last profile and reboot flag" NONE
 echo.
-call :DexChoice "12340" "Choose an option: " "/N"
+call :DexFooter
+call :DexChoice "12340HCX" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+if errorlevel 8 goto Destruct
+if errorlevel 7 goto GlobalSearch
+if errorlevel 6 goto menu
 if errorlevel 5 goto DashboardCenter
 if errorlevel 4 (
     del "%DEX_PROFILE_FILE%" "%DEX_REBOOT_FILE%" >nul 2>&1
@@ -14797,18 +14740,23 @@ exit /b
 call :SetupConsole
 call :DexHeader "Profiles"
 echo.
-echo  [1] Safe         Security, updates and compatibility first
-echo  [2] Balanced     Gaming improvements without disabling protection
-echo  [3] Competitive  High performance, HAGS and reduced visual effects
-echo  [4] Streaming    Gaming and capture-friendly configuration
-echo  [5] Laptop       Balanced power and battery-friendly behavior
-echo  [6] Privacy      Reduced advertising and optional diagnostics
-echo  [7] Import       Desktop\DexTweaks_Profile.queue
-echo  [8] Export       Last applied profile to Desktop
-echo  [0] Back
+call :DexTableHead "PROFILE"
+call :DexRow 1 "Safe" "Security, updates, compatibility" LOW
+call :DexRow 2 "Balanced" "Gaming gains, protection kept" MOD
+call :DexRow 3 "Competitive" "High perf, HAGS, fewer effects" MOD
+call :DexRow 4 "Streaming" "Gaming and capture friendly" MOD
+call :DexRow 5 "Laptop" "Balanced power, battery friendly" LOW
+call :DexRow 6 "Privacy" "Less ads and optional diagnostics" LOW
+call :DexRow 7 "Import" "Desktop\DexTweaks_Profile.queue" NONE
+call :DexRow 8 "Export" "Last applied profile to Desktop" NONE
 echo.
-call :DexChoice "123456780" "Choose a profile: " "/N"
+call :DexRiskLegend
+call :DexFooter
+call :DexChoice "123456780HCX" " %grey%Choose a profile%u% %c%%DEX_ARROW%%u% " "/N"
 set "DEX_PROFILE_CHOICE=%errorlevel%"
+if "%DEX_PROFILE_CHOICE%"=="12" goto Destruct
+if "%DEX_PROFILE_CHOICE%"=="11" goto GlobalSearch
+if "%DEX_PROFILE_CHOICE%"=="10" goto menu
 if "%DEX_PROFILE_CHOICE%"=="9" goto menu
 if "%DEX_PROFILE_CHOICE%"=="8" (
     call :ExportManagedProfile
@@ -14890,13 +14838,14 @@ echo.
 echo  %grey%RISK   CHANGE%u%
 for /f "usebackq eol=# delims=" %%Q in ("%DEX_QUEUE%") do call :DescribeChange "%%Q"
 echo.
-echo %grey%%DEX_RULE%%u%
 echo  A managed snapshot will be created before changes are applied.
 echo  Security protection is never disabled by these recommended profiles.
-echo %grey%%DEX_RULE%%u%
-echo  %c%[A]%u% Apply    %c%[C]%u% Cancel    %c%[0]%u% Main menu
 echo.
-call :DexChoice "AC0" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+call :DexRiskLegend
+call :DexFooter 0HX A "Apply" C "Cancel"
+call :DexChoice "AC0HX" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+if errorlevel 5 goto Destruct
+if errorlevel 4 goto menu
 if errorlevel 3 goto menu
 if errorlevel 2 goto ProfilesCenter
 if errorlevel 1 (
@@ -15222,20 +15171,28 @@ call :SetupConsole
 call :CollectManagedChangeState
 call :DexHeader "Change Center"
 echo.
-echo  Game Mode: %DEX_GM_STATE%  ^| HAGS: %DEX_HAGS_STATE%  ^| Search: %DEX_SEARCH_STATE%
-echo  Power: %DEX_POWER%  ^| Defender: %DEX_DEFENDER%
+echo  %grey%Game Mode%u% %DEX_GM_STATE%   %grey%HAGS%u% %DEX_HAGS_STATE%   %grey%Search%u% %DEX_SEARCH_STATE%
+echo  %grey%Power%u% %DEX_POWER%
 echo.
-echo  [1] Enable Game Mode and disable background capture
-echo  [2] Enable HAGS                 [3] Disable HAGS
-echo  [4] Balanced power             [5] High Performance power
-echo  [6] Enable Windows Search      [7] Disable Windows Search
-echo  [8] Restore Defender protection
-echo  [9] Restore latest managed snapshot
-echo  [A] Build a custom batch queue
-echo  [0] Back
+call :DexTableHead "ACTION"
+call :DexRow 1 "Game Mode on" "Also disables background capture" LOW
+call :DexRow 2 "HAGS on" "GPU scheduling, needs restart" MOD
+call :DexRow 3 "HAGS off" "GPU scheduling, needs restart" MOD
+call :DexRow 4 "Balanced power" "Windows Balanced plan" LOW
+call :DexRow 5 "High Performance power" "More heat and power draw" MOD
+call :DexRow 6 "Windows Search on" "Keep indexing available" LOW
+call :DexRow 7 "Windows Search off" "Disable the indexing service" MOD
+call :DexRow 8 "Restore Defender" "Enable and verify protection" LOW
+call :DexRow 9 "Restore latest snapshot" "Roll back managed settings" MOD
+call :DexRow A "Custom batch queue" "Queue several actions at once" NONE
 echo.
-call :DexChoice "123456789A0" "Choose an action: " "/N"
+call :DexRiskLegend
+call :DexFooter
+call :DexChoice "123456789A0HCX" " %grey%Choose an action%u% %c%%DEX_ARROW%%u% " "/N"
 set "DEX_CHANGE_CHOICE=%errorlevel%"
+if "%DEX_CHANGE_CHOICE%"=="14" goto Destruct
+if "%DEX_CHANGE_CHOICE%"=="13" goto GlobalSearch
+if "%DEX_CHANGE_CHOICE%"=="12" goto menu
 if "%DEX_CHANGE_CHOICE%"=="11" goto menu
 if "%DEX_CHANGE_CHOICE%"=="10" goto CustomQueueBuilder
 if "%DEX_CHANGE_CHOICE%"=="9" (
@@ -15270,19 +15227,28 @@ set "DEX_SELECTED_PROFILE=Custom Batch"
 > "%DEX_QUEUE%" echo # Custom managed batch
 :CustomQueueBuilderLoop
 call :SetupConsole
+call :DexHeader "Custom Batch Queue"
 echo.
-echo %c%CUSTOM BATCH QUEUE%u%
+call :DexTableHead "ACTION"
+call :DexRow 1 "Game Mode on" "Also disables background capture" LOW
+call :DexRow 2 "HAGS on" "GPU scheduling, needs restart" MOD
+call :DexRow 3 "HAGS off" "GPU scheduling, needs restart" MOD
+call :DexRow 4 "Balanced power" "Windows Balanced plan" LOW
+call :DexRow 5 "High Performance power" "More heat and power draw" MOD
+call :DexRow 6 "Windows Search on" "Keep indexing available" LOW
+call :DexRow 7 "Windows Search off" "Disable the indexing service" MOD
+call :DexRow 8 "Defender on" "Enable and verify protection" LOW
 echo.
-echo  [1] Game Mode on        [2] HAGS on           [3] HAGS off
-echo  [4] Balanced power      [5] High Performance  [6] Search on
-echo  [7] Search off          [8] Defender on
-echo  [A] Review and apply    [0] Cancel
-echo.
-echo Current queue:
+echo  %grey%Current queue:%u%
 for /f "usebackq eol=# delims=" %%Q in ("%DEX_QUEUE%") do echo   %%Q
 echo.
-call :DexChoice "12345678A0" "Add an action or review: " "/N"
+call :DexRiskLegend
+call :DexFooter 0HCX A "Review and apply"
+call :DexChoice "12345678A0HCX" " %grey%Add an action or review%u% %c%%DEX_ARROW%%u% " "/N"
 set "DEX_QUEUE_CHOICE=%errorlevel%"
+if "%DEX_QUEUE_CHOICE%"=="13" goto Destruct
+if "%DEX_QUEUE_CHOICE%"=="12" goto GlobalSearch
+if "%DEX_QUEUE_CHOICE%"=="11" goto menu
 if "%DEX_QUEUE_CHOICE%"=="10" goto ChangeCenter
 if "%DEX_QUEUE_CHOICE%"=="9" goto ReviewQueue
 if "%DEX_QUEUE_CHOICE%"=="8" >>"%DEX_QUEUE%" echo DEFENDER_ON
@@ -15411,17 +15377,22 @@ exit /b
 call :SetupConsole
 call :DexHeader "Backup / Restore"
 echo.
-echo  [1] Create managed settings snapshot
-echo  [2] Restore latest managed snapshot
-echo  [3] Create Windows Restore Point
-echo  [4] Create full registry backup
-echo  [5] List available Dex backups
-echo  [6] Open Windows System Restore
-echo  [7] Selective restore by module
-echo  [8] Choose an older managed snapshot
-echo  [0] Back
+call :DexTableHead "ACTION"
+call :DexRow 1 "Create managed snapshot" "Settings Dex can roll back" NONE
+call :DexRow 2 "Restore latest snapshot" "Roll back managed settings" MOD
+call :DexRow 3 "Create Restore Point" "Native Windows restore point" NONE
+call :DexRow 4 "Full registry backup" "All hives, for WinRE recovery" NONE
+call :DexRow 5 "List Dex backups" "Snapshots and registry backups" NONE
+call :DexRow 6 "Windows System Restore" "Opens rstrui.exe" NONE
+call :DexRow 7 "Selective restore" "Restore one module" MOD
+call :DexRow 8 "Older managed snapshot" "Pick a snapshot to restore" MOD
 echo.
-call :DexChoice "123456780" "Choose an option: " "/N"
+call :DexRiskLegend
+call :DexFooter
+call :DexChoice "123456780HCX" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+if errorlevel 12 goto Destruct
+if errorlevel 11 goto GlobalSearch
+if errorlevel 10 goto menu
 if errorlevel 9 goto menu
 if errorlevel 8 (
     call :ChooseManagedSnapshot
@@ -15509,18 +15480,20 @@ if not exist "!DEX_RESTORE_PATH!\metadata.txt" (
     exit /b
 )
 call :SetupConsole
+call :DexHeader "Selective Restore"
 echo.
-echo %c%SELECTIVE RESTORE%u%
-echo Snapshot: "!DEX_RESTORE_PATH!"
+echo  %grey%Snapshot%u% "!DEX_RESTORE_PATH!"
 echo.
-echo  [1] Managed registry settings
-echo  [2] Windows Update and Search service startup
-echo  [3] Power plan
-echo  [4] Defender preferences
-echo  [5] Boot configuration ^(BCD^)
-echo  [0] Cancel
+call :DexTableHead "MODULE"
+call :DexRow 1 "Managed registry settings" "Policies and settings Dex manages" MOD
+call :DexRow 2 "Update and Search startup" "Service startup types" MOD
+call :DexRow 3 "Power plan" "Active power scheme" LOW
+call :DexRow 4 "Defender preferences" "Defender settings in the snapshot" MOD
+call :DexRow 5 "Boot configuration (BCD)" "Boot settings, needs restart" CRIT
 echo.
-call :DexChoice "123450" "Choose a module: " "/N"
+call :DexRiskLegend
+call :DexFooter 0
+call :DexChoice "123450" " %grey%Choose a module%u% %c%%DEX_ARROW%%u% " "/N"
 set "DEX_RESTORE_MODULE=%errorlevel%"
 if "%DEX_RESTORE_MODULE%"=="6" exit /b
 call :DexChoice "YN" "Restore the selected module? [Y/N]: " "/N"
@@ -15666,14 +15639,18 @@ exit /b
 call :SetupConsole
 call :DexHeader "System Health"
 echo.
-echo  [1] Quick health check
-echo  [2] Full Windows repair ^(DISM and SFC^)
-echo  [3] Storage health report
-echo  [4] Recent critical event report
-echo  [5] Security status audit
-echo  [0] Back
+call :DexTableHead "CHECK"
+call :DexRow 1 "Quick health check" "DISM CheckHealth, sfc verifyonly" NONE
+call :DexRow 2 "Full Windows repair" "DISM and SFC repair, 15-30+ min" NONE
+call :DexRow 3 "Storage health report" "Disks and volumes, health, space" NONE
+call :DexRow 4 "Critical event report" "System log errors, last 7 days" NONE
+call :DexRow 5 "Security status audit" "Defender, firewall, TPM and more" NONE
 echo.
-call :DexChoice "123450" "Choose an option: " "/N"
+call :DexFooter
+call :DexChoice "123450HCX" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+if errorlevel 9 goto Destruct
+if errorlevel 8 goto GlobalSearch
+if errorlevel 7 goto menu
 if errorlevel 6 goto menu
 if errorlevel 5 (
     call :SecurityAudit
@@ -15763,13 +15740,17 @@ exit /b
 call :SetupConsole
 call :DexHeader "Benchmark"
 echo.
-echo  [1] Capture baseline
-echo  [2] Capture current result
-echo  [3] Compare baseline with current result
-echo  [4] View latest raw measurements
-echo  [0] Back
+call :DexTableHead "STEP"
+call :DexRow 1 "Capture baseline" "Measure before a change" NONE
+call :DexRow 2 "Capture current result" "Measure after a change" NONE
+call :DexRow 3 "Compare results" "Baseline against current" NONE
+call :DexRow 4 "View raw measurements" "Latest captured values" NONE
 echo.
-call :DexChoice "12340" "Choose an option: " "/N"
+call :DexFooter
+call :DexChoice "12340HCX" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+if errorlevel 8 goto Destruct
+if errorlevel 7 goto GlobalSearch
+if errorlevel 6 goto menu
 if errorlevel 5 goto menu
 if errorlevel 4 (
     call :ViewBenchmarkFiles
@@ -15854,29 +15835,36 @@ exit /b
 exit /b
 
 :GlobalSearch
+set "DEX_DASH_READY="
 call :SetupConsole
 call :DexHeader "Global Search"
 echo.
-echo Search examples: GPU, restore, Defender, streaming, disk, services
-echo Leave empty to return.
+echo  %grey%Search examples: GPU, restore, Defender, streaming, disk, services%u%
 echo.
+call :DexFooter - Enter "Back to main menu"
 set "DEX_SEARCH_TERM="
-set /p "DEX_SEARCH_TERM=Search: "
+set /p "DEX_SEARCH_TERM= %grey%Search%u% %c%%DEX_ARROW%%u% "
 if not defined DEX_SEARCH_TERM goto menu
 echo(!DEX_SEARCH_TERM!| findstr /R /X /C:"[A-Za-z0-9 _-][A-Za-z0-9 _-]*" >nul
 if errorlevel 1 (
-    echo Invalid search. Use letters, numbers, spaces, underscore or hyphen.
-    pause
+    set "DEX_NOTE=Invalid search. Use letters, numbers, spaces, underscore or hyphen."
     goto GlobalSearch
 )
+call :SetupConsole
+call :DexHeader "Global Search"
+echo.
+echo  %grey%Results for%u% !DEX_SEARCH_TERM!
 echo.
 findstr /I /L /C:"!DEX_SEARCH_TERM!" "%DEX_CATALOG%"
-if errorlevel 1 echo No matching section found.
+if errorlevel 1 echo  No matching section found.
 echo.
-echo Enter the code shown at the start of a result, or 0 to return.
+call :DexFooter 0HCX
 set "DEX_SEARCH_CODE="
-set /p "DEX_SEARCH_CODE=Code: "
+set /p "DEX_SEARCH_CODE= %grey%Type the code at the start of a result%u% %c%%DEX_ARROW%%u% "
 if /I "!DEX_SEARCH_CODE!"=="0" goto menu
+if /I "!DEX_SEARCH_CODE!"=="H" goto menu
+if /I "!DEX_SEARCH_CODE!"=="C" goto GlobalSearch
+if /I "!DEX_SEARCH_CODE!"=="X" goto Destruct
 if /I "!DEX_SEARCH_CODE!"=="OPT" goto TweaksMenu
 if /I "!DEX_SEARCH_CODE!"=="HW" goto HardwareMenu
 if /I "!DEX_SEARCH_CODE!"=="PERF" goto PerformanceCheck
@@ -15890,23 +15878,26 @@ if /I "!DEX_SEARCH_CODE!"=="HEALTH" goto HealthCenter
 if /I "!DEX_SEARCH_CODE!"=="BENCH" goto BenchmarkCenter
 if /I "!DEX_SEARCH_CODE!"=="LOG" goto HistoryCenter
 if /I "!DEX_SEARCH_CODE!"=="RESTART" goto RestartCenter
-echo Invalid code.
-pause
+set "DEX_NOTE=Invalid code. Type the code shown at the start of a result."
 goto GlobalSearch
 
 :HistoryCenter
 call :SetupConsole
 call :DexHeader "History"
 echo.
-echo  Current session: "%DEX_LOG%"
+echo  %grey%Current session%u% "%DEX_LOG%"
 echo.
-echo  [1] View current session log
-echo  [2] List all session logs
-echo  [3] Export current log to Desktop
-echo  [4] Clear old logs ^(keep current^)
-echo  [0] Back
+call :DexTableHead "ACTION"
+call :DexRow 1 "View current session log" "Everything logged this session" NONE
+call :DexRow 2 "List session logs" "All logs, newest first" NONE
+call :DexRow 3 "Export current log" "Copy it to the Desktop" NONE
+call :DexRow 4 "Clear old logs" "Keeps the current session" NONE
 echo.
-call :DexChoice "12340" "Choose an option: " "/N"
+call :DexFooter
+call :DexChoice "12340HCX" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+if errorlevel 8 goto Destruct
+if errorlevel 7 goto GlobalSearch
+if errorlevel 6 goto menu
 if errorlevel 5 goto menu
 if errorlevel 4 (
     call :ClearOldLogs
@@ -15944,15 +15935,19 @@ call :SetupConsole
 call :RefreshDashboardCache
 call :DexHeader "Restart Center"
 echo.
-echo  Restart status: %DEX_REBOOT_STATUS%
+echo  %grey%Restart status%u% %DEX_REBOOT_STATUS%
 echo.
-echo  [1] Restart now
-echo  [2] Schedule restart in 60 seconds
-echo  [3] Cancel scheduled shutdown/restart
-echo  [4] Clear Dex restart reminder
-echo  [0] Back
+call :DexTableHead "ACTION"
+call :DexRow 1 "Restart now" "Asks before restarting" NONE
+call :DexRow 2 "Restart in 60 seconds" "Scheduled, can be cancelled" NONE
+call :DexRow 3 "Cancel scheduled restart" "Cancels a pending shutdown" NONE
+call :DexRow 4 "Clear Dex restart reminder" "Internal flag only" NONE
 echo.
-call :DexChoice "12340" "Choose an option: " "/N"
+call :DexFooter
+call :DexChoice "12340HCX" " %grey%Choose an option%u% %c%%DEX_ARROW%%u% " "/N"
+if errorlevel 8 goto Destruct
+if errorlevel 7 goto GlobalSearch
+if errorlevel 6 goto menu
 if errorlevel 5 goto menu
 if errorlevel 4 (
     del "%DEX_REBOOT_FILE%" >nul 2>&1

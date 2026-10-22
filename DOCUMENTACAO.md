@@ -45,7 +45,7 @@ Recursos dependentes de edicao/hardware (HAGS, Hyper-V, Sandbox, BitLocker, Syst
 
 Funcoes de Perfis e Central de Alteracoes seguem sempre: fila -> previa -> checagem de compatibilidade -> snapshot -> aplicacao -> verificacao -> registro. BCD e desativar o Defender exigem Modo Especialista (confirmacao dupla + snapshot + backup do BCD + Ponto de Restauracao).
 
-Nos menus (Optimizations, Hardware, Windows, Privacy, Advanced) cada item mostra um selo colorido com o risco: `LOW` (verde), `MOD` (amarelo), `HIGH` (laranja) e `CRIT` (vermelho). O selo mostra o pior caso do item; itens sem alteracao de risco (inventarios, diagnosticos, instaladores) mostram `-`. Na tela de previa de perfis o selo aparece em cada mudanca da fila, com o aviso `restart` quando ela pede reinicializacao.
+Nos menus (Optimizations, Hardware, Windows, Privacy, Advanced) e nas telas internas com lista de acoes (Profiles, Change Center, Backup / Restore, submenus de energia, GPU, rede, CPU, servicos, recursos do Windows, Defender, Performance Toolkit, Interrupt Lab, Program Debloat) cada item mostra um selo colorido com o risco: `LOW` (verde), `MOD` (amarelo), `HIGH` (laranja) e `CRIT` (vermelho). O selo mostra o pior caso do item; itens sem alteracao de risco (inventarios, diagnosticos, instaladores) mostram `-`. Na tela de previa de perfis o selo aparece em cada mudanca da fila, com o aviso `restart` quando ela pede reinicializacao. Toda tela que mostra selos tem a legenda de risco logo acima do rodape.
 
 ## Painel principal
 
@@ -65,9 +65,22 @@ Nos menus (Optimizations, Hardware, Windows, Privacy, Advanced) cada item mostra
 | `C` | Global Search | Localizar uma area do painel por palavra |
 | `D` | History | Consultar e exportar logs |
 | `E` | Restart Center | Administrar reinicializacoes pendentes |
+| `R` | Refresh status | Recalcular a linha de estado do menu |
 | `X` | Exit | Encerrar o painel |
 
-Todas as telas usam o mesmo cabecalho: secao atual, Windows/build e uma linha de estado (Defender, rede, reinicializacao pendente e ultimo perfil, com indicador verde/amarelo/vermelho). Os cinco submenus (Optimizations, Hardware, Windows, Privacy, Advanced) tem o mesmo rodape: `0` volta ao menu principal, `H` menu principal, `C` busca global, `X` sai. Uma opcao invalida apenas redesenha a tela com um aviso. A cor da interface fica em Dashboard > Settings > Change interface color.
+Todas as telas usam o mesmo cabecalho: secao atual, Windows/build e uma linha de estado (Defender, rede, reinicializacao pendente e ultimo perfil, com indicador verde/amarelo/vermelho). Depois vem o corpo (lista `KEY / ... / WHAT IT DOES / RISK`), a legenda de risco quando ha selos e o rodape, tudo na mesma largura do menu principal.
+
+Todas as telas internas tem o mesmo rodape: `0` volta (a tela anterior ou o menu principal), `H` menu principal, `C` busca global, `X` sai. Teclas proprias da tela aparecem numa linha acima do rodape. Quando a tela ja usava uma dessas quatro teclas para outra coisa, a funcao original foi mantida e a tecla aparece so na linha de teclas proprias:
+
+| Tela | Tecla | Funcao mantida |
+|---|---|---|
+| Dashboard | `H` | System Health |
+| Revisao de perfil / fila | `C` | Cancelar (volta a Profiles) |
+| Dex Toolbox | `X` | Sai do Toolbox para o menu principal |
+| Paginas do Toolbox | `X` | Volta ao Toolbox |
+| Hardware Security Center | `0` | Automated Security Setup |
+
+Uma opcao invalida redesenha a tela com um aviso curto, sem pausa. A linha de estado do menu principal e recalculada na primeira entrada, ao voltar de uma tela que pode alterar o sistema e com `R`; voltar de Benchmark ou History nao recalcula. A cor da interface fica em Dashboard > Settings > Change interface color.
 
 ## Perfis
 
@@ -198,7 +211,7 @@ Comparacao administrativa (processos, servicos, memoria livre/total, carga de CP
 
 ## Pesquisa, historico e reinicializacao
 
-- **Global Search**: termos como `GPU`, `restore`, `Defender`, `streaming` retornam a area correspondente do painel (nao busca comandos internos).
+- **Global Search**: termos como `GPU`, `restore`, `Defender`, `streaming` retornam a area correspondente do painel (nao busca comandos internos). Enter vazio volta ao menu; na tela de resultados digite o codigo do inicio da linha, ou `0`/`H`/`C`/`X`.
 - **History**: log da sessao atual, logs anteriores, exportacao, limpeza (preservando a sessao atual).
 - **Restart Center**: mostra reinicializacao pendente, reinicia agora, agenda em 60s, cancela agendamento, ou limpa so o lembrete interno (nao elimina uma reinicializacao exigida pelo Windows).
 

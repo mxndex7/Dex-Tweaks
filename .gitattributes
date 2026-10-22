@@ -1,1 +1,5 @@
+# Batch files are stored and checked out byte-for-byte as CRLF, which is what
+# --self-test checks. "text eol=crlf" would give the same checkout but store
+# the blob as LF, rewriting every line of Dex-Tweaks.bat in one commit.
 *.bat -text
+*.md text eol=lf
