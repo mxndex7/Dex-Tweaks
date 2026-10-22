@@ -405,7 +405,12 @@ echo  %c%!_dxk!%u%!_dxn!%grey%!_dxd!%u%!_dxb!
 exit /b
 
 :DexTableHead
-echo  %grey%KEY  TWEAK                         WHAT IT DOES                       RISK%u%
+rem Usage: call :DexTableHead ["COLUMN"]   (default TWEAK; screens that are not tweak lists pass ACTION, ITEM...)
+set "_dxth=%~1"
+if not defined _dxth set "_dxth=TWEAK"
+set "_dxth=!_dxth!                              "
+set "_dxth=!_dxth:~0,30!"
+echo  %grey%KEY  !_dxth!WHAT IT DOES                       RISK%u%
 exit /b
 
 :DexRiskLegend
@@ -469,7 +474,8 @@ if not defined DEX_CPU_IS_INTEL if defined DEX_CPU_MANUFACTURER echo(!DEX_CPU_MA
 set "DEX_CPU_CACHED=1"
 goto :eof
 
-:DisplayBanner
+:DexHardwareNames
+rem Sets CPUName and GPUName (once) for Hardware Information.
 if not defined CPUName (
     call :DexGetCPUInfo
     if defined DEX_CPU_NAME set "CPUName=!DEX_CPU_NAME!"
@@ -481,25 +487,6 @@ if not defined GPUName (
         if not "%%G"=="" set "GPUName=%%G"
     )
 )
-
-:GotGPU
-echo.
-echo        %c%######+ #######+##+  ##+ %u%%white%########+ ##+       ##+#######+ #####+ ##+  ##+ ######+
-echo        %c%##+==##+##+====++##+##++ %u%%white%+==##+==+ ##^|  ##+  ##^|##+====+##+==##+##^| ##++##+====+
-echo        %c%##^|  ##^|#####+   +###++  %u%%white%   ##^|    +##+####+##++#####+  #######^|#####=+ +#####+
-echo        %c%##^|  ##^|##+==+   ##+##+  %u%%white%   ##^|     ####+=####^| ##+==+  ##+==##^|##+=##+  +===##+
-echo        %c%######++#######+##+++##+ %u%%white%   ##^|     +##++ +##++ #######+##^|  ##^|##^| +##+######++
-echo        %c%+=====+ +======++=+  +=+ %u%%white%   +=+      +=+   +=+  +======++=+  +=++=+  +=++=====+
-echo.
-echo.
-echo                                 %c%User:%u%%white% %username%%u%     %c%Date:%u%%white% %date%%u%
-echo.
-echo.
-echo                   %c%GPU:%u%%white% %GPUName% %u%    %c%CPU:%u%%white% %CPUName%%u%
-echo.
-echo.
-echo                                %c%Dex%u%%white% Tweaks%u%%c% is a batch script that optimizes your system%u%
-echo                                      %c%to provide the best gaming experience possible%u%
 goto :eof
 
 :menu
@@ -544,17 +531,13 @@ goto menu
 
 :Comingsoon
 call :SetupConsole
-call :DisplayBanner
+call :DexHeader "Coming Soon"
 echo.
+echo  %c%This function is not available yet.%u%
+echo  %grey%It will be available soon in a future update.%u%
 echo.
-echo                              %c%This function is not available yet.%u%
-echo.
-echo                              %c%It will be available soon in a future update.%u%
-echo.
-echo.
-echo.
-echo.
-echo                                                 %red%[ Press any key to go back ]
+echo %grey%%DEX_RULE%%u%
+echo  %grey%Press any key to go back.%u%
 pause >nul
 if defined COMINGSOON_BACK (
     set "COMINGSOON_TARGET=%COMINGSOON_BACK%"
@@ -565,15 +548,13 @@ goto menu
 
 :More
 call :SetupConsole
-call :DisplayBanner
+call :DexHeader "More"
 echo.
-echo.
-echo                                                 [%c%1%u%] About     [%c%2%u%] Disclaimer
-echo.
-echo                                                 [%c%3%u%] Updates   [%c%4%u%] Back
-echo.
-echo.
-echo.
+call :DexTableHead "ITEM"
+call :DexRow 1 "About" "Who makes Dex Tweaks" NONE
+call :DexRow 2 "Disclaimer" "Use at your own risk" NONE
+call :DexRow 3 "Updates" "Opens the release page" NONE
+call :DexRow 4 "Back" "Return to the main menu" NONE
 echo.
 echo                                                       %c%[ X to close ]%u%
 echo.
@@ -671,7 +652,7 @@ goto More
 :Backup
 goto BackupManager
 call :SetupConsole
-call :DisplayBanner
+call :DexHeader "Backup"
 echo.
 echo.
 echo.
@@ -8807,6 +8788,7 @@ if !totalmem! geq 64 (
     set "ram_rating=Insufficient"
 )
 
+call :DexHardwareNames
 echo %c%- Analyzing CPU performance...%u%
 
 set "cpu_score=0"
@@ -12517,15 +12499,17 @@ goto AdvancedMenu
 
 :ProgramDebloat
 call :SetupConsole
-call :DisplayBanner
-echo %c%                       +=============================================+ %u%
-echo                        %c%^|%u%           [%c%1%u%] Program Debloat ^(VS / Nvidia / etc^)   %c%^|%u%
-echo                        %c%^|%u%           [%c%2%u%] Discord Debloat                        %c%^|%u%
-echo                        %c%^|%u%           [%c%3%u%] Steam Debloat                          %c%^|%u%
-echo                        %c%^|%u%           [%c%4%u%] Spotify Debloat                        %c%^|%u%
-echo                        %c%^|%u%           [%c%5%u%] Firefox Debloat                        %c%^|%u%
-echo                        %c%^|%u%           [%c%6%u%] Chrome Debloat                         %c%^|%u%
-echo %c%                       +=============================================+
+call :DexHeader "Program Debloat"
+echo.
+call :DexTableHead
+call :DexRow 1 "Program Debloat" "VS, NVIDIA and other apps" MOD
+call :DexRow 2 "Discord Debloat" "Startup, telemetry and cache" MOD
+call :DexRow 3 "Steam Debloat" "Startup, telemetry and cache" MOD
+call :DexRow 4 "Spotify Debloat" "Startup, telemetry and cache" MOD
+call :DexRow 5 "Firefox Debloat" "Telemetry and tracking prefs" MOD
+call :DexRow 6 "Chrome Debloat" "Reporting policies, keeps updates" MOD
+echo.
+call :DexRiskLegend
 echo %c%                                   ^|  %u%[%c%0%u%] Go Back    [%red%X%u%] Exit%c%  ^|%u%
 echo %c%                                   +===============================+%u%
 echo.
@@ -13261,15 +13245,16 @@ goto :GameBoosters
 
 :Boosters
 call :SetupConsole
-call :DisplayBanner
-echo %c%                       +==================================================+ %u%
-echo                        %c%^|%u%           [%c%1%u%] Valorant                           %c%^|%u%
-echo                        %c%^|%u%           [%c%2%u%] Counter-Strike 2                   %c%^|%u%
-echo                        %c%^|%u%           [%c%3%u%] Minecraft                          %c%^|%u%
-echo                        %c%^|%u%           [%c%4%u%] Fortnite                           %c%^|%u%
-echo                        %c%^|%u%           [%c%5%u%] Warzone                            %c%^|%u%
-echo                        %c%^|%u%           [%c%6%u%] Select your Own Game               %c%^|%u%
-echo %c%                       +==================================================+
+call :DexHeader "Game Boosters"
+echo.
+call :DexTableHead "GAME"
+call :DexRow 1 "Valorant" "Game-specific settings" NONE
+call :DexRow 2 "Counter-Strike 2" "Game-specific settings" NONE
+call :DexRow 3 "Minecraft" "Game-specific settings" NONE
+call :DexRow 4 "Fortnite" "Game-specific settings" NONE
+call :DexRow 5 "Warzone" "Game-specific settings" NONE
+call :DexRow 6 "Select your Own Game" "Toggle tweaks for any .exe" NONE
+echo.
 echo %c%                                   ^|  %u%[%c%0%u%] Go Back    [%red%X%u%] Exit%c%  ^|%u%
 echo %c%                                   +===============================+%u%
 echo.
@@ -13632,17 +13617,13 @@ goto Boosters
 
 :Toolbox
 call :SetupConsole
-call :DisplayBanner
-echo %c%+==============================================================================+
-echo ^|                              Dex TOOLBOX                                   ^|
-echo +==============================================================================+%u%
+call :DexHeader "Dex Toolbox"
 echo.
-echo                                 %c%Dex Toolbox allows you to install any app or software!%u%
+echo  %c%Dex Toolbox allows you to install any app or software.%u%
+echo  %grey%Uses Chocolatey for 159 automatic packages plus 49 guided/manual entries.%u%
 echo.
-echo                 %c%Uses Chocolatey for 159 automatic packages plus 49 guided/manual entries.%u%
-echo.
-echo.
-echo                                          %c%Press any key to start Dex Toolbox!%u%
+echo %grey%%DEX_RULE%%u%
+echo  %grey%Press any key to start Dex Toolbox.%u%
 pause >nul
 
 call :EnsureChoco
@@ -13707,16 +13688,17 @@ exit /b
 
 :START
 call :SetupConsole
-call :DisplayBanner
-echo %c%                       +==================================================+ %u%
-echo                        %c%^|%u%           [%c%1%u%] Page 1  - Browsers / VPN / Security   %c%^|%u%
-echo                        %c%^|%u%           [%c%2%u%] Page 2  - Productivity / Messaging     %c%^|%u%
-echo                        %c%^|%u%           [%c%3%u%] Page 3  - System Tools / Runtimes      %c%^|%u%
-echo                        %c%^|%u%           [%c%4%u%] Page 4  - Design / Game / DevOps        %c%^|%u%
-echo                        %c%^|%u%           [%c%S%u%] Search  - Find specific software       %c%^|%u%
-echo                        %c%^|%u%           [%c%U%u%] Uninstall software                     %c%^|%u%
-echo                        %c%^|%u%           [%c%I%u%] Installed apps / available updates     %c%^|%u%
-echo %c%                       +==================================================+
+call :DexHeader "Dex Toolbox"
+echo.
+call :DexTableHead "SECTION"
+call :DexRow 1 "Page 1" "Browsers, VPN, security, office" NONE
+call :DexRow 2 "Page 2" "Productivity, messaging" NONE
+call :DexRow 3 "Page 3" "System tools, runtimes" NONE
+call :DexRow 4 "Page 4" "Design, game, DevOps" NONE
+call :DexRow S "Search" "Find specific software" NONE
+call :DexRow U "Uninstall" "Remove installed software" NONE
+call :DexRow I "Installed apps" "Installed apps and updates" NONE
+echo.
 echo %c%                                   ^|  %u%[%red%X%u%] Exit Toolbox%c%        ^|%u%
 echo %c%                                   +===============================+%u%
 echo.
