@@ -1,0 +1,14 @@
+# Mirrors .gitattributes: the batch file stays CRLF (checked by --self-test),
+# Markdown stays LF.
+root = true
+
+[*]
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.bat]
+end_of_line = crlf
+
+[*.md]
+end_of_line = lf
+charset = utf-8

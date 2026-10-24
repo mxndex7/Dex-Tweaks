@@ -35,11 +35,21 @@ Alterações gerenciadas seguem prévia → validação → snapshot → aplica�
 
 Lista completa de telas e o que cada uma faz: [DOCUMENTACAO.md](DOCUMENTACAO.md).
 
+## Testes internos
+
+```bat
+Dex-Tweaks.bat --self-test
+Dex-Tweaks.bat --smoke-test
+```
+
+`--self-test` valida a estrutura do script (labels, `goto`/`call`, codificação ASCII e quebras de linha CRLF); `--smoke-test` roda o fluxo gerenciado em dados temporários, sem aplicar tweaks reais. Detalhes em [DOCUMENTACAO.md](DOCUMENTACAO.md#testes-internos).
+
 ## Avisos
 
 - Resultados variam conforme hardware, drivers, edição e versão do Windows.
 - Ajustes agressivos podem afetar compatibilidade, consumo ou segurança.
 - Benchmark é uma fotografia do sistema, não garantia de FPS ou latência.
+- Para desfazer alterações gerenciadas, use **Backup / Restore** e reinicie; arquivos ou apps removidos só voltam pelo Ponto de Restauração do Windows.
 - Revise scripts baixados da internet antes de executá-los como administrador.
 
 ## Projeto
