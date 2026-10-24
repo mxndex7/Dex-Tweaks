@@ -35,6 +35,15 @@ Alterações gerenciadas seguem prévia → validação → snapshot → aplica�
 
 Lista completa de telas e o que cada uma faz: [DOCUMENTACAO.md](DOCUMENTACAO.md).
 
+## Testes internos
+
+```bat
+Dex-Tweaks.bat --self-test
+Dex-Tweaks.bat --smoke-test
+```
+
+`--self-test` valida a estrutura do script (labels, `goto`/`call`, codificação ASCII e quebras de linha CRLF); `--smoke-test` roda o fluxo gerenciado em dados temporários, sem aplicar tweaks reais. Detalhes em [DOCUMENTACAO.md](DOCUMENTACAO.md#testes-internos).
+
 ## Avisos
 
 - Resultados variam conforme hardware, drivers, edição e versão do Windows.
