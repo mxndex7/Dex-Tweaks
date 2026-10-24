@@ -49,6 +49,7 @@ Dex-Tweaks.bat --smoke-test
 - Resultados variam conforme hardware, drivers, edição e versão do Windows.
 - Ajustes agressivos podem afetar compatibilidade, consumo ou segurança.
 - Benchmark é uma fotografia do sistema, não garantia de FPS ou latência.
+- Para desfazer alterações gerenciadas, use **Backup / Restore** e reinicie; arquivos ou apps removidos só voltam pelo Ponto de Restauração do Windows.
 - Revise scripts baixados da internet antes de executá-los como administrador.
 
 ## Projeto
