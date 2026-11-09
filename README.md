@@ -62,3 +62,5 @@ Dex-Tweaks.bat --smoke-test
 ## Projeto
 
 Autor: Guilherme Mendes — [github.com/mxndex7/Dex-Tweaks](https://github.com/mxndex7/Dex-Tweaks)
+
+Problemas e sugestões: abra uma issue em [github.com/mxndex7/Dex-Tweaks/issues](https://github.com/mxndex7/Dex-Tweaks/issues)
