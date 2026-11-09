@@ -52,6 +52,13 @@ Dex-Tweaks.bat --smoke-test
 - Para desfazer alterações gerenciadas, use **Backup / Restore** e reinicie; arquivos ou apps removidos só voltam pelo Ponto de Restauração do Windows.
 - Revise scripts baixados da internet antes de executá-los como administrador.
 
+## Estrutura do repositório
+
+- `Dex-Tweaks.bat`: o painel, em arquivo único.
+- `README.md`: visão geral do projeto.
+- `DOCUMENTACAO.md`: referência funcional das telas.
+- `.gitattributes` e `.editorconfig`: fixam CRLF no `.bat` e LF nos `.md`.
+
 ## Projeto
 
 Autor: Guilherme Mendes — [github.com/mxndex7/Dex-Tweaks](https://github.com/mxndex7/Dex-Tweaks)
