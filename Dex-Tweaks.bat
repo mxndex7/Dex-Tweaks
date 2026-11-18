@@ -13461,24 +13461,29 @@ echo %c%+=======================================================================
 echo ^|                          MINECRAFT OPTIMIZER                                 ^|
 echo +==============================================================================+%u%
 echo.
-echo %c%Applying Minecraft-specific optimizations:%u%
-echo %c%- Aikars optimized JVM flags written to JVMarguments.txt%u%
-echo %c%- OptiFine config applied ^(low quality / high FPS preset^)%u%
-echo %c%- Animations, particles and weather effects minimized%u%
+rem Check the game folder before anything is written. Outside a ( ) block on
+rem purpose: a ")" in the profile path would break a parenthesized block.
+if exist "%APPDATA%\.minecraft\" goto MinecraftFolderFound
+echo %red%Minecraft was not found: "%APPDATA%\.minecraft" does not exist.%u%
+echo %c%Start the Minecraft Launcher once with this Windows account, then try again.%u%
+echo %c%Nothing was written.%u%
+call :LogEvent "SKIP" "Minecraft optimizer skipped: .minecraft folder not found"
 echo.
-echo %c%To use the JVM flags: open your Minecraft Launcher, go to%u%
-echo %c%Installations, edit your profile, and paste the contents of%u%
-echo %c%JVMarguments.txt into the JVM Arguments field.%u%
+call :DexWaitKey
+goto Boosters
+
+:MinecraftFolderFound
+echo %c%Writes JVMarguments.txt and an OptiFine optionsof.txt to:%u%
+echo %c%"%APPDATA%\.minecraft"%u%
+echo %orange%An existing optionsof.txt is replaced with the low quality / high FPS preset.%u%
 echo.
+call :DexChoice "YN" "%c%Apply Minecraft optimizations? (Y/N)%u%"
+if errorlevel 2 goto Boosters
 echo.
-echo   Open Minecraft launcher and put the code inside JVMarguments in JVM Arguments
-call :DexSleep 3
-pause >nul
 (
-    echo of -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1HeapWastePercent=10 -XX:G1MixedGCCountTarget=4 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=true -Daikars.new.flags=true
+    echo -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1HeapWastePercent=10 -XX:G1MixedGCCountTarget=4 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=true -Daikars.new.flags=true
 ) > "%APPDATA%\.minecraft\JVMarguments.txt"
 
-cd /d "%APPDATA%\.minecraft"
 (
     echo ofFogType:3
     echo ofFogStart:0.6
@@ -13552,8 +13557,19 @@ cd /d "%APPDATA%\.minecraft"
     echo ofChatShadow:false
     echo ofTelemetry:2
     echo key_of.key.zoom:key.keyboard.left.control
-) > optionsof.txt
+) > "%APPDATA%\.minecraft\optionsof.txt"
 
+echo %c%Applying Minecraft-specific optimizations:%u%
+echo %c%- Aikars optimized JVM flags written to JVMarguments.txt%u%
+echo %c%- OptiFine config applied ^(low quality / high FPS preset^)%u%
+echo %c%- Animations, particles and weather effects minimized%u%
+echo.
+echo %c%To use the JVM flags: open your Minecraft Launcher, go to%u%
+echo %c%Installations, edit your profile, and paste the contents of%u%
+echo %c%JVMarguments.txt into the JVM Arguments field.%u%
+echo.
+echo.
+echo   Open Minecraft launcher and put the code inside JVMarguments in JVM Arguments
 echo.
 echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
@@ -14510,11 +14526,13 @@ rem   %~2 = 1 to include "D3D Shader Cache"; anything else keeps it
 rem Every category gets 2 (selected) or 0 (not selected), so choices left by an
 rem earlier /sageset run cannot re-enable an excluded category. Always kept,
 rem matching what the cleanup screens promise: the Downloads folder, File
-rem History versions, crash dumps and setup/upgrade/reset logs.
+rem History versions, crash dumps and setup/upgrade/reset logs. Also kept:
+rem Previous Installations (Windows.old, needed to roll back a feature update)
+rem and Windows ESD installation files (used by Reset this PC).
 rem ---------------------------------------------------------------------------
 set "DEX_CM_FLAG=000%~1"
 set "DEX_CM_FLAG=StateFlags%DEX_CM_FLAG:~-4%"
-set "DEX_CM_SKIP=DownloadsFolder;User file versions;System error memory dump files;System error minidump files;Setup Log Files;Windows Upgrade Log Files;Windows Reset Log Files"
+set "DEX_CM_SKIP=DownloadsFolder;User file versions;System error memory dump files;System error minidump files;Setup Log Files;Windows Upgrade Log Files;Windows Reset Log Files;Previous Installations;Windows ESD installation files"
 if not "%~2"=="1" set "DEX_CM_SKIP=%DEX_CM_SKIP%;D3D Shader Cache"
 powershell -NoProfile -NonInteractive -Command "$skip=$env:DEX_CM_SKIP -split ';'; Get-ChildItem -LiteralPath 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches' -ErrorAction SilentlyContinue | ForEach-Object { $v=2; if ($skip -contains $_.PSChildName) { $v=0 }; Set-ItemProperty -LiteralPath $_.PSPath -Name $env:DEX_CM_FLAG -Value $v -Type DWord -Force -ErrorAction SilentlyContinue }" >nul 2>&1 <nul
 set "DEX_CM_FLAG="
