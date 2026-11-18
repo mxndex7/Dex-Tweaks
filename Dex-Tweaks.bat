@@ -256,12 +256,12 @@ net start Schedule >nul 2>&1
 
 echo - Enabling System Restore...
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\SystemRestore" /v DisableSR /t REG_DWORD /d 0 /f >nul 2>&1
-powershell.exe -Command "Enable-ComputerRestore -Drive 'C:\'" >nul 2>&1
+powershell.exe -NoProfile -NonInteractive -Command "Enable-ComputerRestore -Drive 'C:\'" >nul 2>&1 <nul
 reg.exe add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" /v "SystemRestorePointCreationFrequency" /t REG_DWORD /d "0" /f >nul 2>&1
 
 echo.
 echo Creating restore point...
-powershell.exe -ExecutionPolicy Bypass -Command "Checkpoint-Computer -Description 'PreTweaksBackup' -RestorePointType MODIFY_SETTINGS" >nul 2>&1
+powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Checkpoint-Computer -Description 'PreTweaksBackup' -RestorePointType MODIFY_SETTINGS" >nul 2>&1 <nul
 set "SR_STATUS=%ERRORLEVEL%"
 if %SR_STATUS%==0 (
     echo %cyan%System Restore point created successfully!%u%
@@ -275,7 +275,7 @@ if errorlevel 2 (
     echo Old restore points preserved.
 ) else (
     echo Removing old system restore points...
-    vssadmin delete shadows /for=C: /oldest >nul 2>&1
+    vssadmin delete shadows /for=C: /oldest /quiet >nul 2>&1
     if !errorlevel!==0 (
         echo %cyan%Old restore points removed successfully!%u%
     ) else (
@@ -285,8 +285,8 @@ if errorlevel 2 (
 
 echo.
 echo Stopping temporary services...
-net stop VSS >nul 2>&1
-net stop swprv >nul 2>&1
+net stop VSS /y >nul 2>&1
+net stop swprv /y >nul 2>&1
 
 echo.
 echo %cyan%Backup and restore point creation completed!%u%
@@ -297,8 +297,8 @@ goto Presets
 
 :Presets
 set "DEX_COLOR_LOADED="
-net stop VSS    >nul 2>&1
-net stop swprv  >nul 2>&1
+net stop VSS /y    >nul 2>&1
+net stop swprv /y  >nul 2>&1
 cls
 
 echo %white%Type one of the colours you want to use from below!%u%
@@ -477,7 +477,7 @@ set "DEX_CPU_MANUFACTURER="
 set "DEX_CPU_CORES="
 set "DEX_CPU_THREADS="
 set "DEX_CPU_MAXCLOCK="
-for /f "tokens=1-5 delims=|" %%a in ('powershell -NoProfile -Command "$p=Get-CimInstance -ClassName Win32_Processor -ErrorAction SilentlyContinue | Select-Object -First 1; $v=@($p.Name,$p.Manufacturer,$p.NumberOfCores,$p.NumberOfLogicalProcessors,$p.MaxClockSpeed) | ForEach-Object{if($_){$_}else{'NA'}}; $v -join '|'" 2^>nul') do (
+for /f "tokens=1-5 delims=|" %%a in ('powershell -NoProfile -NonInteractive -Command "$p=Get-CimInstance -ClassName Win32_Processor -ErrorAction SilentlyContinue | Select-Object -First 1; $v=@($p.Name,$p.Manufacturer,$p.NumberOfCores,$p.NumberOfLogicalProcessors,$p.MaxClockSpeed) | ForEach-Object{if($_){$_}else{'NA'}}; $v -join '|'" 2^>nul ^<nul') do (
     set "DEX_CPU_NAME=%%a"
     set "DEX_CPU_MANUFACTURER=%%b"
     set "DEX_CPU_CORES=%%c"
@@ -510,7 +510,7 @@ if not defined CPUName (
 )
 
 if not defined GPUName (
-    for /f "delims=" %%G in ('powershell -NoProfile -Command "(Get-CimInstance Win32_VideoController | Select-Object -First 1).Name" 2^>nul') do set "GPUName=%%G"
+    for /f "delims=" %%G in ('powershell -NoProfile -NonInteractive -Command "(Get-CimInstance Win32_VideoController | Select-Object -First 1).Name" 2^>nul ^<nul') do set "GPUName=%%G"
     if not defined GPUName for /f "skip=1 delims=" %%G in ('wmic path win32_VideoController get Name 2^>nul') do if not defined GPUName (
         if not "%%G"=="" set "GPUName=%%G"
     )
@@ -626,7 +626,7 @@ echo      %c%system stability without compromising reliability.%u%
 echo.
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto More
 
 :disclaimer
@@ -657,7 +657,7 @@ echo.
 echo %lime%   Support:%u% %c%For technical assistance, reach out via%u% %lime%Github: Mxndex7%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto More
 
 :changelog
@@ -682,7 +682,7 @@ echo         %lime%https://github.com/mxndex7/Dex-Tweaks/releases%u%
 echo.
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto More
 
 :Backup
@@ -916,10 +916,10 @@ if "%EDGE_FOUND%"=="true" (
     reg delete "HKLM\SOFTWARE\Policies\Microsoft\EdgeUpdate" /v "UpdatesSuppressedStartMin" /f >nul 2>&1
 
     echo %c%- Enabling Edge update services...%u%
-    powershell -Command "$services = @('edgeupdate', 'edgeupdatem'); foreach ($serviceName in $services) { if(Get-Service -Name $serviceName -ErrorAction SilentlyContinue){ Set-Service -Name $serviceName -StartupType Manual -ErrorAction SilentlyContinue } }" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "$services = @('edgeupdate', 'edgeupdatem'); foreach ($serviceName in $services) { if(Get-Service -Name $serviceName -ErrorAction SilentlyContinue){ Set-Service -Name $serviceName -StartupType Manual -ErrorAction SilentlyContinue } }" >nul 2>&1 <nul
 
     echo %c%- Enabling Edge update scheduled tasks...%u%
-    powershell -Command "Get-ScheduledTask -TaskPath '\' -TaskName 'MicrosoftEdgeUpdateTaskMachine*' -ErrorAction SilentlyContinue | Enable-ScheduledTask" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "Get-ScheduledTask -TaskPath '\' -TaskName 'MicrosoftEdgeUpdateTaskMachine*' -ErrorAction SilentlyContinue | Enable-ScheduledTask" >nul 2>&1 <nul
 
     echo %c%+ Microsoft Edge configured for maximum privacy and performance%u%
 ) else (
@@ -1023,16 +1023,16 @@ if "%CHROME_FOUND%"=="true" (
     reg delete "HKLM\SOFTWARE\Policies\Google\Update" /v "Update{8A69D345-D564-463C-AFF1-A69D9E530F96}" /f >nul 2>&1
 
     echo %c%- Enabling Google update services...%u%
-    powershell -Command "$services = @('gupdate', 'gupdatem', 'GoogleChromeElevationService'); foreach ($serviceName in $services) { if(Get-Service -Name $serviceName -ErrorAction SilentlyContinue){ Set-Service -Name $serviceName -StartupType Manual -ErrorAction SilentlyContinue } }" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "$services = @('gupdate', 'gupdatem', 'GoogleChromeElevationService'); foreach ($serviceName in $services) { if(Get-Service -Name $serviceName -ErrorAction SilentlyContinue){ Set-Service -Name $serviceName -StartupType Manual -ErrorAction SilentlyContinue } }" >nul 2>&1 <nul
 
     echo %c%- Enabling Google update scheduled tasks...%u%
-    powershell -Command "Get-ScheduledTask -TaskPath '\' -TaskName 'Google*' -ErrorAction SilentlyContinue | Enable-ScheduledTask" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "Get-ScheduledTask -TaskPath '\' -TaskName 'Google*' -ErrorAction SilentlyContinue | Enable-ScheduledTask" >nul 2>&1 <nul
 
     echo %c%- Creating Software Reporter Tool block...%u%
-    powershell -Command "$executableFilename='software_reporter_tool.exe'; try { $registryPathForDisallowRun='HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\DisallowRun'; $existingBlockEntries = Get-ItemProperty -Path $registryPathForDisallowRun -ErrorAction Ignore; $nextFreeRuleIndex = 1; if ($existingBlockEntries) { $existingBlockingRuleForExecutable = $existingBlockEntries.PSObject.Properties | Where-Object { $_.Value -eq $executableFilename }; if ($existingBlockingRuleForExecutable) { exit 0; }; $occupiedRuleIndexes = $existingBlockEntries.PSObject.Properties | Where-Object { $_.Name -Match '^\d+$' } | Select -ExpandProperty Name; if ($occupiedRuleIndexes) { while ($occupiedRuleIndexes -Contains $nextFreeRuleIndex) { $nextFreeRuleIndex += 1; }; }; }; if (!(Test-Path $registryPathForDisallowRun)) { New-Item -Path $registryPathForDisallowRun -Force -ErrorAction Stop | Out-Null; }; New-ItemProperty -Path $registryPathForDisallowRun -Name $nextFreeRuleIndex -PropertyType String -Value $executableFilename -ErrorAction Stop | Out-Null; } catch { }" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "$executableFilename='software_reporter_tool.exe'; try { $registryPathForDisallowRun='HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\DisallowRun'; $existingBlockEntries = Get-ItemProperty -Path $registryPathForDisallowRun -ErrorAction Ignore; $nextFreeRuleIndex = 1; if ($existingBlockEntries) { $existingBlockingRuleForExecutable = $existingBlockEntries.PSObject.Properties | Where-Object { $_.Value -eq $executableFilename }; if ($existingBlockingRuleForExecutable) { exit 0; }; $occupiedRuleIndexes = $existingBlockEntries.PSObject.Properties | Where-Object { $_.Name -Match '^\d+$' } | Select -ExpandProperty Name; if ($occupiedRuleIndexes) { while ($occupiedRuleIndexes -Contains $nextFreeRuleIndex) { $nextFreeRuleIndex += 1; }; }; }; if (!(Test-Path $registryPathForDisallowRun)) { New-Item -Path $registryPathForDisallowRun -Force -ErrorAction Stop | Out-Null; }; New-ItemProperty -Path $registryPathForDisallowRun -Name $nextFreeRuleIndex -PropertyType String -Value $executableFilename -ErrorAction Stop | Out-Null; } catch { }" >nul 2>&1 <nul
 
     echo %c%- Activating executable blocking policy...%u%
-    powershell -Command "try { $fileExplorerDisallowRunRegistryPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer'; $currentDisallowRunPolicyValue = Get-ItemProperty -Path $fileExplorerDisallowRunRegistryPath -Name 'DisallowRun' -ErrorAction Ignore | Select -ExpandProperty DisallowRun; if ([string]::IsNullOrEmpty($currentDisallowRunPolicyValue)) { if (!(Test-Path $fileExplorerDisallowRunRegistryPath)) { New-Item -Path $fileExplorerDisallowRunRegistryPath -Force -ErrorAction Stop | Out-Null; }; New-ItemProperty -Path $fileExplorerDisallowRunRegistryPath -Name 'DisallowRun' -Value 1 -PropertyType DWORD -Force -ErrorAction Stop | Out-Null; } elseif ($currentDisallowRunPolicyValue -ne 1) { Set-ItemProperty -Path $fileExplorerDisallowRunRegistryPath -Name 'DisallowRun' -Value 1 -Type DWORD -Force -ErrorAction Stop | Out-Null; } } catch { }" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "try { $fileExplorerDisallowRunRegistryPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer'; $currentDisallowRunPolicyValue = Get-ItemProperty -Path $fileExplorerDisallowRunRegistryPath -Name 'DisallowRun' -ErrorAction Ignore | Select -ExpandProperty DisallowRun; if ([string]::IsNullOrEmpty($currentDisallowRunPolicyValue)) { if (!(Test-Path $fileExplorerDisallowRunRegistryPath)) { New-Item -Path $fileExplorerDisallowRunRegistryPath -Force -ErrorAction Stop | Out-Null; }; New-ItemProperty -Path $fileExplorerDisallowRunRegistryPath -Name 'DisallowRun' -Value 1 -PropertyType DWORD -Force -ErrorAction Stop | Out-Null; } elseif ($currentDisallowRunPolicyValue -ne 1) { Set-ItemProperty -Path $fileExplorerDisallowRunRegistryPath -Name 'DisallowRun' -Value 1 -Type DWORD -Force -ErrorAction Stop | Out-Null; } } catch { }" >nul 2>&1 <nul
 
     echo %c%+ Google Chrome configured for maximum privacy and performance%u%
 ) else (
@@ -1051,7 +1051,7 @@ if "%FIREFOX_FOUND%"=="true" (
     reg delete "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisableSystemAddonUpdate" /f >nul 2>&1
 
     echo %c%- Disabling Firefox background services...%u%
-    powershell -Command "$tasks = @('Firefox Default Browser Agent 308046B0AF4A39CB', 'Firefox Default Browser Agent D2CEEC440E2074BD'); foreach ($taskName in $tasks) { $task = Get-ScheduledTask -TaskPath '\Mozilla\' -TaskName $taskName -ErrorAction SilentlyContinue; if ($task -and $task.State -ne [Microsoft.PowerShell.Cmdletization.GeneratedTypes.ScheduledTask.StateEnum]::Disabled) { try { $task | Disable-ScheduledTask -ErrorAction Stop | Out-Null } catch { } } }" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "$tasks = @('Firefox Default Browser Agent 308046B0AF4A39CB', 'Firefox Default Browser Agent D2CEEC440E2074BD'); foreach ($taskName in $tasks) { $task = Get-ScheduledTask -TaskPath '\Mozilla\' -TaskName $taskName -ErrorAction SilentlyContinue; if ($task -and $task.State -ne [Microsoft.PowerShell.Cmdletization.GeneratedTypes.ScheduledTask.StateEnum]::Disabled) { try { $task | Disable-ScheduledTask -ErrorAction Stop | Out-Null } catch { } } }" >nul 2>&1 <nul
 
     echo %c%- Configuring Firefox security and privacy policies...%u%
     reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v "DisablePocket" /t REG_DWORD /d "1" /f >nul 2>&1
@@ -1102,7 +1102,7 @@ echo.
 echo %c%Browser privacy and performance settings have been applied.%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto TweaksMenu
 
 :CreateFirefoxPrivacyConfig
@@ -1431,7 +1431,7 @@ echo %c%- Enhanced privacy protection across all browsers%u%
 echo %c%- Automatic malware and phishing protection%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto TweaksMenu
 
 :K
@@ -1472,7 +1472,7 @@ echo %c%Available Power Plans:%u%
 powercfg /list
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto K
 
 :DesktopPowerPlan
@@ -1933,7 +1933,7 @@ echo %c%- Optimized for competitive gaming and streaming%u%
 if not exist "%temp%\desktop_plan_created" echo %c%- Extended battery life when unplugged%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto TweaksMenu
 
 :A
@@ -2086,8 +2086,8 @@ start explorer.exe
 call :DexSleep 2
 
 echo %c%[7/14] Rebuilding Font Cache...%u%
-net stop FontCache >nul 2>&1
-net stop FontCache3.0.0.0 >nul 2>&1
+net stop FontCache /y >nul 2>&1
+net stop FontCache3.0.0.0 /y >nul 2>&1
 del /f /s /q "%windir%\ServiceProfiles\LocalService\AppData\Local\FontCache\*" >nul 2>&1
 net start FontCache >nul 2>&1
 
@@ -2106,7 +2106,7 @@ echo %c%[10/14] Flushing DNS Resolver Cache...%u%
 ipconfig /flushdns >nul 2>&1
 
 echo %c%[11/14] Emptying Recycle Bin...%u%
-powershell -NoProfile -Command "Clear-RecycleBin -Force -ErrorAction SilentlyContinue" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Clear-RecycleBin -Force -ErrorAction SilentlyContinue" >nul 2>&1 <nul
 
 echo %c%[12/14] Preserving Windows diagnostic logs and crash dumps...%u%
 rem CBS, setup, driver and crash logs are required to diagnose update, boot and
@@ -2124,11 +2124,9 @@ reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths" 
 echo %c%[14/14] Running Advanced Disk Cleanup...%u%
 echo.
 echo %c%Launching Disk Cleanup utility...%u%
-echo %c%Please select all options EXCEPT 'DirectX Shader Cache' and click OK%u%
-call :DexSleep 3
-cleanmgr /sageset:0
 echo.
 echo %c%Running automated cleanup...%u%
+call :DexCleanmgrProfile 0 !CLN_SHADERS!
 cleanmgr /sagerun:0
 
 echo.
@@ -2151,7 +2149,7 @@ echo %c%- Your personal files were left untouched%u%
 echo %c%- System performance optimized%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto TweaksMenu
 
 :B
@@ -2209,7 +2207,7 @@ if errorlevel 1 (
     echo %c%  %SystemDrive%\DexTools\TimerResolution\SetTimerResolution.exe%u%
     del /f /q "%SystemDrive%\DexTools\TimerResolution\SetTimerResolution.exe.download" >nul 2>&1
 ) else (
-    powershell -NoProfile -Command "$p='%SystemDrive%\DexTools\TimerResolution\SetTimerResolution.exe.download';try{$s=Get-AuthenticodeSignature -LiteralPath $p -ErrorAction Stop;if($s.Status -eq 'Valid'){exit 0}else{exit 1}}catch{exit 1}" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "$p='%SystemDrive%\DexTools\TimerResolution\SetTimerResolution.exe.download';try{$s=Get-AuthenticodeSignature -LiteralPath $p -ErrorAction Stop;if($s.Status -eq 'Valid'){exit 0}else{exit 1}}catch{exit 1}" >nul 2>&1 <nul
     if errorlevel 1 (
         echo %red%  Download blocked: the executable has no valid Authenticode signature.%u%
         call :LogEvent "BLOCKED" "Unsigned TimerResolution executable was not installed"
@@ -2220,7 +2218,7 @@ if errorlevel 1 (
     )
 )
 
-powershell -NoProfile -Command "$p='%SystemDrive%\DexTools\TimerResolution\SetTimerResolution.exe';try{$s=Get-AuthenticodeSignature -LiteralPath $p -ErrorAction Stop;if($s.Status -eq 'Valid'){exit 0}else{exit 1}}catch{exit 1}" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "$p='%SystemDrive%\DexTools\TimerResolution\SetTimerResolution.exe';try{$s=Get-AuthenticodeSignature -LiteralPath $p -ErrorAction Stop;if($s.Status -eq 'Valid'){exit 0}else{exit 1}}catch{exit 1}" >nul 2>&1 <nul
 if errorlevel 1 (
     echo %red%  Timer Resolution setup cancelled because no signed executable is available.%u%
     reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "TimerResolution" /f >nul 2>&1
@@ -2386,7 +2384,7 @@ echo.
 
 echo %c%[CHECK] Detecting device type...%u%
 set "_ct="
-for /F "tokens=*" %%c in ('powershell -Command "(Get-CimInstance -ClassName Win32_SystemEnclosure).ChassisTypes[0]" 2^>nul') do set /A "_ct=%%c" 2>nul
+for /F "tokens=*" %%c in ('powershell -NoProfile -NonInteractive -Command "(Get-CimInstance -ClassName Win32_SystemEnclosure).ChassisTypes[0]" 2^>nul ^<nul') do set /A "_ct=%%c" 2>nul
 set "_isPortable="
 for %%t in (8 9 10 11 14 30 31 32) do if "!_ct!"=="%%t" set "_isPortable=1"
 if defined _isPortable (
@@ -2480,7 +2478,7 @@ echo %red%System restart required for full effect.%u%
 echo %c%To revert these changes, select [3] from the NVIDIA GPU menu.%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto NVIDIAGPU
 
 :NVIDIAGPURevert
@@ -2527,7 +2525,7 @@ echo %c%Experimental DWORDs removed. NVIDIA driver defaults restored.%u%
 echo %red%System restart recommended.%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto NVIDIAGPU
 
 :AMDGPU
@@ -2598,7 +2596,7 @@ for /f "delims=" %%K in ('reg query "%_amd_class%" 2^>nul ^| findstr /r /i "\\[0
             set "_amd_scan_devid=Unknown"
             for /f "tokens=2,*" %%a in ('reg query "%_amd_class%\!_amd_scan_idx!" /v MatchingDeviceId 2^>nul ^| findstr /i "MatchingDeviceId"') do set "_amd_scan_devid=%%b"
             if "!_amd_scan_devid!"=="Unknown" (
-                for /f "delims=" %%a in ('powershell -NoProfile -Command "try { $b = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\!_amd_scan_idx!' -Name 'HardwareInformation.AdapterString' -ErrorAction Stop).'HardwareInformation.AdapterString'; [Text.Encoding]::Unicode.GetString($b).TrimEnd([char]0) } catch { '' }" 2^>nul') do if not "%%a"=="" set "_amd_scan_devid=%%a"
+                for /f "delims=" %%a in ('powershell -NoProfile -NonInteractive -Command "try { $b = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\!_amd_scan_idx!' -Name 'HardwareInformation.AdapterString' -ErrorAction Stop).'HardwareInformation.AdapterString'; [Text.Encoding]::Unicode.GetString($b).TrimEnd([char]0) } catch { '' }" 2^>nul ^<nul') do if not "%%a"=="" set "_amd_scan_devid=%%a"
             )
             set /a "AMD_CAND_COUNT+=1"
             set "AMD_CAND_!AMD_CAND_COUNT!_IDX=!_amd_scan_idx!"
@@ -2858,7 +2856,7 @@ powercfg -setdcvalueindex scheme_current sub_processor PERFBOOSTMODE 1 >nul 2>&1
 powercfg -setdcvalueindex scheme_current sub_processor PERFBOOSTPOL 60 >nul 2>&1
 powercfg -setactive scheme_current >nul 2>&1
 set "_wifi_pnp_found="
-for /f "delims=" %%j in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.NetEnabled -eq $true -and $_.AdapterTypeId -eq 9 } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+for /f "delims=" %%j in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.NetEnabled -eq $true -and $_.AdapterTypeId -eq 9 } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
     set "_wifi_pnp_found=1"
     reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%j\Device Parameters" /v "SelectiveSuspendEnabled" /t REG_DWORD /d 0 /f >nul 2>&1
     reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%j\Device Parameters" /v "SelectiveSuspendOn" /t REG_DWORD /d 0 /f >nul 2>&1
@@ -2972,7 +2970,7 @@ echo %c%- Comprehensive wireless security hardening while maintaining performanc
 echo %c%- Professional-grade wireless optimization combining multiple methodologies%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto D
 
 :EthernetOptimization
@@ -3014,7 +3012,7 @@ echo.
 echo %c%[1/16] Detecting Ethernet interfaces and speed...%u%
 set "ETHERNET_SPEED=Unknown"
 set "_eth_speed_raw="
-for /f "delims=" %%a in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.NetConnectionStatus -eq 2 -and $_.AdapterTypeId -eq 0 } | Select-Object -First 1 -ExpandProperty Speed" 2^>nul') do set "_eth_speed_raw=%%a"
+for /f "delims=" %%a in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.NetConnectionStatus -eq 2 -and $_.AdapterTypeId -eq 0 } | Select-Object -First 1 -ExpandProperty Speed" 2^>nul ^<nul') do set "_eth_speed_raw=%%a"
 if not defined _eth_speed_raw for /f "tokens=2 delims==" %%a in ('wmic path win32_networkadapter where "NetConnectionStatus=2 and AdapterTypeId=0" get Speed /format:value 2^>nul ^| findstr "Speed"') do set "_eth_speed_raw=%%a"
 if defined _eth_speed_raw (
     set /a "SPEED_MBPS=!_eth_speed_raw!/1000000"
@@ -3085,7 +3083,7 @@ powercfg -setacvalueindex scheme_current sub_processor PERFBOOSTMODE 2 >nul 2>&1
 powercfg -setacvalueindex scheme_current sub_processor PERFBOOSTPOL 100 >nul 2>&1
 powercfg -setactive scheme_current >nul 2>&1
 set "_eth_pnp_found="
-for /f "delims=" %%j in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.NetEnabled -eq $true -and $_.AdapterTypeId -eq 0 } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+for /f "delims=" %%j in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.NetEnabled -eq $true -and $_.AdapterTypeId -eq 0 } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
     set "_eth_pnp_found=1"
     reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%j\Device Parameters" /v "SelectiveSuspendEnabled" /t REG_DWORD /d 0 /f >nul 2>&1
     reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%j\Device Parameters" /v "SelectiveSuspendOn" /t REG_DWORD /d 0 /f >nul 2>&1
@@ -3263,7 +3261,7 @@ echo %c%- Advanced hardware acceleration for maximum performance%u%
 echo %c%- Jumbo frame support for high-bandwidth applications%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto D
 
 :UniversalTweaks
@@ -3307,7 +3305,7 @@ echo.
 echo %c%[1/18] Detecting network interfaces and connection types...%u%
 set "CONN_DETECT_FILE=%TEMP%\connection_type.txt"
 set "NETSH_OUTPUT=%TEMP%\netsh_output.txt"
-powershell -Command "Get-NetAdapter | Where-Object {$_.Status -eq 'Up'} | Select-Object Name, InterfaceDescription, LinkSpeed, Status | Format-Table -AutoSize > '%CONN_DETECT_FILE%'" 2>nul
+powershell -NoProfile -NonInteractive -Command "Get-NetAdapter | Where-Object {$_.Status -eq 'Up'} | Select-Object Name, InterfaceDescription, LinkSpeed, Status | Format-Table -AutoSize > '%CONN_DETECT_FILE%'" 2>nul <nul
 netsh interface show interface > "%NETSH_OUTPUT%" 2>nul
 set "CONN_TYPE=Unknown"
 if exist "%CONN_DETECT_FILE%" (
@@ -3415,7 +3413,7 @@ powercfg -setdcvalueindex scheme_current sub_processor PERFBOOSTMODE 1 >nul 2>&1
 powercfg -setdcvalueindex scheme_current sub_processor PERFBOOSTPOL 60 >nul 2>&1
 powercfg -setactive scheme_current >nul 2>&1
 set "_all_pnp_found="
-for /f "delims=" %%j in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.NetEnabled -eq $true } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+for /f "delims=" %%j in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.NetEnabled -eq $true } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
     set "_all_pnp_found=1"
     reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%j\Device Parameters" /v "SelectiveSuspendEnabled" /t REG_DWORD /d 0 /f >nul 2>&1
     reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%j\Device Parameters" /v "SelectiveSuspendOn" /t REG_DWORD /d 0 /f >nul 2>&1
@@ -3503,7 +3501,7 @@ if "!CONN_TYPE!"=="WiFi" (
     reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpInitialRTT" /t REG_DWORD /d 400 /f >nul 2>&1
     netsh interface tcp set global autotuninglevel=normal >nul 2>&1
     set "_wifi_conn_pnp_found="
-    for /f "delims=" %%b in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.NetConnectionStatus -eq 2 -and $_.AdapterTypeId -eq 9 } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+    for /f "delims=" %%b in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.NetConnectionStatus -eq 2 -and $_.AdapterTypeId -eq 9 } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
         set "_wifi_conn_pnp_found=1"
         reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%b\Device Parameters" /v "ScanWhenAssociated" /t REG_DWORD /d 0 /f >nul 2>&1
         reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%b\Device Parameters" /v "PowerSaveMode" /t REG_DWORD /d 0 /f >nul 2>&1
@@ -3521,7 +3519,7 @@ if "!CONN_TYPE!"=="WiFi" (
     reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpInitialRTT" /t REG_DWORD /d 300 /f >nul 2>&1
     netsh interface tcp set global autotuninglevel=normal >nul 2>&1
     set "_eth_conn_pnp_found="
-    for /f "delims=" %%b in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.NetConnectionStatus -eq 2 -and $_.AdapterTypeId -eq 0 } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+    for /f "delims=" %%b in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.NetConnectionStatus -eq 2 -and $_.AdapterTypeId -eq 0 } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
         set "_eth_conn_pnp_found=1"
         reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%b\Device Parameters" /v "FlowControl" /t REG_DWORD /d 3 /f >nul 2>&1
         reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%b\Device Parameters" /v "SpeedDuplex" /t REG_DWORD /d 0 /f >nul 2>&1
@@ -3671,7 +3669,7 @@ echo %c%+ LLMNR disabled ^(anti-poisoning^); LMHOSTS lookup disabled ^(legacy Ne
 
 echo %c%[20/20] Setting NTP time server to pool.ntp.org...%u%
 w32tm /config /syncfromflags:manual /manualpeerlist:"0.pool.ntp.org 1.pool.ntp.org 2.pool.ntp.org 3.pool.ntp.org" >nul 2>&1
-net stop w32time >nul 2>&1
+net stop w32time /y >nul 2>&1
 net start w32time >nul 2>&1
 w32tm /config /update >nul 2>&1
 w32tm /resync >nul 2>&1
@@ -3733,7 +3731,7 @@ echo %c%- Hardware acceleration features have been enabled for all supported net
 echo %c%- Universal optimizations provide maximum performance across all network scenarios%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto D
 
 :E
@@ -3803,7 +3801,7 @@ echo %c%- Intel XTU / BIOS limits ^(PL1, PL2, ICCMAX^) decide sustained boost, n
 echo %c%- Monitor temperatures with HWiNFO64 after applying%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto TweaksMenu
 
 :RyzenOptimization
@@ -3850,7 +3848,7 @@ echo %c%- Enable PBO / EXPO in BIOS for extra boost and memory speed%u%
 echo %c%- Monitor with HWiNFO64 or Ryzen Master%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto TweaksMenu
 
 :UniversalCPU
@@ -3890,7 +3888,7 @@ echo +==========================================================================
 echo.
 call :DexCpuSummary
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto TweaksMenu
 
 :DexCpuOptimizeCore
@@ -4026,7 +4024,7 @@ echo ^|                       MEMORY OPTIMIZATION IN PROGRESS                   
 echo +==============================================================================+%u%
 echo %c%[1/6] Detecting System Memory Configuration...%u%
 set RAM_GB=
-for /f "delims=" %%R in ('powershell -NoProfile -Command "[math]::Round(((Get-WmiObject -Class Win32_ComputerSystem -ErrorAction SilentlyContinue).TotalPhysicalMemory)/1GB)" 2^>nul') do (
+for /f "delims=" %%R in ('powershell -NoProfile -NonInteractive -Command "[math]::Round(((Get-WmiObject -Class Win32_ComputerSystem -ErrorAction SilentlyContinue).TotalPhysicalMemory)/1GB)" 2^>nul ^<nul') do (
     set RAM_GB=%%R
 )
 
@@ -4075,7 +4073,7 @@ set "CRITICAL_SERVICES=DsSvc Dhcp DPS Dnscache WinHttpAutoProxySvc DcpSvc WlanSv
 for %%s in (%CRITICAL_SERVICES%) do (
     for /f "tokens=3" %%a in ('sc queryex "%%s" 2^>nul ^| findstr "PID"') do (
         if not "%%a"=="" if not "%%a"=="0" (
-            powershell -NoProfile -Command "try{(Get-CimInstance Win32_Process -Filter 'ProcessId=%%a') | Invoke-CimMethod -MethodName SetPriority -Arguments @{Priority=32768} | Out-Null}catch{}" >nul 2>&1
+            powershell -NoProfile -NonInteractive -Command "try{(Get-CimInstance Win32_Process -Filter 'ProcessId=%%a') | Invoke-CimMethod -MethodName SetPriority -Arguments @{Priority=32768} | Out-Null}catch{}" >nul 2>&1 <nul
         )
     )
 )
@@ -4085,7 +4083,7 @@ set "LOW_PRIORITY_SERVICES=BITS smphost PNRPsvc SensrSvc Wcmsvc Wersvc wuauserv 
 for %%s in (%LOW_PRIORITY_SERVICES%) do (
     for /f "tokens=3" %%a in ('sc queryex "%%s" 2^>nul ^| findstr "PID"') do (
         if not "%%a"=="" if not "%%a"=="0" (
-            powershell -NoProfile -Command "try{(Get-CimInstance Win32_Process -Filter 'ProcessId=%%a') | Invoke-CimMethod -MethodName SetPriority -Arguments @{Priority=64} | Out-Null}catch{}" >nul 2>&1
+            powershell -NoProfile -NonInteractive -Command "try{(Get-CimInstance Win32_Process -Filter 'ProcessId=%%a') | Invoke-CimMethod -MethodName SetPriority -Arguments @{Priority=64} | Out-Null}catch{}" >nul 2>&1 <nul
         )
     )
 )
@@ -4112,9 +4110,9 @@ echo %c%[6/6] Applying Advanced Memory Optimizations...%u%
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness"                           /t REG_DWORD /d "10" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl"     /v "Win32PrioritySeparation"     /t REG_DWORD /d "38"                     /f >nul 2>&1
 if !RAM_GB! GEQ 16 (
-    powershell -NoProfile -Command "Disable-MMAgent -MemoryCompression" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "Disable-MMAgent -MemoryCompression" >nul 2>&1 <nul
 ) else (
-    powershell -NoProfile -Command "Enable-MMAgent -MemoryCompression" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "Enable-MMAgent -MemoryCompression" >nul 2>&1 <nul
 )
 
 if "!RAM_PROFILE!"=="MAXIMUM" (
@@ -4156,7 +4154,7 @@ if "!RAM_PROFILE!"=="MAXIMUM" echo %c%- Large system cache enabled for high-RAM 
 if "!RAM_PROFILE!"=="LOW" echo %c%- Conservative settings applied for low-RAM systems%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto TweaksMenu
 
 :G
@@ -4301,7 +4299,7 @@ echo %c%- Input lag reduced through hardware optimizations%u%
 echo %c%- Gaming applications will benefit from raw input%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto TweaksMenu
 
 :H
@@ -4397,8 +4395,8 @@ netsh int tcp set global netdma=enabled          >nul 2>&1
 netsh int tcp set global ecncapability=enabled   >nul 2>&1
 netsh int tcp set global timestamps=disabled      >nul 2>&1
 echo %c%[8/10] Restarting Network Adapters...%u%
-powershell -Command ^
-  "if (Get-Command Get-NetAdapter -ErrorAction SilentlyContinue) { Get-NetAdapter | Where-Object { $_.Status -eq 'Up' } | Restart-NetAdapter -Confirm:\$false }" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command ^
+  "if (Get-Command Get-NetAdapter -ErrorAction SilentlyContinue) { Get-NetAdapter | Where-Object { $_.Status -eq 'Up' } | Restart-NetAdapter -Confirm:$false }" >nul 2>&1 <nul
 call :DexSleep 5
 echo %c%[9/10] Testing Network Connectivity and Performance...%u%
 echo %c%- Testing DNS resolution...%u%
@@ -4445,7 +4443,7 @@ if "!NET_SWITCH_DNS!"=="true" (
     echo.
 )
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto TweaksMenu
 
 :I
@@ -4815,7 +4813,7 @@ echo %green%Total Services Optimized: Over 250+ background services managed%u%
 echo %red%Note: Changes will take effect after restart.%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 
 echo.
 echo %c%+==============================================================================+
@@ -4835,7 +4833,7 @@ setlocal enabledelayedexpansion
 set "DM_DEVICES=ACPI Processor Aggregator|ACPI Thermal Zone|ACPI Wake Alarm|AMD Controller Emulation|AMD Crash Defender|AMD PSP|Composite Bus Enumerator|Direct memory access controller|High Precision Event Timer|Intel Management Engine|Intel(R) Dynamic Application Loader Host Interface|Intel(R) Management Engine Interface #1|Intel(R) Management Engine WMI Provider|Intel(R) Platform Monitoring Technology Device|Intel(R) SMBus - 7AA3|Intel(R) SPI (Flash) Controller - 7AA4|Microsoft Device Association Root Enumerator|Microsoft GS Wavetable Synth|Microsoft Hyper-V Virtualization Infrastructure Driver|Microsoft Hypervisor Service|Microsoft Kernel Debug Network Adapter|Microsoft Print to PDF|Microsoft Radio Device Enumeration Bus|Microsoft RRAS Root Enumerator|Microsoft Virtual Drive Enumerator|Microsoft Windows Management Interface for ACPI|NDIS Virtual Network Adapter Enumerator|NVIDIA High Definition Audio|Numeric Data Processor|Programmable interrupt controller|Remote Desktop Device Redirector Bus|Resource Hub proxy device|Root Print Queue|System Timer|UMBus Root Bus Enumerator|WAN Miniport (IKEv2)|WAN Miniport (IP)|WAN Miniport (IPv6)|WAN Miniport (L2TP)|WAN Miniport (Network Monitor)|WAN Miniport (PPPOE)|WAN Miniport (PPTP)|WAN Miniport (SSTP)"
 for %%D in ("%DM_DEVICES:^|=" "%") do (
     set "_dev=%%~D"
-    powershell -NoProfile -Command "try { Get-PnpDevice -FriendlyName '!_dev!' -ErrorAction Stop | Disable-PnpDevice -Confirm:$false -ErrorAction Stop; Write-Host 'OK' } catch { Write-Host 'SKIP' }" 2>nul | findstr /i "OK" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "try { Get-PnpDevice -FriendlyName '!_dev!' -ErrorAction Stop | Disable-PnpDevice -Confirm:$false -ErrorAction Stop; Write-Host 'OK' } catch { Write-Host 'SKIP' }" 2>nul <nul | findstr /i "OK" >nul 2>&1
     if !errorlevel! equ 0 echo %green%  [+] Disabled: !_dev!%u%
 )
 endlocal
@@ -4844,7 +4842,7 @@ echo %green%Device Manager tweaks applied.%u%
 echo %c%Note: Re-enable devices in Device Manager if issues occur.%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto TweaksMenu
 
 :DisableService
@@ -5194,7 +5192,7 @@ echo.
 echo %red%Note: Changes will take full effect after a system restart.%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto TweaksMenu
 
 :DisableTelemetryServices
@@ -5336,7 +5334,7 @@ reg add "HKLM\SOFTWARE\NVIDIA Corporation\Global\FTS" /v EnableRID66610 /t REG_D
 reg add "HKCU\SOFTWARE\Microsoft\VSCode" /v telemetry.enableTelemetry /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\VSCode" /v telemetry.enableCrashReporter /t REG_DWORD /d 0 /f >nul 2>&1
 
-PowerShell -NoProfile -Command "$f='%APPDATA%\Code\User\settings.json'; if(!(Test-Path $f)){exit 0}; try{$c=Get-Content $f -Raw -ErrorAction Stop}catch{exit 1}; if([string]::IsNullOrWhiteSpace($c)){$c='{}'}; try{$j=$c|ConvertFrom-Json}catch{exit 1}; $j|Add-Member NoteProperty 'telemetry.enableTelemetry' $false -Force; $j|Add-Member NoteProperty 'telemetry.enableCrashReporter' $false -Force; $j|Add-Member NoteProperty 'workbench.enableExperiments' $false -Force; $j|Add-Member NoteProperty 'update.mode' 'manual' -Force; $j|Add-Member NoteProperty 'update.showReleaseNotes' $false -Force; $j|Add-Member NoteProperty 'extensions.autoCheckUpdates' $false -Force; $j|Add-Member NoteProperty 'extensions.showRecommendationsOnlyOnDemand' $true -Force; $j|Add-Member NoteProperty 'git.autofetch' $false -Force; $j|Add-Member NoteProperty 'npm.fetchOnlinePackageInfo' $false -Force; $j|ConvertTo-Json|Set-Content $f" >nul 2>&1
+PowerShell -NoProfile -NonInteractive -Command "$f='%APPDATA%\Code\User\settings.json'; if(!(Test-Path $f)){exit 0}; try{$c=Get-Content $f -Raw -ErrorAction Stop}catch{exit 1}; if([string]::IsNullOrWhiteSpace($c)){$c='{}'}; try{$j=$c|ConvertFrom-Json}catch{exit 1}; $j|Add-Member NoteProperty 'telemetry.enableTelemetry' $false -Force; $j|Add-Member NoteProperty 'telemetry.enableCrashReporter' $false -Force; $j|Add-Member NoteProperty 'workbench.enableExperiments' $false -Force; $j|Add-Member NoteProperty 'update.mode' 'manual' -Force; $j|Add-Member NoteProperty 'update.showReleaseNotes' $false -Force; $j|Add-Member NoteProperty 'extensions.autoCheckUpdates' $false -Force; $j|Add-Member NoteProperty 'extensions.showRecommendationsOnlyOnDemand' $true -Force; $j|Add-Member NoteProperty 'git.autofetch' $false -Force; $j|Add-Member NoteProperty 'npm.fetchOnlinePackageInfo' $false -Force; $j|ConvertTo-Json|Set-Content $f" >nul 2>&1 <nul
 
 reg add "HKCU\SOFTWARE\Microsoft\Office\Common\ClientTelemetry" /v DisableTelemetry /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Office\16.0\Common\ClientTelemetry" /v DisableTelemetry /t REG_DWORD /d 1 /f >nul 2>&1
@@ -6009,16 +6007,16 @@ echo %c%- All apps were properly deprovisioned to prevent reinstallation%u%
 echo %c%- System files were safely renamed ^(not deleted^) for recovery%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto TweaksMenu
 
 :RemoveAppCompletely
 set "APP_NAME=%1"
 set "APP_PACKAGE=%2"
 
-powershell -Command "Get-AppxPackage '%APP_NAME%' | Remove-AppxPackage" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-AppxPackage '%APP_NAME%' | Remove-AppxPackage" >nul 2>&1 <nul
 
-powershell -Command "$keyPath='HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore\Deprovisioned\%APP_PACKAGE%'; if (!(Test-Path $keyPath)) { try { New-Item -Path $keyPath -Force -ErrorAction Stop | Out-Null } catch { } }" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "$keyPath='HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore\Deprovisioned\%APP_PACKAGE%'; if (!(Test-Path $keyPath)) { try { New-Item -Path $keyPath -Force -ErrorAction Stop | Out-Null } catch { } }" >nul 2>&1 <nul
 
 rem Remove-AppxPackage and deprovisioning are sufficient. Physical package files
 rem and per-user data are preserved so Windows servicing and recovery remain valid.
@@ -6028,12 +6026,12 @@ exit /b
 :RemoveAdvancedSystemApp
 set "APP_NAME=%1"
 set "APP_PACKAGE=%2"
-powershell -Command "$keyPath='HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore\EndOfLife\$env:USERNAME\%APP_PACKAGE%'; $userSid = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([Security.Principal.SecurityIdentifier]).Value; $keyPath = $keyPath.Replace('$env:USERNAME', $userSid); if (!(Test-Path $keyPath)) { try { New-Item -Path $keyPath -Force -ErrorAction Stop | Out-Null } catch { } }" >nul 2>&1
-powershell -Command "Get-AppxPackage '%APP_NAME%' | Remove-AppxPackage" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "$keyPath='HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore\EndOfLife\$env:USERNAME\%APP_PACKAGE%'; $userSid = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([Security.Principal.SecurityIdentifier]).Value; $keyPath = $keyPath.Replace('$env:USERNAME', $userSid); if (!(Test-Path $keyPath)) { try { New-Item -Path $keyPath -Force -ErrorAction Stop | Out-Null } catch { } }" >nul 2>&1 <nul
+powershell -NoProfile -NonInteractive -Command "Get-AppxPackage '%APP_NAME%' | Remove-AppxPackage" >nul 2>&1 <nul
 
-powershell -Command "$keyPath='HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore\Deprovisioned\%APP_PACKAGE%'; if (!(Test-Path $keyPath)) { try { New-Item -Path $keyPath -Force -ErrorAction Stop | Out-Null } catch { } }" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "$keyPath='HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore\Deprovisioned\%APP_PACKAGE%'; if (!(Test-Path $keyPath)) { try { New-Item -Path $keyPath -Force -ErrorAction Stop | Out-Null } catch { } }" >nul 2>&1 <nul
 
-powershell -Command "$keyPath='HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore\EndOfLife\$env:USERNAME\%APP_PACKAGE%'; $userSid = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([Security.Principal.SecurityIdentifier]).Value; $keyPath = $keyPath.Replace('$env:USERNAME', $userSid); if (Test-Path $keyPath) { try { Remove-Item -LiteralPath $keyPath -Force -ErrorAction Stop } catch { } }" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "$keyPath='HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore\EndOfLife\$env:USERNAME\%APP_PACKAGE%'; $userSid = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([Security.Principal.SecurityIdentifier]).Value; $keyPath = $keyPath.Replace('$env:USERNAME', $userSid); if (Test-Path $keyPath) { try { Remove-Item -LiteralPath $keyPath -Force -ErrorAction Stop } catch { } }" >nul 2>&1 <nul
 
 rem Never rename files inside SystemApps, WindowsApps or AppRepository. Doing so
 rem bypasses the component servicing stack and can make SFC, DISM and updates fail.
@@ -6044,7 +6042,7 @@ exit /b
 set "BLOAT_APPS=*2FE3CB00.PicsArt-PhotoStudio* *4DF9E0F8.Netflix* *9E2F88E3.Twitter* *Facebook* *SpotifyAB.SpotifyMusic* *BytedancePte.Ltd.TikTok* *king.com* *GAMELOFTSA.Asphalt8Airborne* *Playtika.CaesarsSlotsFreeCasino* *ClearChannelRadioDigital.iHeartRadio* *TuneIn.TuneInRadio* *PandoraMediaInc* *ShazamEntertainmentLtd.Shazam* *AdobeSystemsIncorporated.AdobePhotoshopExpress* *Expedia.ExpediaHotelsFlightsCarsActivities* *Flipboard.Flipboard* *Duolingo-LearnLanguagesforFree* *CandyCrush* *FarmVille* *MarchofEmpires* *DisneyMagicKingdoms* *ActiproSoftware* *Clipchamp* *46928bounde.EclipseManager*"
 
 for %%a in (%BLOAT_APPS%) do (
-    powershell -Command "Get-AppxPackage %%a | Remove-AppxPackage" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "Get-AppxPackage %%a | Remove-AppxPackage" >nul 2>&1 <nul
 )
 exit /b
 
@@ -6137,8 +6135,8 @@ if "!DEX_CAP_WIN11_UI!"=="1" (
     reg add "HKCU\Software\Microsoft\Windows\Shell\Copilot\BingChat" /v "IsUserEligible" /t REG_DWORD /d "0" /f >nul 2>&1
     reg add "HKCU\Software\Microsoft\Windows\Shell\Copilot" /v "AutoOpenCopilotLargeScreens" /t REG_DWORD /d "0" /f >nul 2>&1
 )
-powershell -Command "Get-AppxPackage *Microsoft.Copilot* | Remove-AppxPackage" >nul 2>&1
-powershell -Command "Get-AppxPackage *Microsoft.Windows.Ai.Copilot.Provider* | Remove-AppxPackage" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-AppxPackage *Microsoft.Copilot* | Remove-AppxPackage" >nul 2>&1 <nul
+powershell -NoProfile -NonInteractive -Command "Get-AppxPackage *Microsoft.Windows.Ai.Copilot.Provider* | Remove-AppxPackage" >nul 2>&1 <nul
 reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft.Windows.Ai.Copilot.Provider" /f >nul 2>&1
 reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{Microsoft.Copilot}" /f >nul 2>&1
 reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft.Copilot" /f >nul 2>&1
@@ -6197,8 +6195,8 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\WindowsStore" /v "RemoveWindowsStore" 
 exit /b
 
 :RemoveMicrosoftEdge
-powershell -Command "Get-AppxPackage *Microsoft.MicrosoftEdge* | Remove-AppxPackage" >nul 2>&1
-powershell -Command "Get-AppxPackage *Microsoft.MicrosoftEdgeDevToolsClient* | Remove-AppxPackage" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-AppxPackage *Microsoft.MicrosoftEdge* | Remove-AppxPackage" >nul 2>&1 <nul
+powershell -NoProfile -NonInteractive -Command "Get-AppxPackage *Microsoft.MicrosoftEdgeDevToolsClient* | Remove-AppxPackage" >nul 2>&1 <nul
 
 if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\*\Installer\setup.exe" (
     for /d %%d in ("%ProgramFiles(x86)%\Microsoft\Edge\Application\*") do (
@@ -6292,7 +6290,7 @@ del /f /q "%USERPROFILE%\Desktop\OneDrive.lnk" >nul 2>&1
 schtasks /delete /tn "\Microsoft\Windows\OneDrive\OneDrive Standalone Update Task-S-*" /f >nul 2>&1
 schtasks /delete /tn "\Microsoft\Windows\OneDrive\OneDrive Per-Machine Standalone Update Task" /f >nul 2>&1
 
-powershell -Command "[System.Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "[System.Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')" >nul 2>&1 <nul
 exit /b
 
 :RemoveWindowsFeatures
@@ -6303,7 +6301,7 @@ dism /online /disable-feature /featurename:Printing-XPSServices-Features /Quiet 
 dism /online /disable-feature /featurename:WorkFolders-Client /Quiet /NoRestart >nul 2>&1
 
 if not "%REMOVE_SNIPPING%"=="false" (
-    powershell -Command "Get-AppxPackage *Microsoft.ScreenSketch* | Remove-AppxPackage" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "Get-AppxPackage *Microsoft.ScreenSketch* | Remove-AppxPackage" >nul 2>&1 <nul
 )
 
 dism /online /remove-capability /capabilityName:Microsoft.Windows.Cortana~~~~0.0.1.0 /Quiet /NoRestart >nul 2>&1
@@ -6324,7 +6322,7 @@ if "%REMOVE_WEBVIEW2%"=="true" (
     )
 )
 
-powershell -Command "Get-AppxPackage *MicrosoftWindows.Client.WebExperience* | Remove-AppxPackage" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-AppxPackage *MicrosoftWindows.Client.WebExperience* | Remove-AppxPackage" >nul 2>&1 <nul
 
 if not "%REMOVE_SNIPPING%"=="false" (
     reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "DisableSnippingTool" /t REG_DWORD /d "1" /f >nul 2>&1
@@ -6350,7 +6348,7 @@ dism /online /remove-capability /capabilityname:OpenSSH.Server~~~~0.0.0.1 /Quiet
 dism /online /remove-capability /capabilityname:Windows.Desktop.EMS-SAC.Tools~~~~0.0.1.0 /Quiet /NoRestart >nul 2>&1
 dism /online /remove-capability /capabilityname:XPS.Viewer~~~~0.0.1.0 /Quiet /NoRestart >nul 2>&1
 
-powershell -Command "Get-WindowsCapability -Online | Where-Object {$_.Name -like 'Rsat.*' -and $_.State -eq 'Installed'} | Remove-WindowsCapability -Online" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-WindowsCapability -Online | Where-Object {$_.Name -like 'Rsat.*' -and $_.State -eq 'Installed'} | Remove-WindowsCapability -Online" >nul 2>&1 <nul
 
 dism /online /disable-feature /featurename:Printing-Foundation-LPDPrintService /Quiet /NoRestart >nul 2>&1
 dism /online /disable-feature /featurename:Printing-Foundation-LPRPortMonitor /Quiet /NoRestart >nul 2>&1
@@ -6364,7 +6362,7 @@ exit /b
 
 :RemoveMixedReality
 call :RemoveAdvancedSystemApp "Microsoft.Windows.Holographic.FirstRun" "Microsoft.Windows.Holographic.FirstRun_cw5n1h2txyewy"
-powershell -Command "Get-AppxPackage *Microsoft.MixedReality.Portal* | Remove-AppxPackage" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-AppxPackage *Microsoft.MixedReality.Portal* | Remove-AppxPackage" >nul 2>&1 <nul
 exit /b
 
 :ApplyFinalOptimizations
@@ -6453,7 +6451,7 @@ echo.
 set "PC_WARN=0"
 set "PC_ROWS=0"
 echo %c%Power and Windows%u%
-for /f "tokens=1-4 delims=|" %%a in ('powershell -NoProfile -Command "$o=@();function Row($s,$l,$v,$h){$script:o+=($s+'|'+$l+'|'+$v+'|'+$h)};$g=(powercfg /getactivescheme) -join ' ';$id=[regex]::Match($g,'[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}').Value.ToLower();$nm=[regex]::Match($g,'\((.*)\)').Groups[1].Value;function PQ($a){$t=(powercfg /query SCHEME_CURRENT SUB_PROCESSOR $a) -join ' ';$m=[regex]::Matches($t,'0x[0-9a-fA-F]{8}');if($m.Count -ge 2){[Convert]::ToInt32($m[$m.Count-2].Value,16)}else{-1}};$st='INFO';$h='-';if($id -eq 'e9a42b02-d5df-448d-aa00-03f14749eb61' -or $id -eq '8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c' -or $id -like '44444444*'){$st='OK'}elseif($id -eq '381b4222-f694-41f0-9685-ff5bb260df2e' -or $id -eq 'a1841308-3541-4fab-bc81-f71556f20b4a'){$st='WARN';$h='Balanced and Power saver can hold clocks back in games on a desktop PC'};Row $st 'Power plan' $nm $h;$v=PQ PROCTHROTTLEMIN;if($v -ge 100){Row OK 'Min processor state (AC)' '100 percent' '-'}elseif($v -ge 0){Row INFO 'Min processor state (AC)' ([string]$v+' percent') 'Below 100 lets the CPU idle down; the CPU optimizer sets 100 at the cost of idle power'};$b=PQ PERFBOOSTMODE;$bn=@('Disabled','Enabled','Aggressive','Efficient enabled','Efficient aggressive','Aggressive at guaranteed','Efficient aggressive at guaranteed');if($b -eq 0){Row WARN 'CPU boost mode (AC)' 'Disabled' 'Turbo / Precision Boost is off, so the CPU cannot reach its top clocks'}elseif($b -gt 0 -and $b -lt 7){Row INFO 'CPU boost mode (AC)' $bn[$b] '-'};$c=PQ CPMINCORES;if($c -ge 0){Row INFO 'Core parking min cores (AC)' ([string]$c+' percent') '-'};$hw=(Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers' -ErrorAction SilentlyContinue).HwSchMode;$hv='Default (driver decides)';if($hw -eq 2){$hv='On'}elseif($hw -eq 1){$hv='Off'};Row INFO 'Hardware GPU scheduling' $hv 'Average FPS change is about 0 percent; some frame-generation features need it on';$gm=(Get-ItemProperty -Path 'HKCU:\Software\Microsoft\GameBar' -ErrorAction SilentlyContinue).AutoGameModeEnabled;if($gm -eq 0){Row INFO 'Windows Game Mode' 'Off' 'On is the Windows default and helps keep background work away from the game'}else{Row OK 'Windows Game Mode' 'On' '-'};$d=Get-CimInstance -Namespace 'root\Microsoft\Windows\DeviceGuard' -ClassName Win32_DeviceGuard -ErrorAction SilentlyContinue;if($d){if($d.VirtualizationBasedSecurityStatus -eq 2){$x='Running';if($d.SecurityServicesRunning -contains 2){$x='Running, memory integrity on'};Row INFO 'VBS / Core Isolation' $x 'Security feature that can cost a few percent in some games. Change it only in Hardware Security Center'}else{Row OK 'VBS / Core Isolation' 'Off' '-'}};$lg=0;$ifeo='HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\';foreach($p in 'csrss','dwm'){if((Get-ItemProperty -Path ($ifeo+$p+'.exe\PerfOptions') -ErrorAction SilentlyContinue).CpuPriorityClass -eq 4){$lg++}};foreach($p in 'svchost','lsass','MsMpEng'){if((Get-ItemProperty -Path ($ifeo+$p+'.exe\PerfOptions') -ErrorAction SilentlyContinue).CpuPriorityClass -eq 1){$lg++}};if((Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel' -ErrorAction SilentlyContinue).DpcTimeout -eq 0){$lg++};if(Select-String -Path ($env:windir+'\System32\drivers\etc\hosts') -Pattern 'telemetry.gfe.nvidia.com','telemetry.amd.com','survey.amd.com' -Quiet -ErrorAction SilentlyContinue){$lg++};if($lg -gt 0){Row WARN 'Leftovers from old Dex versions' ([string]$lg+' found') 'Run the CPU optimizer and GPU Driver and Performance to restore Windows defaults'}else{Row OK 'Leftovers from old Dex versions' 'None' '-'};$o" 2^>nul') do (
+for /f "tokens=1-4 delims=|" %%a in ('powershell -NoProfile -NonInteractive -Command "$o=@();function Row($s,$l,$v,$h){$script:o+=($s+'|'+$l+'|'+$v+'|'+$h)};$g=(powercfg /getactivescheme) -join ' ';$id=[regex]::Match($g,'[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}').Value.ToLower();$nm=[regex]::Match($g,'\((.*)\)').Groups[1].Value;function PQ($a){$t=(powercfg /query SCHEME_CURRENT SUB_PROCESSOR $a) -join ' ';$m=[regex]::Matches($t,'0x[0-9a-fA-F]{8}');if($m.Count -ge 2){[Convert]::ToInt32($m[$m.Count-2].Value,16)}else{-1}};$st='INFO';$h='-';if($id -eq 'e9a42b02-d5df-448d-aa00-03f14749eb61' -or $id -eq '8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c' -or $id -like '44444444*'){$st='OK'}elseif($id -eq '381b4222-f694-41f0-9685-ff5bb260df2e' -or $id -eq 'a1841308-3541-4fab-bc81-f71556f20b4a'){$st='WARN';$h='Balanced and Power saver can hold clocks back in games on a desktop PC'};Row $st 'Power plan' $nm $h;$v=PQ PROCTHROTTLEMIN;if($v -ge 100){Row OK 'Min processor state (AC)' '100 percent' '-'}elseif($v -ge 0){Row INFO 'Min processor state (AC)' ([string]$v+' percent') 'Below 100 lets the CPU idle down; the CPU optimizer sets 100 at the cost of idle power'};$b=PQ PERFBOOSTMODE;$bn=@('Disabled','Enabled','Aggressive','Efficient enabled','Efficient aggressive','Aggressive at guaranteed','Efficient aggressive at guaranteed');if($b -eq 0){Row WARN 'CPU boost mode (AC)' 'Disabled' 'Turbo / Precision Boost is off, so the CPU cannot reach its top clocks'}elseif($b -gt 0 -and $b -lt 7){Row INFO 'CPU boost mode (AC)' $bn[$b] '-'};$c=PQ CPMINCORES;if($c -ge 0){Row INFO 'Core parking min cores (AC)' ([string]$c+' percent') '-'};$hw=(Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers' -ErrorAction SilentlyContinue).HwSchMode;$hv='Default (driver decides)';if($hw -eq 2){$hv='On'}elseif($hw -eq 1){$hv='Off'};Row INFO 'Hardware GPU scheduling' $hv 'Average FPS change is about 0 percent; some frame-generation features need it on';$gm=(Get-ItemProperty -Path 'HKCU:\Software\Microsoft\GameBar' -ErrorAction SilentlyContinue).AutoGameModeEnabled;if($gm -eq 0){Row INFO 'Windows Game Mode' 'Off' 'On is the Windows default and helps keep background work away from the game'}else{Row OK 'Windows Game Mode' 'On' '-'};$d=Get-CimInstance -Namespace 'root\Microsoft\Windows\DeviceGuard' -ClassName Win32_DeviceGuard -ErrorAction SilentlyContinue;if($d){if($d.VirtualizationBasedSecurityStatus -eq 2){$x='Running';if($d.SecurityServicesRunning -contains 2){$x='Running, memory integrity on'};Row INFO 'VBS / Core Isolation' $x 'Security feature that can cost a few percent in some games. Change it only in Hardware Security Center'}else{Row OK 'VBS / Core Isolation' 'Off' '-'}};$lg=0;$ifeo='HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\';foreach($p in 'csrss','dwm'){if((Get-ItemProperty -Path ($ifeo+$p+'.exe\PerfOptions') -ErrorAction SilentlyContinue).CpuPriorityClass -eq 4){$lg++}};foreach($p in 'svchost','lsass','MsMpEng'){if((Get-ItemProperty -Path ($ifeo+$p+'.exe\PerfOptions') -ErrorAction SilentlyContinue).CpuPriorityClass -eq 1){$lg++}};if((Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel' -ErrorAction SilentlyContinue).DpcTimeout -eq 0){$lg++};if(Select-String -Path ($env:windir+'\System32\drivers\etc\hosts') -Pattern 'telemetry.gfe.nvidia.com','telemetry.amd.com','survey.amd.com' -Quiet -ErrorAction SilentlyContinue){$lg++};if($lg -gt 0){Row WARN 'Leftovers from old Dex versions' ([string]$lg+' found') 'Run the CPU optimizer and GPU Driver and Performance to restore Windows defaults'}else{Row OK 'Leftovers from old Dex versions' 'None' '-'};$o" 2^>nul ^<nul') do (
     set "PC_S=%%a"
     set "PC_L=%%b"
     set "PC_V=%%c"
@@ -6462,7 +6460,7 @@ for /f "tokens=1-4 delims=|" %%a in ('powershell -NoProfile -Command "$o=@();fun
 )
 echo.
 echo %c%Hardware%u%
-for /f "tokens=1-4 delims=|" %%a in ('powershell -NoProfile -Command "$o=@();function Row($s,$l,$v,$h){$script:o+=($s+'|'+$l+'|'+$v+'|'+$h)};$m=@(Get-CimInstance -ClassName Win32_PhysicalMemory -ErrorAction SilentlyContinue);if($m.Count -gt 0){$rated=($m | Measure-Object -Property Speed -Maximum).Maximum;$cur=($m | Measure-Object -Property ConfiguredClockSpeed -Maximum).Maximum;if($cur -gt 0 -and $rated -gt 0){if($cur + 50 -lt $rated){Row WARN 'Memory speed' ([string]$cur+' MHz, rated '+[string]$rated+' MHz') 'Likely below its rated speed. Enable XMP / EXPO in the BIOS'}else{Row OK 'Memory speed' ([string]$cur+' MHz') '-'}};if($m.Count -eq 1){Row WARN 'Memory modules' 'Single module' 'One stick usually means single-channel; a matching second stick doubles bandwidth'}else{Row OK 'Memory modules' ([string]$m.Count+' installed') '-'}};$vc=@(Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Where-Object{$_.Name -notmatch 'Microsoft|Remote|Virtual'});foreach($x in $vc){$age=-1;$dd='unknown date';if($x.DriverDate){$age=((Get-Date) - $x.DriverDate).Days;$dd=$x.DriverDate.ToString('yyyy-MM-dd')};$hint='-';$st='INFO';if($age -gt 365){$st='WARN';$hint='Driver is over a year old; check the vendor site for a newer one'}elseif($age -ge 0){$st='OK'};Row $st ('GPU driver: '+$x.Name) ($x.DriverVersion+', '+$dd) $hint;if($x.CurrentRefreshRate){Row INFO 'Refresh rate' ([string]$x.CurrentRefreshRate+' Hz') 'Set the highest rate your monitor supports in Windows display settings'}};$o" 2^>nul') do (
+for /f "tokens=1-4 delims=|" %%a in ('powershell -NoProfile -NonInteractive -Command "$o=@();function Row($s,$l,$v,$h){$script:o+=($s+'|'+$l+'|'+$v+'|'+$h)};$m=@(Get-CimInstance -ClassName Win32_PhysicalMemory -ErrorAction SilentlyContinue);if($m.Count -gt 0){$rated=($m | Measure-Object -Property Speed -Maximum).Maximum;$cur=($m | Measure-Object -Property ConfiguredClockSpeed -Maximum).Maximum;if($cur -gt 0 -and $rated -gt 0){if($cur + 50 -lt $rated){Row WARN 'Memory speed' ([string]$cur+' MHz, rated '+[string]$rated+' MHz') 'Likely below its rated speed. Enable XMP / EXPO in the BIOS'}else{Row OK 'Memory speed' ([string]$cur+' MHz') '-'}};if($m.Count -eq 1){Row WARN 'Memory modules' 'Single module' 'One stick usually means single-channel; a matching second stick doubles bandwidth'}else{Row OK 'Memory modules' ([string]$m.Count+' installed') '-'}};$vc=@(Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Where-Object{$_.Name -notmatch 'Microsoft|Remote|Virtual'});foreach($x in $vc){$age=-1;$dd='unknown date';if($x.DriverDate){$age=((Get-Date) - $x.DriverDate).Days;$dd=$x.DriverDate.ToString('yyyy-MM-dd')};$hint='-';$st='INFO';if($age -gt 365){$st='WARN';$hint='Driver is over a year old; check the vendor site for a newer one'}elseif($age -ge 0){$st='OK'};Row $st ('GPU driver: '+$x.Name) ($x.DriverVersion+', '+$dd) $hint;if($x.CurrentRefreshRate){Row INFO 'Refresh rate' ([string]$x.CurrentRefreshRate+' Hz') 'Set the highest rate your monitor supports in Windows display settings'}};$o" 2^>nul ^<nul') do (
     set "PC_S=%%a"
     set "PC_L=%%b"
     set "PC_V=%%c"
@@ -6485,7 +6483,7 @@ echo %c%Real FPS gains come from the driver, in-game settings, cooling, XMP / EX
 echo %c%right power plan - not from registry tweaks.%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto HardwareMenu
 
 :DexPcRow
@@ -6622,7 +6620,7 @@ echo.
 echo %orange%A restart is recommended for all changes to take full effect.%u%
 echo.
 echo                                          %red%[ Press any key to go back ]%u%
-pause >nul
+call :DexWaitKey
 goto HardwareMenu
 
 :AudioOptimization
@@ -6686,12 +6684,12 @@ reg add "HKCU\AppEvents\Schemes" /ve /t REG_SZ /d ".None" /f >nul 2>&1
 if !errorlevel!==0 (echo %green%  [+] Done%u%) else (echo %orange%  [!] Failed%u%)
 
 echo %white%[5/6]%u% Disabling GS Wavetable Synth ^(unused MIDI overhead^)...
-powershell -NoProfile -Command "Get-PnpDevice | Where-Object {$_.FriendlyName -like '*GS Wavetable*'} | Disable-PnpDevice -Confirm:$false -ErrorAction SilentlyContinue" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-PnpDevice | Where-Object {$_.FriendlyName -like '*GS Wavetable*'} | Disable-PnpDevice -Confirm:$false -ErrorAction SilentlyContinue" >nul 2>&1 <nul
 echo %green%  [+] Done%u%
 
 echo %white%[6/6]%u% Audio/video AI enhancements and DSP effects...
 if "!AUDIO_DISABLE_FX!"=="true" (
-    powershell -NoProfile -Command "$r='HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render'; Get-ChildItem $r -ErrorAction SilentlyContinue | ForEach-Object { $fx=Join-Path $_.PSPath 'FxProperties'; if(-not(Test-Path $fx)){New-Item -Path $fx -Force | Out-Null}; Set-ItemProperty -Path $fx -Name '{1da5d803-d492-4edd-8c23-e0c0ffee7f0e},5' -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue }" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "$r='HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render'; Get-ChildItem $r -ErrorAction SilentlyContinue | ForEach-Object { $fx=Join-Path $_.PSPath 'FxProperties'; if(-not(Test-Path $fx)){New-Item -Path $fx -Force | Out-Null}; Set-ItemProperty -Path $fx -Name '{1da5d803-d492-4edd-8c23-e0c0ffee7f0e},5' -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue }" >nul 2>&1 <nul
     reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Audio" /v "DisableAudioProcessing" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Audio" /v "DisableAudioProcessing" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Audio" /v "DisableAudioEnhancements" /t REG_DWORD /d "1" /f >nul 2>&1
@@ -6731,7 +6729,7 @@ echo.
 echo %orange%A restart is recommended for all changes to take full effect.%u%
 echo.
 echo                                          %red%[ Press any key to go back ]%u%
-pause >nul
+call :DexWaitKey
 goto HardwareMenu
 
 :USBOptimization
@@ -6766,7 +6764,7 @@ echo %c%Applying USB power management optimizations...%u%
 echo.
 
 echo %white%[1/2]%u% Disabling selective suspend on input/audio/capture devices...
-powershell -NoProfile -Command "$vals=@('EnhancedPowerManagementEnabled','AllowIdleIrpInD3','EnableSelectiveSuspend','DeviceSelectiveSuspended','SelectiveSuspendEnabled','SelectiveSuspendOn','IdleInWorkingState','WaitWakeEnabled'); $classes='HIDClass','Mouse','Keyboard','AudioEndpoint','Camera','Media'; $touched=New-Object System.Collections.Generic.HashSet[string]; $count=0; Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.Class -in $classes -and $_.Status -eq 'OK' } | ForEach-Object { $parent=(Get-PnpDeviceProperty -InstanceId $_.InstanceId -KeyName DEVPKEY_Device_Parent -ErrorAction SilentlyContinue).Data; if ($parent -and $parent -like 'USB*' -and $touched.Add($parent)) { $p=\"HKLM:\SYSTEM\CurrentControlSet\Enum\$parent\Device Parameters\"; if (Test-Path $p) { foreach($v in $vals){ Set-ItemProperty -Path $p -Name $v -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue }; $count++ } } }; Write-Host \"COUNT|$count\"" > "%temp%\dex_usb.txt" 2>nul
+powershell -NoProfile -NonInteractive -Command "$vals=@('EnhancedPowerManagementEnabled','AllowIdleIrpInD3','EnableSelectiveSuspend','DeviceSelectiveSuspended','SelectiveSuspendEnabled','SelectiveSuspendOn','IdleInWorkingState','WaitWakeEnabled'); $classes='HIDClass','Mouse','Keyboard','AudioEndpoint','Camera','Media'; $touched=New-Object System.Collections.Generic.HashSet[string]; $count=0; Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.Class -in $classes -and $_.Status -eq 'OK' } | ForEach-Object { $parent=(Get-PnpDeviceProperty -InstanceId $_.InstanceId -KeyName DEVPKEY_Device_Parent -ErrorAction SilentlyContinue).Data; if ($parent -and $parent -like 'USB*' -and $touched.Add($parent)) { $p=\"HKLM:\SYSTEM\CurrentControlSet\Enum\$parent\Device Parameters\"; if (Test-Path $p) { foreach($v in $vals){ Set-ItemProperty -Path $p -Name $v -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue }; $count++ } } }; Write-Host ('COUNT|'+$count)" > "%temp%\dex_usb.txt" 2>nul <nul
 set "USB_TOUCHED=0"
 for /f "usebackq tokens=2 delims=|" %%C in ("%temp%\dex_usb.txt") do set "USB_TOUCHED=%%C"
 del "%temp%\dex_usb.txt" 2>nul
@@ -6793,7 +6791,7 @@ echo.
 echo %orange%Reconnect the affected devices or restart for all changes to take effect.%u%
 echo.
 echo                                          %red%[ Press any key to go back ]%u%
-pause >nul
+call :DexWaitKey
 goto HardwareMenu
 
 :HardwareSecurityCenter
@@ -6804,30 +6802,30 @@ echo %c%Analyzing hardware security configuration...%u%
 echo.
 
 set "mobo_manufacturer="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "(Get-CimInstance -ClassName Win32_BaseBoard -ErrorAction SilentlyContinue).Manufacturer" 2^>nul') do set "mobo_manufacturer=%%i"
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "(Get-CimInstance -ClassName Win32_BaseBoard -ErrorAction SilentlyContinue).Manufacturer" 2^>nul ^<nul') do set "mobo_manufacturer=%%i"
 if not defined mobo_manufacturer for /f "tokens=1,* delims==" %%a in ('wmic baseboard get manufacturer /value ^| find "="') do for /f "delims=" %%i in ("%%b") do set "mobo_manufacturer=%%i"
 
 set "mobo_model="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "(Get-CimInstance -ClassName Win32_BaseBoard -ErrorAction SilentlyContinue).Product" 2^>nul') do set "mobo_model=%%i"
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "(Get-CimInstance -ClassName Win32_BaseBoard -ErrorAction SilentlyContinue).Product" 2^>nul ^<nul') do set "mobo_model=%%i"
 if not defined mobo_model for /f "tokens=1,* delims==" %%a in ('wmic baseboard get product /value ^| find "="') do for /f "delims=" %%i in ("%%b") do set "mobo_model=%%i"
 
 set "bios_version="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "(Get-CimInstance -ClassName Win32_BIOS -ErrorAction SilentlyContinue).SMBIOSBIOSVersion" 2^>nul') do set "bios_version=%%i"
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "(Get-CimInstance -ClassName Win32_BIOS -ErrorAction SilentlyContinue).SMBIOSBIOSVersion" 2^>nul ^<nul') do set "bios_version=%%i"
 if not defined bios_version for /f "tokens=1,* delims==" %%a in ('wmic bios get smbiosbiosversion /value ^| find "="') do for /f "delims=" %%i in ("%%b") do set "bios_version=%%i"
 
 call :DexGetCPUInfo
 set "cpu_name=!DEX_CPU_NAME!"
 
-powershell -Command "try { $tpm = Get-Tpm -ErrorAction SilentlyContinue; if ($tpm) { if ($tpm.TpmPresent) { Write-Host 'TPM_PRESENT' } else { Write-Host 'TPM_ABSENT' } } else { Write-Host 'TPM_UNKNOWN' } } catch { Write-Host 'TPM_UNKNOWN' }" > "%temp%\tpm_status.txt"
+powershell -NoProfile -NonInteractive -Command "try { $tpm = Get-Tpm -ErrorAction SilentlyContinue; if ($tpm) { if ($tpm.TpmPresent) { Write-Host 'TPM_PRESENT' } else { Write-Host 'TPM_ABSENT' } } else { Write-Host 'TPM_UNKNOWN' } } catch { Write-Host 'TPM_UNKNOWN' }" > "%temp%\tpm_status.txt" <nul
 set /p tpm_status=<"%temp%\tpm_status.txt"
 
-powershell -Command "try { $sb = Confirm-SecureBootUEFI -ErrorAction SilentlyContinue; if ($sb) { Write-Host 'SECUREBOOT_ENABLED' } else { Write-Host 'SECUREBOOT_DISABLED' } } catch { Write-Host 'SECUREBOOT_UNSUPPORTED' }" > "%temp%\sb_status.txt"
+powershell -NoProfile -NonInteractive -Command "try { $sb = Confirm-SecureBootUEFI -ErrorAction SilentlyContinue; if ($sb) { Write-Host 'SECUREBOOT_ENABLED' } else { Write-Host 'SECUREBOOT_DISABLED' } } catch { Write-Host 'SECUREBOOT_UNSUPPORTED' }" > "%temp%\sb_status.txt" <nul
 set /p secureboot_status=<"%temp%\sb_status.txt"
 
-powershell -Command "if ((Get-WmiObject -Class Win32_Processor).VirtualizationFirmwareEnabled -eq $true) { Write-Host 'VIRT_ENABLED' } else { Write-Host 'VIRT_DISABLED' }" > "%temp%\virt_status.txt"
+powershell -NoProfile -NonInteractive -Command "if ((Get-WmiObject -Class Win32_Processor).VirtualizationFirmwareEnabled -eq $true) { Write-Host 'VIRT_ENABLED' } else { Write-Host 'VIRT_DISABLED' }" > "%temp%\virt_status.txt" <nul
 set /p virt_status=<"%temp%\virt_status.txt"
 
-powershell -Command "if (Get-BitLockerVolume -ErrorAction SilentlyContinue) { Write-Host 'BITLOCKER_AVAILABLE' } else { Write-Host 'BITLOCKER_UNAVAILABLE' }" > "%temp%\bitlocker_status.txt"
+powershell -NoProfile -NonInteractive -Command "if (Get-BitLockerVolume -ErrorAction SilentlyContinue) { Write-Host 'BITLOCKER_AVAILABLE' } else { Write-Host 'BITLOCKER_UNAVAILABLE' }" > "%temp%\bitlocker_status.txt" <nul
 set /p bitlocker_status=<"%temp%\bitlocker_status.txt"
 
 call :SetupConsole
@@ -7051,7 +7049,7 @@ if /i "%tpm_status%"=="TPM_PRESENT" (
 
 echo.
 echo %c%Press any key to return to Hardware Security Center...%u%
-pause >nul
+call :DexWaitKey
 goto HardwareSecurityCenter
 
 :EnableWindowsHello
@@ -7064,7 +7062,7 @@ echo.
 echo %c%Configuring Windows Hello PIN and biometric authentication...%u%
 echo.
 
-powershell -Command "if (Get-WmiObject -Class Win32_BiometricDevice) { Write-Host 'BIOMETRIC_AVAILABLE' } else { Write-Host 'BIOMETRIC_UNAVAILABLE' }" > "%temp%\bio_status.txt"
+powershell -NoProfile -NonInteractive -Command "if (Get-WmiObject -Class Win32_BiometricDevice) { Write-Host 'BIOMETRIC_AVAILABLE' } else { Write-Host 'BIOMETRIC_UNAVAILABLE' }" > "%temp%\bio_status.txt" <nul
 set /p bio_status=<"%temp%\bio_status.txt"
 
 if "%bio_status%"=="BIOMETRIC_AVAILABLE" (
@@ -7084,7 +7082,7 @@ echo %c%Windows Hello setup opened in Settings app.%u%
 echo %c%Follow the on-screen instructions to configure PIN and biometrics.%u%
 echo.
 echo %c%Press any key to return to Hardware Security Center...%u%
-pause >nul
+call :DexWaitKey
 goto HardwareSecurityCenter
 
 :EnableCredentialGuard
@@ -7109,7 +7107,7 @@ echo.
 echo %yellow%* A restart is required for Credential Guard to take effect.%u%
 echo.
 echo %c%Press any key to return to Hardware Security Center...%u%
-pause >nul
+call :DexWaitKey
 goto HardwareSecurityCenter
 
 :ConfigureDeviceGuard
@@ -7137,7 +7135,7 @@ echo.
 echo %yellow%* A restart is required for Device Guard to take effect.%u%
 echo.
 echo %c%Press any key to return to Hardware Security Center...%u%
-pause >nul
+call :DexWaitKey
 goto HardwareSecurityCenter
 
 :EnableCoreIsolation
@@ -7166,7 +7164,7 @@ echo %yellow%* A restart is required for Core Isolation to take effect.%u%
 echo %yellow%* Some older drivers may be incompatible with Memory Integrity.%u%
 echo.
 echo %c%Press any key to return to Hardware Security Center...%u%
-pause >nul
+call :DexWaitKey
 goto HardwareSecurityCenter
 
 :SecurityComplianceReport
@@ -7234,7 +7232,7 @@ echo Virtualization %virt_status% >> "%USERPROFILE%\Desktop\Security_Report.txt"
 echo %c%+ Report saved to Desktop\Security_Report.txt%u%
 echo.
 echo %c%Press any key to return to Hardware Security Center...%u%
-pause >nul
+call :DexWaitKey
 goto HardwareSecurityCenter
 
 :ShowASUSGuide
@@ -7324,7 +7322,7 @@ echo %c%Configuring Windows Defender System Guard...%u%
 echo.
 
 echo %c%[1/6] Checking System Guard compatibility...%u%
-powershell -NoProfile -Command "$ok=$true;try{$build=[Environment]::OSVersion.Version.Build;if($build-lt 17763){$ok=$false};$t=Get-Tpm -ErrorAction Stop;if(-not $t.TpmPresent){$ok=$false};if(-not (Confirm-SecureBootUEFI -ErrorAction Stop)){$ok=$false};$v=Get-CimInstance Win32_Processor -ErrorAction Stop|Select-Object -First 1;if(-not $v.VirtualizationFirmwareEnabled){$ok=$false}}catch{$ok=$false};if($ok){'COMPATIBLE'}else{'INCOMPATIBLE'}" > "%temp%\sg_compat.txt"
+powershell -NoProfile -NonInteractive -Command "$ok=$true;try{$build=[Environment]::OSVersion.Version.Build;if($build-lt 17763){$ok=$false};$t=Get-Tpm -ErrorAction Stop;if(-not $t.TpmPresent){$ok=$false};if(-not (Confirm-SecureBootUEFI -ErrorAction Stop)){$ok=$false};$v=Get-CimInstance Win32_Processor -ErrorAction Stop|Select-Object -First 1;if(-not $v.VirtualizationFirmwareEnabled){$ok=$false}}catch{$ok=$false};if($ok){'COMPATIBLE'}else{'INCOMPATIBLE'}" > "%temp%\sg_compat.txt" <nul
 set /p sg_compat=<"%temp%\sg_compat.txt"
 
 if "%sg_compat%"=="INCOMPATIBLE" (
@@ -7391,7 +7389,7 @@ echo %yellow%* A restart is required for System Guard to fully activate.%u%
 echo %green%+ Your system is now protected against firmware-level attacks!%u%
 echo.
 echo %c%Press any key to return to Hardware Security Center...%u%
-pause >nul
+call :DexWaitKey
 del /q "%temp%\sg_compat.txt" 2>nul
 goto HardwareSecurityCenter
 
@@ -7406,7 +7404,7 @@ echo %c%Configuring Hypervisor-protected Code Integrity ^(HVCI^)...%u%
 echo.
 
 echo %c%[1/8] Checking HVCI compatibility...%u%
-powershell -Command "if ((Get-WmiObject -Class Win32_Processor).VirtualizationFirmwareEnabled -eq $true) { Write-Host 'VIRT_SUPPORTED' } else { Write-Host 'VIRT_UNSUPPORTED' }" > "%temp%\hvci_compat.txt"
+powershell -NoProfile -NonInteractive -Command "if ((Get-WmiObject -Class Win32_Processor).VirtualizationFirmwareEnabled -eq $true) { Write-Host 'VIRT_SUPPORTED' } else { Write-Host 'VIRT_UNSUPPORTED' }" > "%temp%\hvci_compat.txt" <nul
 set /p hvci_compat=<"%temp%\hvci_compat.txt"
 
 if "%hvci_compat%"=="VIRT_UNSUPPORTED" (
@@ -7488,7 +7486,7 @@ echo.
 echo %green%+ Maximum kernel protection is now active!%u%
 echo.
 echo %c%Press any key to return to Hardware Security Center...%u%
-pause >nul
+call :DexWaitKey
 del /q "%temp%\hvci_compat.txt" 2>nul
 goto HardwareSecurityCenter
 
@@ -7500,7 +7498,7 @@ echo %c%Configuring Smart Card and Certificate Authentication...%u%
 echo.
 
 echo %c%[1/7] Detecting Smart Card readers...%u%
-powershell -Command "if (Get-PnpDevice -Class SmartCardReader -ErrorAction SilentlyContinue) { Write-Host 'READER_FOUND' } else { Write-Host 'READER_NOT_FOUND' }" > "%temp%\sc_reader.txt"
+powershell -NoProfile -NonInteractive -Command "if (Get-PnpDevice -Class SmartCardReader -ErrorAction SilentlyContinue) { Write-Host 'READER_FOUND' } else { Write-Host 'READER_NOT_FOUND' }" > "%temp%\sc_reader.txt" <nul
 set /p sc_reader=<"%temp%\sc_reader.txt"
 
 if "%sc_reader%"=="READER_NOT_FOUND" (
@@ -7639,13 +7637,13 @@ if "!sc_choice!"=="7" (
     sc query "CertPropSvc" | findstr "STATE"
     echo.
     echo %c%Installed Smart Card Readers:%u%
-    powershell -Command "Get-PnpDevice -Class SmartCardReader | Select-Object Name, Status"
+    powershell -NoProfile -NonInteractive -Command "Get-PnpDevice -Class SmartCardReader | Select-Object Name, Status" <nul
     echo.
     echo %c%Available Certificates:%u%
     certlm -store my -s | findstr "Subject"
     echo.
     echo %c%Press any key to continue...%u%
-    pause >nul
+    call :DexWaitKey
     goto ConfigureSmartCard
 )
 
@@ -7691,7 +7689,7 @@ if "%sc_reader%"=="READER_FOUND" (
 )
 echo.
 echo %c%Press any key to return to Hardware Security Center...%u%
-pause >nul
+call :DexWaitKey
 del /q "%temp%\sc_reader.txt" 2>nul
 goto HardwareSecurityCenter
 
@@ -7766,11 +7764,11 @@ echo.
 echo %yellow%* A restart is required for all changes to take effect.%u%
 echo.
 call :DexChoice "YN" "%c%Restart now to apply changes? (Y/N)%u%"
-if errorlevel 1 shutdown /r /t 10 /c "Restarting to apply security configurations..."
+if not errorlevel 2 shutdown /r /t 10 /c "Restarting to apply security configurations..."
 
 echo.
 echo %c%Press any key to return to Hardware Security Center...%u%
-pause >nul
+call :DexWaitKey
 goto HardwareSecurityCenter
 
 :GPUOptimizer
@@ -7785,7 +7783,7 @@ echo.
 echo %c%Detecting GPU vendor...%u%
 set "GPU_VENDOR=NONE"
 set "GPU_NAME="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name" 2^>nul') do (
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name" 2^>nul ^<nul') do (
     echo(%%i| findstr /i "NVIDIA" >nul && (set "GPU_VENDOR=NVIDIA" & set "GPU_NAME=%%i")
     echo(%%i| findstr /i "AMD Radeon" >nul && if not "!GPU_VENDOR!"=="NVIDIA" (set "GPU_VENDOR=AMD" & set "GPU_NAME=%%i")
 )
@@ -7839,7 +7837,7 @@ echo.
 
 echo %c%[1/5] Checking installed driver...%u%
 set "GPU_DRIVER_VERSION="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Where-Object {$_.Name -eq [Environment]::GetEnvironmentVariable('GPU_NAME')} | Select-Object -ExpandProperty DriverVersion" 2^>nul') do set "GPU_DRIVER_VERSION=%%i"
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Where-Object {$_.Name -eq [Environment]::GetEnvironmentVariable('GPU_NAME')} | Select-Object -ExpandProperty DriverVersion" 2^>nul ^<nul') do set "GPU_DRIVER_VERSION=%%i"
 if defined GPU_DRIVER_VERSION (echo %c%  Current driver: !GPU_DRIVER_VERSION!%u%) else (echo %c%  Could not read driver version%u%)
 if "!GPU_VENDOR!"=="NVIDIA" echo %c%  Official downloads: https://www.nvidia.com/Download/index.aspx%u%
 if "!GPU_VENDOR!"=="AMD" echo %c%  Official downloads: https://www.amd.com/en/support%u%
@@ -7933,7 +7931,7 @@ echo.
 if "!GPU_HAGS!"=="true" echo %orange%A restart is required for HAGS to take effect.%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 set "GPU_JUMP=!GPU_RETURN!"
 set "GPU_RETURN="
 goto !GPU_JUMP!
@@ -8020,10 +8018,10 @@ echo %c%- Scanning for SSD and NVMe drives...%u%
 set "SSD_FOUND=false"
 set "NVME_FOUND=false"
 
-powershell -noprofile -command "Get-WmiObject -Class MSFT_PhysicalDisk -Namespace root\Microsoft\Windows\Storage | Where-Object {$_.MediaType -eq 4} | Select-Object -First 1" >nul 2>&1
+powershell -noprofile -NonInteractive -command "Get-WmiObject -Class MSFT_PhysicalDisk -Namespace root\Microsoft\Windows\Storage | Where-Object {$_.MediaType -eq 4} | Select-Object -First 1" >nul 2>&1 <nul
 if %errorlevel%==0 set "SSD_FOUND=true"
 
-powershell -noprofile -command "Get-WmiObject -Class MSFT_PhysicalDisk -Namespace root\Microsoft\Windows\Storage | Where-Object {$_.FriendlyName -like '*NVMe*'} | Select-Object -First 1" >nul 2>&1
+powershell -noprofile -NonInteractive -command "Get-WmiObject -Class MSFT_PhysicalDisk -Namespace root\Microsoft\Windows\Storage | Where-Object {$_.FriendlyName -like '*NVMe*'} | Select-Object -First 1" >nul 2>&1 <nul
 if %errorlevel%==0 (
     set "SSD_FOUND=true"
     set "NVME_FOUND=true"
@@ -8058,7 +8056,7 @@ rem Uses the documented "Enable write caching on the device" Device Manager
 rem policy value. fsutil dirty was previously (mis)used here - that command
 rem only flags a volume for a chkdsk on next boot, it does not touch caching.
 set "_diskcache_found="
-for /f "delims=" %%b in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_DiskDrive -ErrorAction SilentlyContinue | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+for /f "delims=" %%b in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_DiskDrive -ErrorAction SilentlyContinue | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
     set "_diskcache_found=1"
     reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%b\Device Parameters\Disk" /v "UserWriteCacheSetting" /t REG_DWORD /d "1" /f >nul 2>&1
     echo %c%  + Write caching confirmed enabled: %%b%u%
@@ -8081,7 +8079,7 @@ if "%SSD_FOUND%"=="true" (
 echo %c%[6/8] Optimizing Storage Controllers...%u%
 
 set "_scsi_found="
-for /f "delims=" %%j in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_SCSIController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+for /f "delims=" %%j in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_SCSIController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
     set "_scsi_found=1"
     reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%j\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties" /v "MSISupported" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%j\Device Parameters" /v "ForceFifo" /t REG_DWORD /d "0" /f >nul 2>&1
@@ -8093,10 +8091,10 @@ if not defined _scsi_found for /f "tokens=*" %%i in ('wmic path Win32_SCSIContro
     )
 ) >nul 2>&1
 
-powershell.exe -NoProfile -Command "Get-PnpDevice | Where-Object {$_.FriendlyName -like '*NVMe*' -and $_.InstanceId -like 'PCI*'} | ForEach-Object {try{New-ItemProperty -Path \"HKLM:\SYSTEM\CurrentControlSet\Enum\$($_.InstanceId)\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties\" -Name 'MSISupported' -Value 1 -PropertyType DWord -Force -ErrorAction SilentlyContinue}catch{}}" >nul 2>&1
+powershell.exe -NoProfile -NonInteractive -Command "Get-PnpDevice | Where-Object {$_.FriendlyName -like '*NVMe*' -and $_.InstanceId -like 'PCI*'} | ForEach-Object {try{New-ItemProperty -Path \"HKLM:\SYSTEM\CurrentControlSet\Enum\$($_.InstanceId)\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties\" -Name 'MSISupported' -Value 1 -PropertyType DWord -Force -ErrorAction SilentlyContinue}catch{}}" >nul 2>&1 <nul
 
 set "_ide_found="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_IDEController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_IDEController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
     set "_ide_found=1"
     reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties" /v "MSISupported" /t REG_DWORD /d "1" /f >nul 2>&1
     reg add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters" /v "ForceFifo" /t REG_DWORD /d "0" /f >nul 2>&1
@@ -8109,7 +8107,7 @@ if not defined _ide_found for /f %%i in ('wmic path Win32_IDEController get PNPD
 echo %c%  + Storage controller interrupts optimized%u%
 
 set "_is_laptop=false"
-for /f "delims=" %%L in ('powershell -NoProfile -Command "if(Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue){'true'}else{'false'}" 2^>nul') do set "_is_laptop=%%L"
+for /f "delims=" %%L in ('powershell -NoProfile -NonInteractive -Command "if(Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue){'true'}else{'false'}" 2^>nul ^<nul') do set "_is_laptop=%%L"
 if /i "!_is_laptop!"=="true" (
     echo %c%  - Laptop battery detected - AHCI link power management kept enabled%u%
 ) else (
@@ -8178,7 +8176,7 @@ echo %c%- Optimized caching for your storage type%u%
 echo %c%- Enhanced overall system responsiveness%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto HardwareMenu
 
 :MemoryDiagnostics
@@ -8195,7 +8193,7 @@ echo %c%Without it, most kits run at a slow JEDEC default instead of their rated
 echo.
 echo %c%Reading installed memory modules...%u%
 echo.
-powershell -NoProfile -Command "$mods = Get-CimInstance Win32_PhysicalMemory -ErrorAction SilentlyContinue; if (-not $mods) { Write-Host 'NO_DATA'; exit }; $totalGB = [math]::Round((($mods | Measure-Object Capacity -Sum).Sum)/1GB,0); Write-Host (\"Installed: {0} module(s), {1} GB total\" -f $mods.Count, $totalGB); Write-Host ''; $anyLow = $false; foreach ($m in $mods) { $rated = $m.Speed; $running = $m.ConfiguredClockSpeed; $tag = 'OK'; if ($running -and $rated -and ($running -lt $rated)) { $tag = 'BELOW RATED SPEED'; $anyLow = $true }; $part = ('' + $m.PartNumber).Trim(); Write-Host (\"  {0}: {1} GB, {2} - rated {3} MHz, running {4} MHz [{5}]\" -f $m.DeviceLocator, [math]::Round($m.Capacity/1GB,0), $part, $rated, $running, $tag) }; Write-Host ''; if ($anyLow) { Write-Host 'VERDICT|LOW' } else { Write-Host 'VERDICT|OK' }" > "%temp%\dex_mem.txt" 2>nul
+powershell -NoProfile -NonInteractive -Command "$mods = Get-CimInstance Win32_PhysicalMemory -ErrorAction SilentlyContinue; if (-not $mods) { Write-Host 'NO_DATA'; exit }; $totalGB = [math]::Round((($mods | Measure-Object Capacity -Sum).Sum)/1GB,0); Write-Host (\"Installed: {0} module(s), {1} GB total\" -f $mods.Count, $totalGB); Write-Host ''; $anyLow = $false; foreach ($m in $mods) { $rated = $m.Speed; $running = $m.ConfiguredClockSpeed; $tag = 'OK'; if ($running -and $rated -and ($running -lt $rated)) { $tag = 'BELOW RATED SPEED'; $anyLow = $true }; $part = ('' + $m.PartNumber).Trim(); Write-Host (\"  {0}: {1} GB, {2} - rated {3} MHz, running {4} MHz [{5}]\" -f $m.DeviceLocator, [math]::Round($m.Capacity/1GB,0), $part, $rated, $running, $tag) }; Write-Host ''; if ($anyLow) { Write-Host 'VERDICT|LOW' } else { Write-Host 'VERDICT|OK' }" > "%temp%\dex_mem.txt" 2>nul <nul
 
 if not exist "%temp%\dex_mem.txt" (
     echo %red%Could not read memory information.%u%
@@ -8240,7 +8238,7 @@ if "!MEM_VERDICT!"=="LOW" (
 :MemoryDiagnosticsEnd
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto HardwareMenu
 
 :HardwareInformation
@@ -8298,7 +8296,7 @@ set "_cs_model="
 set "_cs_manufacturer="
 set "_cs_name="
 set "_cs_user="
-for /f "tokens=1-4 delims=|" %%i in ('powershell -NoProfile -Command "$c=Get-CimInstance -ClassName Win32_ComputerSystem -ErrorAction SilentlyContinue; $v=@($c.Model,$c.Manufacturer,$c.Name,$c.UserName) | ForEach-Object{if($_){$_}else{'NA'}}; $v -join '|'" 2^>nul') do (
+for /f "tokens=1-4 delims=|" %%i in ('powershell -NoProfile -NonInteractive -Command "$c=Get-CimInstance -ClassName Win32_ComputerSystem -ErrorAction SilentlyContinue; $v=@($c.Model,$c.Manufacturer,$c.Name,$c.UserName) | ForEach-Object{if($_){$_}else{'NA'}}; $v -join '|'" 2^>nul ^<nul') do (
     set "_cs_model=%%i"
     set "_cs_manufacturer=%%j"
     set "_cs_name=%%k"
@@ -8359,7 +8357,7 @@ set "_mb_version="
 set "_bios_manufacturer="
 set "_bios_version="
 set "_bios_date="
-for /f "tokens=1-6 delims=|" %%i in ('powershell -NoProfile -Command "$m=Get-CimInstance -ClassName Win32_BaseBoard -ErrorAction SilentlyContinue; $b=Get-CimInstance -ClassName Win32_BIOS -ErrorAction SilentlyContinue; $bd=$null; if($b -and $b.ReleaseDate){try{$bd=$b.ReleaseDate.ToString('yyyy-MM-dd')}catch{}}; $v=@($m.Manufacturer,$m.Product,$m.Version,$b.Manufacturer,$b.SMBIOSBIOSVersion,$bd) | ForEach-Object{if($_){$_}else{'NA'}}; $v -join '|'" 2^>nul') do (
+for /f "tokens=1-6 delims=|" %%i in ('powershell -NoProfile -NonInteractive -Command "$m=Get-CimInstance -ClassName Win32_BaseBoard -ErrorAction SilentlyContinue; $b=Get-CimInstance -ClassName Win32_BIOS -ErrorAction SilentlyContinue; $bd=$null; if($b -and $b.ReleaseDate){try{$bd=$b.ReleaseDate.ToString('yyyy-MM-dd')}catch{}}; $v=@($m.Manufacturer,$m.Product,$m.Version,$b.Manufacturer,$b.SMBIOSBIOSVersion,$bd) | ForEach-Object{if($_){$_}else{'NA'}}; $v -join '|'" 2^>nul ^<nul') do (
     set "_mb_manufacturer=%%i"
     set "_mb_product=%%j"
     set "_mb_version=%%k"
@@ -8449,7 +8447,7 @@ echo %c%========================== MEMORY INFO ==========================%u%
 
 echo %c%- Reading total memory...%u%
 set "totalmem=0"
-for /f %%i in ('powershell -NoProfile -Command "[math]::Round(((Get-WmiObject -Class Win32_ComputerSystem -ErrorAction SilentlyContinue).TotalPhysicalMemory)/1GB)"') do (
+for /f %%i in ('powershell -NoProfile -NonInteractive -Command "[math]::Round(((Get-WmiObject -Class Win32_ComputerSystem -ErrorAction SilentlyContinue).TotalPhysicalMemory)/1GB)" ^<nul') do (
 	if %%i gtr 0 (
         set "totalmem=%%i"
         echo %c%Total Physical Memory: !totalmem! GB%u%
@@ -8461,7 +8459,7 @@ echo %c%Total Physical Memory: Unable to detect%u%
 
 echo %c%- Reading available memory...%u%
 set "freemem=0"
-for /f %%i in ('powershell -NoProfile -Command "[math]::Round(((Get-WmiObject -Class Win32_OperatingSystem -ErrorAction SilentlyContinue).FreePhysicalMemory)/1MB, 1)"') do (
+for /f %%i in ('powershell -NoProfile -NonInteractive -Command "[math]::Round(((Get-WmiObject -Class Win32_OperatingSystem -ErrorAction SilentlyContinue).FreePhysicalMemory)/1MB, 1)" ^<nul') do (
 	if %%i gtr 0 (
         set "freemem=%%i"
         echo %c%Available Memory: !freemem! GB%u%
@@ -8473,7 +8471,7 @@ echo %c%Available Memory: Unknown%u%
 
 echo %c%Memory Modules:%u%
 set "modulecount=0"
-for /f %%i in ('powershell -NoProfile -Command "Get-WmiObject -Class Win32_PhysicalMemory -ErrorAction SilentlyContinue | ForEach-Object { [math]::Round($_.Capacity/1GB) }"') do (
+for /f %%i in ('powershell -NoProfile -NonInteractive -Command "Get-WmiObject -Class Win32_PhysicalMemory -ErrorAction SilentlyContinue | ForEach-Object { [math]::Round($_.Capacity/1GB) }" ^<nul') do (
 	if %%i gtr 0 (
         set /a "modulecount+=1"
         echo %c%  Module !modulecount!: %%i GB%u%
@@ -8484,12 +8482,12 @@ if !modulecount! equ 0 echo %c%  Memory modules: Detection failed%u%
 echo %c%- Reading memory specifications...%u%
 set "mem_speed=Unknown"
 set "mem_manufacturer=Unknown"
-for /f %%i in ('powershell -NoProfile -Command "try { $mem = Get-WmiObject -Class Win32_PhysicalMemory -ErrorAction Stop | Select-Object -First 1; if($mem.Speed) { $mem.Speed } else { 'Unknown' } } catch { 'Unknown' }"') do (
+for /f %%i in ('powershell -NoProfile -NonInteractive -Command "try { $mem = Get-WmiObject -Class Win32_PhysicalMemory -ErrorAction Stop | Select-Object -First 1; if($mem.Speed) { $mem.Speed } else { 'Unknown' } } catch { 'Unknown' }" ^<nul') do (
 	if not "%%i"=="Unknown" if not "%%i"=="" (
         set "mem_speed=%%i"
     )
 )
-for /f "delims=" %%i in ('powershell -NoProfile -Command "try { $mem = Get-WmiObject -Class Win32_PhysicalMemory -ErrorAction Stop | Select-Object -First 1; if($mem.Manufacturer) { $mem.Manufacturer.Trim() } else { 'Unknown' } } catch { 'Unknown' }"') do (
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "try { $mem = Get-WmiObject -Class Win32_PhysicalMemory -ErrorAction Stop | Select-Object -First 1; if($mem.Manufacturer) { $mem.Manufacturer.Trim() } else { 'Unknown' } } catch { 'Unknown' }" ^<nul') do (
 	if not "%%i"=="Unknown" if not "%%i"=="" (
         set "mem_manufacturer=%%i"
     )
@@ -8514,7 +8512,7 @@ echo %c%=========================== GPU DETAILS ==========================%u%
 
 set "gpucount=0"
 echo %c%- Reading graphics cards...%u%
-for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name" 2^>nul') do (
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name" 2^>nul ^<nul') do (
     if not "%%i"=="" (
         set /a "gpucount+=1"
         echo %c%Graphics Card !gpucount!: %%i%u%
@@ -8530,9 +8528,9 @@ if !gpucount! equ 0 echo %c%Graphics Card: Detection failed%u%
 
 echo %c%- Reading video memory...%u%
 set "vram_found=false"
-for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AdapterRAM" 2^>nul') do (
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AdapterRAM" 2^>nul ^<nul') do (
 	if not "%%i"=="" if not "%%i"=="4294967295" (
-        for /f %%j in ('powershell -command "try { $size = [math]::round(%%i/1GB, 0); if($size -gt 0) { $size } else { 0 } } catch { 0 }"') do (
+        for /f %%j in ('powershell -NoProfile -NonInteractive -command "try { $size = [math]::round(%%i/1GB, 0); if($size -gt 0) { $size } else { 0 } } catch { 0 }" ^<nul') do (
             if %%j gtr 0 (
                 echo %c%Video Memory: %%j GB%u%
                 set "vram_found=true"
@@ -8543,7 +8541,7 @@ for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -Class
 )
 for /f "tokens=2 delims==" %%i in ('wmic path win32_videocontroller get adapterram /value 2^>nul ^| find "=" 2^>nul') do (
 	if not "%%i"=="" if not "%%i"=="4294967295" (
-        for /f %%j in ('powershell -command "try { $size = [math]::round(%%i/1GB, 0); if($size -gt 0) { $size } else { 0 } } catch { 0 }"') do (
+        for /f %%j in ('powershell -NoProfile -NonInteractive -command "try { $size = [math]::round(%%i/1GB, 0); if($size -gt 0) { $size } else { 0 } } catch { 0 }" ^<nul') do (
             if %%j gtr 0 (
                 echo %c%Video Memory: %%j GB%u%
                 set "vram_found=true"
@@ -8568,7 +8566,7 @@ set "drive1_size="
 set "drive2_name="
 set "drive2_size="
 echo %c%- Reading storage devices...%u%
-for /f "tokens=1,* delims=|" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_DiskDrive -ErrorAction SilentlyContinue | ForEach-Object { $sz = 0; try { $sz = [math]::Round($_.Size/1GB,0) } catch {}; ('{0}|{1}' -f $_.Model, $sz) }" 2^>nul') do (
+for /f "tokens=1,* delims=|" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_DiskDrive -ErrorAction SilentlyContinue | ForEach-Object { $sz = 0; try { $sz = [math]::Round($_.Size/1GB,0) } catch {}; ('{0}|{1}' -f $_.Model, $sz) }" 2^>nul ^<nul') do (
     if not "%%i"=="" (
         set /a "drivecount+=1"
         if !drivecount! equ 1 (
@@ -8590,7 +8588,7 @@ if !drivecount! equ 0 for /f "skip=1 tokens=1,2" %%i in ('wmic diskdrive get mod
         if !drivecount! equ 1 (
             set "drive1_name=%%i"
             if not "%%j"=="" (
-                for /f %%k in ('powershell -NoProfile -Command "try { [math]::round(%%j/1GB, 0) } catch { 0 }"') do (
+                for /f %%k in ('powershell -NoProfile -NonInteractive -Command "try { [math]::round(%%j/1GB, 0) } catch { 0 }" ^<nul') do (
                     if %%k gtr 0 set "drive1_size=%%k"
                 )
             )
@@ -8599,7 +8597,7 @@ if !drivecount! equ 0 for /f "skip=1 tokens=1,2" %%i in ('wmic diskdrive get mod
         if !drivecount! equ 2 (
             set "drive2_name=%%i"
             if not "%%j"=="" (
-                for /f %%k in ('powershell -NoProfile -Command "try { [math]::round(%%j/1GB, 0) } catch { 0 }"') do (
+                for /f %%k in ('powershell -NoProfile -NonInteractive -Command "try { [math]::round(%%j/1GB, 0) } catch { 0 }" ^<nul') do (
                     if %%k gtr 0 set "drive2_size=%%k"
                 )
             )
@@ -8607,7 +8605,7 @@ if !drivecount! equ 0 for /f "skip=1 tokens=1,2" %%i in ('wmic diskdrive get mod
 
         echo %c%Drive !drivecount!: %%i%u%
         if not "%%j"=="" (
-            for /f %%k in ('powershell -NoProfile -Command "try { [math]::round(%%j/1GB, 0) } catch { 0 }"') do (
+            for /f %%k in ('powershell -NoProfile -NonInteractive -Command "try { [math]::round(%%j/1GB, 0) } catch { 0 }" ^<nul') do (
                 if %%k gtr 0 echo %c%  Capacity: %%k GB%u%
             )
         )
@@ -8693,7 +8691,7 @@ echo.
 echo %c%======================= HARDWARE HEALTH STATUS ===================%u%
 
 echo %c%- Checking thermal status...%u%
-powershell -Command "try { Get-WmiObject -Namespace 'root/wmi' -Class MSAcpi_ThermalZoneTemperature -ErrorAction Stop | ForEach-Object { $temp = ($_.CurrentTemperature - 2732) / 10; Write-Host \"CPU Temperature: $temp C\" } } catch { Write-Host 'Thermal sensors not accessible' }" 2>nul | find "CPU Temperature" >nul && (
+powershell -NoProfile -NonInteractive -Command "try { Get-WmiObject -Namespace 'root/wmi' -Class MSAcpi_ThermalZoneTemperature -ErrorAction Stop | ForEach-Object { $temp = ($_.CurrentTemperature - 2732) / 10; Write-Host \"CPU Temperature: $temp C\" } } catch { Write-Host 'Thermal sensors not accessible' }" 2>nul <nul | find "CPU Temperature" >nul && (
 	echo %c%Thermal monitoring available%u%
 ) || (
     echo %c%Thermal sensors not accessible via WMI%u%
@@ -8701,7 +8699,7 @@ powershell -Command "try { Get-WmiObject -Namespace 'root/wmi' -Class MSAcpi_The
 
 echo %c%- Checking system drivers...%u%
 set "_running_driver_count="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "(Get-CimInstance -ClassName Win32_SystemDriver -ErrorAction SilentlyContinue | Where-Object { $_.State -eq 'Running' } | Measure-Object).Count" 2^>nul') do if not "%%i"=="0" set "_running_driver_count=%%i"
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "(Get-CimInstance -ClassName Win32_SystemDriver -ErrorAction SilentlyContinue | Where-Object { $_.State -eq 'Running' } | Measure-Object).Count" 2^>nul ^<nul') do if not "%%i"=="0" set "_running_driver_count=%%i"
 if not defined _running_driver_count for /f %%i in ('wmic path win32_systemdriver where "state='running'" get name /value 2^>nul ^| find "=" ^| find /c "=" 2^>nul') do set "_running_driver_count=%%i"
 for /f %%i in ("!_running_driver_count!") do (
     if %%i gtr 50 (
@@ -8712,7 +8710,7 @@ for /f %%i in ("!_running_driver_count!") do (
 )
 
 echo %c%- Checking disk health...%u%
-for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_DiskDrive -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty Status" 2^>nul') do (
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_DiskDrive -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty Status" 2^>nul ^<nul') do (
     if "%%i"=="OK" (
         echo %c%Storage: Healthy%u%
     ) else (
@@ -8858,7 +8856,7 @@ set "gpu_score=0"
 set "gpu_rating=Unknown"
 
 set "detected_vram=0"
-for /f %%i in ('powershell -NoProfile -Command "try { $gpu = Get-WmiObject Win32_VideoController | Where-Object {$_.Name -like '*RTX*' -or $_.Name -like '*GTX*' -or $_.Name -like '*RX*'}; [math]::Round($gpu.AdapterRAM/1GB) } catch { 4 }"') do (
+for /f %%i in ('powershell -NoProfile -NonInteractive -Command "try { $gpu = Get-WmiObject Win32_VideoController | Where-Object {$_.Name -like '*RTX*' -or $_.Name -like '*GTX*' -or $_.Name -like '*RX*'}; [math]::Round($gpu.AdapterRAM/1GB) } catch { 4 }" ^<nul') do (
 	if %%i gtr 0 set "detected_vram=%%i"
 )
 
@@ -9380,7 +9378,7 @@ echo %c%  Location: %USERPROFILE%\Desktop%u%
 
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto HardwareMenu
 
 :WindowsMenu
@@ -9702,9 +9700,9 @@ echo %c%+ Business tracking removed%u%
 echo.
 echo %c%[4/6] Disabling Location and Sync Services...%u%
 echo %c%- Disabling Contact Data sync...%u%
-powershell -Command "Get-AppxPackage *People* | Remove-AppxPackage" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-AppxPackage *People* | Remove-AppxPackage" >nul 2>&1 <nul
 echo %c%- Disabling Calendar sync...%u%
-powershell -Command "Get-AppxPackage *Calendar* | Remove-AppxPackage" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-AppxPackage *Calendar* | Remove-AppxPackage" >nul 2>&1 <nul
 echo %c%+ Sync services disabled%u%
 
 echo.
@@ -9844,7 +9842,7 @@ echo +==========================================================================
 dism /online /get-features /format:table | findstr /i "Disabled"
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto WindowsFeaturesManager
 
 :CustomFeatures
@@ -10068,7 +10066,7 @@ if /i "!restart_choice!"=="Y" (
 )
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto WindowsMenu
 
 :RegistryPerformance
@@ -10125,7 +10123,7 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Privacy" /v "TailoredExp
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ActivityHistory" /v "EnableActivityFeed" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ActivityHistory" /v "PublishUserActivities" /t REG_DWORD /d "0" /f >nul 2>&1
 
-powershell -Command "Get-ChildItem 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ActivityHistory' | Remove-Item -Recurse -Force" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-ChildItem 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ActivityHistory' | Remove-Item -Recurse -Force" >nul 2>&1 <nul
 echo %c%+ Timeline and Activity History disabled and cleared%u%
 
 echo.
@@ -10253,7 +10251,7 @@ echo.
 echo %red%Note: A system restart is recommended to fully apply all optimizations.%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto WindowsMenu
 
 :SystemFileOptimizer
@@ -10340,7 +10338,8 @@ dism /online /cleanup-image /startcomponentcleanup /resetbase >nul 2>&1
 
 dism /online /cleanup-image /spsuperseded >nul 2>&1
 
-cleanmgr /verylowdisk /sagerun:1 >nul 2>&1
+call :DexCleanmgrProfile 1 0
+cleanmgr /sagerun:1 >nul 2>&1
 
 echo %c%+ WinSxS folder optimization completed%u%
 
@@ -10352,10 +10351,10 @@ call :DexSleep 10
 taskkill /f /im WinStore.App.exe >nul 2>&1
 
 echo %c%Rebuilding Windows Store database...%u%
-powershell -Command "Get-AppxPackage -AllUsers Microsoft.WindowsStore | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\AppXManifest.xml\"}" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-AppxPackage -AllUsers Microsoft.WindowsStore | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\AppXManifest.xml\"}" >nul 2>&1 <nul
 
 echo %c%Resetting Windows Store apps...%u%
-powershell -Command "Get-AppxPackage | Where-Object {$_.Name -like '*Store*'} | Reset-AppxPackage" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-AppxPackage | Where-Object {$_.Name -like '*Store*'} | Reset-AppxPackage" >nul 2>&1 <nul
 
 echo %c%+ Windows Store cache reset completed%u%
 
@@ -10373,7 +10372,7 @@ echo %c%Clearing DNS cache...%u%
 ipconfig /flushdns >nul 2>&1
 
 echo %c%Rebuilding font cache...%u%
-net stop FontCache >nul 2>&1
+net stop FontCache /y >nul 2>&1
 del /f /s /q "%windir%\ServiceProfiles\LocalService\AppData\Local\FontCache\*" >nul 2>&1
 net start FontCache >nul 2>&1
 
@@ -10405,7 +10404,7 @@ echo.
 echo %red%Recommendation: Restart your computer to complete all optimizations.%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto WindowsMenu
 
 :ExplorerOptimizer
@@ -10628,8 +10627,8 @@ echo %c%+ DPI scaling and font smoothing disabled%u%
 
 echo.
 echo %c%[13/16] Cleaning up Explorer context menus and shell extensions...%u%
-powershell -NoProfile -Command "Remove-Item -Path 'HKLM:\SOFTWARE\Classes\Folder\shellex\ContextMenuHandlers\Library Location' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'HKLM:\SOFTWARE\Classes\Folder\shell\pintohome' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'HKLM:\SOFTWARE\Classes\Directory\background\shellex\ContextMenuHandlers\NvCplDesktopContext' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\shell\Windows.help' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'HKLM:\SOFTWARE\Classes\Folder\shellex\ContextMenuHandlers\PintoStartScreen' -Recurse -Force -EA SilentlyContinue" >nul 2>&1
-powershell -NoProfile -Command "Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\.library-ms\ShellNew' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\Folder\ShellNew' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\.lnk\ShellNew' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\.bmp\ShellNew' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\.rtf\ShellNew' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\.txt\ShellNew' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\.zip\CompressedFolder\ShellNew' -Recurse -Force -EA SilentlyContinue" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Remove-Item -Path 'HKLM:\SOFTWARE\Classes\Folder\shellex\ContextMenuHandlers\Library Location' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'HKLM:\SOFTWARE\Classes\Folder\shell\pintohome' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'HKLM:\SOFTWARE\Classes\Directory\background\shellex\ContextMenuHandlers\NvCplDesktopContext' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\shell\Windows.help' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'HKLM:\SOFTWARE\Classes\Folder\shellex\ContextMenuHandlers\PintoStartScreen' -Recurse -Force -EA SilentlyContinue" >nul 2>&1 <nul
+powershell -NoProfile -NonInteractive -Command "Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\.library-ms\ShellNew' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\Folder\ShellNew' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\.lnk\ShellNew' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\.bmp\ShellNew' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\.rtf\ShellNew' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\.txt\ShellNew' -Recurse -Force -EA SilentlyContinue; Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\.zip\CompressedFolder\ShellNew' -Recurse -Force -EA SilentlyContinue" >nul 2>&1 <nul
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoDrivesInSendToMenu" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoDrivesInSendToMenu" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoNetConnectDisconnect" /t REG_DWORD /d "1" /f >nul 2>&1
@@ -10640,7 +10639,7 @@ echo %c%+ Shell context menus and extensions cleaned%u%
 
 echo.
 echo %c%[14/16] Removing print verbs from file context menus...%u%
-powershell -NoProfile -Command "$pp = @('HKLM:\SOFTWARE\Classes\SystemFileAssociations\.txt\shell\print','HKLM:\SOFTWARE\Classes\SystemFileAssociations\.bmp\shell\print','HKLM:\SOFTWARE\Classes\SystemFileAssociations\.rtf\shell\print','HKLM:\SOFTWARE\Classes\SystemFileAssociations\.doc\shell\print','HKLM:\SOFTWARE\Classes\SystemFileAssociations\.docx\shell\print','HKLM:\SOFTWARE\Classes\txtfile\shell\print','HKLM:\SOFTWARE\Classes\txtfile\shell\printto','HKLM:\SOFTWARE\Classes\rtffile\shell\print','HKLM:\SOFTWARE\Classes\rtffile\shell\printto','HKLM:\SOFTWARE\Classes\docxfile\shell\print','HKLM:\SOFTWARE\Classes\docxfile\shell\printto','HKLM:\SOFTWARE\Classes\batfile\shell\print','HKLM:\SOFTWARE\Classes\regfile\shell\print'); foreach ($p in $pp) { Remove-Item -Path $p -Recurse -Force -EA SilentlyContinue }" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "$pp = @('HKLM:\SOFTWARE\Classes\SystemFileAssociations\.txt\shell\print','HKLM:\SOFTWARE\Classes\SystemFileAssociations\.bmp\shell\print','HKLM:\SOFTWARE\Classes\SystemFileAssociations\.rtf\shell\print','HKLM:\SOFTWARE\Classes\SystemFileAssociations\.doc\shell\print','HKLM:\SOFTWARE\Classes\SystemFileAssociations\.docx\shell\print','HKLM:\SOFTWARE\Classes\txtfile\shell\print','HKLM:\SOFTWARE\Classes\txtfile\shell\printto','HKLM:\SOFTWARE\Classes\rtffile\shell\print','HKLM:\SOFTWARE\Classes\rtffile\shell\printto','HKLM:\SOFTWARE\Classes\docxfile\shell\print','HKLM:\SOFTWARE\Classes\docxfile\shell\printto','HKLM:\SOFTWARE\Classes\batfile\shell\print','HKLM:\SOFTWARE\Classes\regfile\shell\print'); foreach ($p in $pp) { Remove-Item -Path $p -Recurse -Force -EA SilentlyContinue }" >nul 2>&1 <nul
 echo %c%+ Print verbs removed from context menus%u%
 
 echo.
@@ -10707,7 +10706,7 @@ echo %c%- Eliminated privacy tracking in file explorer%u%
 echo %c%- Reduced system resources usage%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto WindowsMenu
 
 :DefenderOptimizer
@@ -10752,24 +10751,24 @@ if errorlevel 2 goto DefenderOptimizer
 
 echo.
 echo %c%[1/4] Verifying Active Protection...%u%
-powershell -Command "Set-MpPreference -DisableRealtimeMonitoring $false -DisableBehaviorMonitoring $false -EnableNetworkProtection Enabled -ErrorAction SilentlyContinue" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Set-MpPreference -DisableRealtimeMonitoring $false -DisableBehaviorMonitoring $false -EnableNetworkProtection Enabled -ErrorAction SilentlyContinue" >nul 2>&1 <nul
 echo %c%+ Active protection retained; no broad game-folder exclusions added%u%
 
 echo.
 echo %c%[2/4] Configuring Performance Settings...%u%
-powershell -Command "Set-MpPreference -EnableNetworkProtection Enabled -ScanAvgCPULoadFactor 10 -CheckForSignaturesBeforeRunningScan $true" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Set-MpPreference -EnableNetworkProtection Enabled -ScanAvgCPULoadFactor 10 -CheckForSignaturesBeforeRunningScan $true" >nul 2>&1 <nul
 echo %c%+ Performance settings optimized%u%
 
 echo.
 echo %c%[3/4] Disabling Gaming Interruptions...%u%
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender Security Center\Notifications" /v "DisableNotifications" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\UX Configuration" /v "SuppressRebootNotification" /t REG_DWORD /d "1" /f >nul 2>&1
-powershell -Command "Set-MpPreference -ScanOnlyIfIdleEnabled $true" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Set-MpPreference -ScanOnlyIfIdleEnabled $true" >nul 2>&1 <nul
 echo %c%+ Gaming interruptions disabled%u%
 
 echo.
 echo %c%[4/4] Configuring Scan Schedules...%u%
-powershell -Command "Set-MpPreference -RemediatePurgeItemsAfterDelay 30 -ScanPurgeItemsAfterDelay 30" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Set-MpPreference -RemediatePurgeItemsAfterDelay 30 -ScanPurgeItemsAfterDelay 30" >nul 2>&1 <nul
 echo %c%+ Scan schedules optimized%u%
 goto DefenderComplete
 
@@ -10795,30 +10794,30 @@ if errorlevel 2 goto DefenderOptimizer
 
 echo.
 echo %c%[1/5] Disabling Real-Time Protection...%u%
-powershell -Command "Set-MpPreference -DisableRealtimeMonitoring $true" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Set-MpPreference -DisableRealtimeMonitoring $true" >nul 2>&1 <nul
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d "1" /f >nul 2>&1
 echo %c%+ Real-time protection disabled%u%
 
 echo.
 echo %c%[2/5] Disabling Cloud Protection...%u%
-powershell -Command "Set-MpPreference -MAPSReporting Disabled -SubmitSamplesConsent NeverSend" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Set-MpPreference -MAPSReporting Disabled -SubmitSamplesConsent NeverSend" >nul 2>&1 <nul
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Spynet" /v "SubmitSamplesConsent" /t REG_DWORD /d "2" /f >nul 2>&1
 echo %c%+ Cloud protection disabled%u%
 
 echo.
 echo %c%[3/5] Adding System Exclusions...%u%
-powershell -Command "Add-MpPreference -ExclusionPath 'C:\Windows\Temp','C:\Windows\Prefetch','C:\Windows\SoftwareDistribution','%TEMP%' -ExclusionProcess 'svchost.exe'" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Add-MpPreference -ExclusionPath 'C:\Windows\Temp','C:\Windows\Prefetch','C:\Windows\SoftwareDistribution','%TEMP%' -ExclusionProcess 'svchost.exe'" >nul 2>&1 <nul
 echo %c%+ System exclusions added%u%
 
 echo.
 echo %c%[4/5] Disabling Background Scanning...%u%
-powershell -Command "Set-MpPreference -DisableBehaviorMonitoring $true -DisableBlockAtFirstSeen $true -DisableIOAVProtection $true -DisableScriptScanning $true" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Set-MpPreference -DisableBehaviorMonitoring $true -DisableBlockAtFirstSeen $true -DisableIOAVProtection $true -DisableScriptScanning $true" >nul 2>&1 <nul
 echo %c%+ Background scanning disabled%u%
 
 echo.
 echo %c%[5/5] Optimizing Scan Performance...%u%
-powershell -Command "Set-MpPreference -ScanAvgCPULoadFactor 5 -EnableLowCpuPriority $true -ScanOnlyIfIdleEnabled $true" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Set-MpPreference -ScanAvgCPULoadFactor 5 -EnableLowCpuPriority $true -ScanOnlyIfIdleEnabled $true" >nul 2>&1 <nul
 echo %c%+ Scan performance optimized%u%
 goto DefenderComplete
 
@@ -10867,7 +10866,7 @@ if "!choice!"=="3" (
 )
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto WindowsMenu
 
 :SearchIndexOptimizer
@@ -10896,7 +10895,7 @@ if errorlevel 2 goto WindowsMenu
 
 echo.
 echo %c%[1/6] Stopping and Disabling Windows Search Service...%u%
-net stop "Windows Search" >nul 2>&1
+net stop "Windows Search" /y >nul 2>&1
 sc config "WSearch" start= disabled >nul 2>&1
 echo %c%+ Windows Search service disabled%u%
 
@@ -10984,7 +10983,7 @@ echo %c%- Significantly reduced background CPU usage%u%
 echo %c%- Faster system startup and file operations%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto WindowsMenu
 
 :PrivacyMenu
@@ -11317,7 +11316,7 @@ echo %c%- Gaming platform privacy data eliminated%u%
 echo %c%- Maximum privacy protection implemented%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto PrivacyMenu
 
 :TelemetryBlocker
@@ -11350,7 +11349,7 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\Windows Error Reporting" /v "Disabled" 
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting" /v "Disabled" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\PCHealth\ErrorReporting" /v "DoReport" /t REG_DWORD /d "0" /f >nul 2>&1
 sc config "WerSvc" start= disabled >nul 2>&1
-net stop "WerSvc" >nul 2>&1
+net stop "WerSvc" /y >nul 2>&1
 echo %c%+ Windows Error Reporting disabled%u%
 
 echo.
@@ -11359,8 +11358,8 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat" /v "AITEnable" /t R
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat" /v "DisableInventory" /t REG_DWORD /d "1" /f >nul 2>&1
 sc config "DiagTrack" start= disabled >nul 2>&1
 sc config "dmwappushservice" start= disabled >nul 2>&1
-net stop "DiagTrack" >nul 2>&1
-net stop "dmwappushservice" >nul 2>&1
+net stop "DiagTrack" /y >nul 2>&1
+net stop "dmwappushservice" /y >nul 2>&1
 schtasks /Change /TN "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /Disable >nul 2>&1
 schtasks /Change /TN "Microsoft\Windows\Application Experience\ProgramDataUpdater" /Disable >nul 2>&1
 echo %c%+ Microsoft Compatibility Telemetry blocked%u%
@@ -11378,7 +11377,7 @@ echo.
 echo %c%[4/11] Blocking Windows Defender Telemetry...%u%
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" /v "SubmitSamplesConsent" /t REG_DWORD /d "2" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" /v "SpynetReporting" /t REG_DWORD /d "0" /f >nul 2>&1
-powershell -Command "Set-MpPreference -MAPSReporting Disabled -SubmitSamplesConsent NeverSend" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Set-MpPreference -MAPSReporting Disabled -SubmitSamplesConsent NeverSend" >nul 2>&1 <nul
 echo %c%+ Windows Defender telemetry blocked%u%
 
 echo.
@@ -11429,7 +11428,7 @@ echo %c%+ Feedback prompts and input personalization data suppressed%u%
 
 echo.
 echo %c%[11/11] System Security Hardening and SvcHost Memory Threshold...%u%
-for /f %%m in ('powershell -NoProfile -Command "(Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1KB" 2^>nul') do (
+for /f %%m in ('powershell -NoProfile -NonInteractive -Command "(Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1KB" 2^>nul ^<nul') do (
     reg add "HKLM\SYSTEM\CurrentControlSet\Control" /v "SvcHostSplitThresholdInKB" /t REG_DWORD /d "%%m" /f >nul 2>&1
 )
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager" /v "DisableWpbtExecution" /t REG_DWORD /d "1" /f >nul 2>&1
@@ -11466,7 +11465,7 @@ echo %c%- Improved system performance%u%
 echo %c%- Vendor boot-time execution and driver bundleware blocked%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto PrivacyMenu
 
 :CortanaPrivacy
@@ -11571,7 +11570,7 @@ echo %c%- No location data used for search%u%
 echo %c%- Enhanced local search privacy%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto PrivacyMenu
 
 :AccountPrivacy
@@ -11681,7 +11680,7 @@ echo %c%- No cross-device activity tracking%u%
 echo %c%- Enhanced local account privacy%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto PrivacyMenu
 
 :LocationPrivacy
@@ -11712,15 +11711,15 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration" /v 
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" /v "DisableLocation" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" /v "DisableLocationScripting" /t REG_DWORD /d "1" /f >nul 2>&1
 sc config "lfsvc" start= disabled >nul 2>&1
-net stop "lfsvc" >nul 2>&1
+net stop "lfsvc" /y >nul 2>&1
 echo %c%+ Location services system-wide disabled%u%
 
 echo.
 echo %c%[2/7] Blocking Location Access for All Apps...%u%
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" /v "Value" /t REG_SZ /d "Deny" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" /v "Value" /t REG_SZ /d "Deny" /f >nul 2>&1
-powershell -Command "Get-ChildItem 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location\NonPackaged' -ErrorAction SilentlyContinue | ForEach-Object { Set-ItemProperty -Path $_.PSPath -Name 'Value' -Value 'Deny' -Force }" >nul 2>&1
-powershell -Command "Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location\NonPackaged' -ErrorAction SilentlyContinue | ForEach-Object { Set-ItemProperty -Path $_.PSPath -Name 'Value' -Value 'Deny' -Force }" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-ChildItem 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location\NonPackaged' -ErrorAction SilentlyContinue | ForEach-Object { Set-ItemProperty -Path $_.PSPath -Name 'Value' -Value 'Deny' -Force }" >nul 2>&1 <nul
+powershell -NoProfile -NonInteractive -Command "Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location\NonPackaged' -ErrorAction SilentlyContinue | ForEach-Object { Set-ItemProperty -Path $_.PSPath -Name 'Value' -Value 'Deny' -Force }" >nul 2>&1 <nul
 echo %c%+ Location access blocked for all apps%u%
 
 echo.
@@ -11739,7 +11738,7 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" /v "DisableSensors" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SensrSvc" /v "Start" /t REG_DWORD /d "4" /f >nul 2>&1
 sc config "SensrSvc" start= disabled >nul 2>&1
-net stop "SensrSvc" >nul 2>&1
+net stop "SensrSvc" /y >nul 2>&1
 echo %c%+ Motion and sensor data collection blocked%u%
 
 echo.
@@ -11789,7 +11788,7 @@ echo %c%- Network location services disabled%u%
 echo %c%- Complete location privacy achieved%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto PrivacyMenu
 
 :AppPermissions
@@ -11817,7 +11816,7 @@ echo %c%[1/8] Disabling Background Apps Globally...%u%
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /v "GlobalUserDisabled" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsRunInBackground" /t REG_DWORD /d "2" /f >nul 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "BackgroundAppGlobalToggle" /t REG_DWORD /d "0" /f >nul 2>&1
-powershell -Command "Get-AppxPackage | Where-Object {$_.PackageFullName -like '*Microsoft*'} | ForEach-Object {Set-ItemProperty -Path ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications\' + $_.PackageFamilyName) -Name 'Disabled' -Value 1 -Force -ErrorAction SilentlyContinue}" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-AppxPackage | Where-Object {$_.PackageFullName -like '*Microsoft*'} | ForEach-Object {Set-ItemProperty -Path ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications\' + $_.PackageFamilyName) -Name 'Disabled' -Value 1 -Force -ErrorAction SilentlyContinue}" >nul 2>&1 <nul
 echo %c%+ Background apps globally disabled%u%
 
 echo.
@@ -11905,7 +11904,7 @@ echo %c%+ Webcam access blocked%u%
 
 echo.
 echo %c%[11/11] Clearing Explorer FeatureUsage tracking data...%u%
-powershell -NoProfile -Command "$rootRegistryKeyPath = 'HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FeatureUsage'; function Clear-RegistryKeyProperties { $currentRegistryKeyPath = $args[0]; $formattedRegistryKeyPath = $currentRegistryKeyPath -replace '^([^\\\\]+)', '$1:'; try { if (-Not (Test-Path -LiteralPath $formattedRegistryKeyPath)) { return; }; $directValueNames=(Get-Item -LiteralPath $formattedRegistryKeyPath -ErrorAction Stop | Select-Object -ExpandProperty Property); if ($directValueNames) { foreach ($valueName in $directValueNames) { Remove-ItemProperty -LiteralPath $formattedRegistryKeyPath -Name $valueName -ErrorAction SilentlyContinue; }; }; } catch {} }; function Clear-RegistrySubkeysProperties { $currentRegistryKeyPath = $args[0]; $formattedRegistryKeyPath = $currentRegistryKeyPath -replace '^([^\\\\]+)', '$1:'; try { if (-Not (Test-Path -LiteralPath $formattedRegistryKeyPath)) { return; }; $subkeys = Get-ChildItem -LiteralPath $formattedRegistryKeyPath -ErrorAction Stop; if (!$subkeys) { return; }; foreach ($subkey in $subkeys) { $subkeyName = $($subkey.PSChildName); $subkeyPath = Join-Path -Path $currentRegistryKeyPath -ChildPath $subkeyName; Clear-RegistryKeyProperties $subkeyPath; }; } catch {} }; Clear-RegistrySubkeysProperties $rootRegistryKeyPath" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "$rootRegistryKeyPath = 'HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FeatureUsage'; function Clear-RegistryKeyProperties { $currentRegistryKeyPath = $args[0]; $formattedRegistryKeyPath = $currentRegistryKeyPath -replace '^([^\\\\]+)', '$1:'; try { if (-Not (Test-Path -LiteralPath $formattedRegistryKeyPath)) { return; }; $directValueNames=(Get-Item -LiteralPath $formattedRegistryKeyPath -ErrorAction Stop | Select-Object -ExpandProperty Property); if ($directValueNames) { foreach ($valueName in $directValueNames) { Remove-ItemProperty -LiteralPath $formattedRegistryKeyPath -Name $valueName -ErrorAction SilentlyContinue; }; }; } catch {} }; function Clear-RegistrySubkeysProperties { $currentRegistryKeyPath = $args[0]; $formattedRegistryKeyPath = $currentRegistryKeyPath -replace '^([^\\\\]+)', '$1:'; try { if (-Not (Test-Path -LiteralPath $formattedRegistryKeyPath)) { return; }; $subkeys = Get-ChildItem -LiteralPath $formattedRegistryKeyPath -ErrorAction Stop; if (!$subkeys) { return; }; foreach ($subkey in $subkeys) { $subkeyName = $($subkey.PSChildName); $subkeyPath = Join-Path -Path $currentRegistryKeyPath -ChildPath $subkeyName; Clear-RegistryKeyProperties $subkeyPath; }; } catch {} }; Clear-RegistrySubkeysProperties $rootRegistryKeyPath" >nul 2>&1 <nul
 echo %c%+ Explorer FeatureUsage tracking cleared%u%
 
 echo.
@@ -11931,7 +11930,7 @@ echo %c%- Reduced battery and performance impact%u%
 echo %c%- Enhanced overall system privacy%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto PrivacyMenu
 
 :AdvertisingPrivacy
@@ -12052,7 +12051,7 @@ echo %c%- Enhanced browsing privacy%u%
 echo %c%- Reduced data collection and profiling%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto PrivacyMenu
 
 :AdvancedMenu
@@ -12126,7 +12125,7 @@ echo %c%Programs currently set to auto-start with Windows:%u%
 echo.
 set "DEX_STARTUP_LIST=%temp%\dex_startup_list.txt"
 del /f /q "%DEX_STARTUP_LIST%" >nul 2>&1
-powershell -NoProfile -Command "$i=0; Get-CimInstance Win32_StartupCommand -ErrorAction SilentlyContinue | Select-Object Name,Location,User,Command | ForEach-Object { $i++; \"$i|$($_.Name)|$($_.Location)|$($_.Command)\" } | Set-Content -Encoding UTF8 -LiteralPath '%DEX_STARTUP_LIST%'" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "$i=0; Get-CimInstance Win32_StartupCommand -ErrorAction SilentlyContinue | Select-Object Name,Location,User,Command | ForEach-Object { $i++; ('{0}|{1}|{2}|{3}' -f $i,$_.Name,$_.Location,$_.Command) } | Set-Content -Encoding UTF8 -LiteralPath '%DEX_STARTUP_LIST%'" >nul 2>&1 <nul
 if not exist "%DEX_STARTUP_LIST%" (
     echo No startup entries were found or they could not be read.
     pause
@@ -12164,8 +12163,8 @@ echo %c%This is a best-effort reading using sensors Windows exposes without extr
 echo %c%drivers. Many laptops and GPUs hide their sensors from this API; if nothing%u%
 echo %c%shows below, use HWiNFO, HWMonitor or your GPU vendor's app instead.%u%
 echo.
-powershell -NoProfile -Command "try { $zones = Get-CimInstance -Namespace root/wmi -ClassName MSAcpi_ThermalZoneTemperature -ErrorAction Stop; if ($zones) { $zones | ForEach-Object { $c = [math]::Round(($_.CurrentTemperature / 10) - 273.15, 1); Write-Host ('CPU/ACPI thermal zone: {0} C' -f $c) } } else { Write-Host 'No ACPI thermal zone sensors were exposed by this system.' } } catch { Write-Host 'No ACPI thermal zone sensors were exposed by this system.' }"
-powershell -NoProfile -Command "try { $gpu = Get-CimInstance -Namespace root/CIMV2 -ClassName Win32_VideoController -ErrorAction Stop | Select-Object -First 1; Write-Host ('GPU: {0} (vendor tool required for temperature)' -f $gpu.Name) } catch {}"
+powershell -NoProfile -NonInteractive -Command "try { $zones = Get-CimInstance -Namespace root/wmi -ClassName MSAcpi_ThermalZoneTemperature -ErrorAction Stop; if ($zones) { $zones | ForEach-Object { $c = [math]::Round(($_.CurrentTemperature / 10) - 273.15, 1); Write-Host ('CPU/ACPI thermal zone: {0} C' -f $c) } } else { Write-Host 'No ACPI thermal zone sensors were exposed by this system.' } } catch { Write-Host 'No ACPI thermal zone sensors were exposed by this system.' }" <nul
+powershell -NoProfile -NonInteractive -Command "try { $gpu = Get-CimInstance -Namespace root/CIMV2 -ClassName Win32_VideoController -ErrorAction Stop | Select-Object -First 1; Write-Host ('GPU: {0} (vendor tool required for temperature)' -f $gpu.Name) } catch {}" <nul
 echo.
 call :LogEvent "REPORT" "Temperature snapshot requested"
 pause
@@ -12206,7 +12205,7 @@ echo %c%so it is easy to find and roll back to if a driver install goes wrong.%u
 echo.
 call :DexChoice "YN" "%c%Create a driver restore point now? (Y/N)%u%"
 if errorlevel 2 goto PerformanceToolkit
-powershell -NoProfile -ExecutionPolicy Bypass -Command "try { Enable-ComputerRestore -Drive $env:SystemDrive -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'DexTweaks_PreDriverInstall_%DEX_SESSION%' -RestorePointType DEVICE_DRIVER_INSTALL -ErrorAction Stop; exit 0 } catch { Write-Host $_.Exception.Message; exit 1 }"
+powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "try { Enable-ComputerRestore -Drive $env:SystemDrive -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'DexTweaks_PreDriverInstall_%DEX_SESSION%' -RestorePointType DEVICE_DRIVER_INSTALL -ErrorAction Stop; exit 0 } catch { Write-Host $_.Exception.Message; exit 1 }" <nul
 if errorlevel 1 (
     echo %red%Restore point creation failed. Check System Protection settings.%u%
     call :LogEvent "FAIL" "Driver restore point creation failed"
@@ -12236,7 +12235,7 @@ echo %c%Running this again on the same app UNDOES its priority boost.%u%
 echo %c%HAGS and Game DVR are shared system settings, so they are not reverted per app.%u%
 echo.
 echo Please select the capture/streaming app executable:
-for /f "delims=" %%p in ('powershell -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; $d=New-Object System.Windows.Forms.OpenFileDialog; $d.Filter='Executable Files (*.exe)|*.exe'; if($d.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){ Write-Output $d.FileName }"') do set "file=%%p"
+for /f "delims=" %%p in ('powershell -NoProfile -NonInteractive -Command "Add-Type -AssemblyName System.Windows.Forms; $d=New-Object System.Windows.Forms.OpenFileDialog; $d.Filter='Executable Files (*.exe)|*.exe'; if($d.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){ Write-Output $d.FileName }" ^<nul') do set "file=%%p"
 if "%file%"=="" (
     echo No file was selected.
     pause
@@ -12266,7 +12265,7 @@ echo.
 echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
-pause >nul
+call :DexWaitKey
 goto AdvancedMenu
 
 :DirectXOptimization
@@ -12327,7 +12326,7 @@ echo %c%- DirectDraw local memory and AGP enabled ^(64-bit + 32-bit^)%u%
 echo %c%- Fullscreen Optimizations ^(FSO^) disabled for exclusive fullscreen%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto AdvancedMenu
 
 :OBSOptimizer
@@ -12351,7 +12350,7 @@ if not exist "%OBSProfilePath%" (
     echo %c%    Launch OBS at least once to create profiles, then re-run.%u%
     echo.
     echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-    pause >nul
+    call :DexWaitKey
     goto AdvancedMenu
 )
 echo %c%[+] OBS profiles found%u%
@@ -12419,7 +12418,7 @@ echo %c%[1/2] Updating OBS profile settings...%u%
     echo     }
     echo }
 ) > "%TEMP%\obs_dex.ps1"
-powershell -ExecutionPolicy Bypass -File "%TEMP%\obs_dex.ps1" >nul 2>&1
+powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "%TEMP%\obs_dex.ps1" >nul 2>&1 <nul
 del "%TEMP%\obs_Dex.ps1" >nul 2>&1
 echo %c%+ OBS profiles updated%u%
 
@@ -12444,7 +12443,7 @@ echo.
 echo %c%Restart OBS Studio for profile changes to take effect.%u%
 echo.
 echo %c%========================== PRESS ANY KEY TO CONTINUE ==========================%u%
-pause >nul
+call :DexWaitKey
 goto AdvancedMenu
 
 :ProgramDebloat
@@ -12502,7 +12501,7 @@ echo.
 echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
-pause >nul
+call :DexWaitKey
 goto ProgramDebloat
 
 :debloatfirefox
@@ -12550,7 +12549,7 @@ echo.
 echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
-pause >nul
+call :DexWaitKey
 goto ProgramDebloat
 
 :debloatspotify
@@ -12568,7 +12567,7 @@ echo %c%- Spotify startup entry removed from registry%u%
 echo %c%- D3D/Vulkan/EGL renderer files are KEPT - deleting them risks breaking%u%
 echo %c%  the Spotify UI, which is not worth the disk-space saving%u%
 echo.
-for /f "delims=" %%L in ('powershell -NoProfile -Command "(Get-Culture).Name"') do set "DEX_OS_LOCALE=%%L"
+for /f "delims=" %%L in ('powershell -NoProfile -NonInteractive -Command "(Get-Culture).Name" ^<nul') do set "DEX_OS_LOCALE=%%L"
 if /i not "!DEX_OS_LOCALE:~0,2!"=="en" (
     echo %red%[!] Your Windows display language is not English ^(%DEX_OS_LOCALE%^).%u%
     echo %red%    Removing every locale except en-US will leave Spotify's UI in English%u%
@@ -12682,7 +12681,7 @@ echo.
 echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
-pause >nul
+call :DexWaitKey
 goto ProgramDebloat
 
 :debloatsteam
@@ -12714,7 +12713,7 @@ echo.
 echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
-pause >nul
+call :DexWaitKey
 goto ProgramDebloat
 
 :debloatdiscord
@@ -12865,7 +12864,7 @@ echo.
 echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
-pause >nul
+call :DexWaitKey
 goto ProgramDebloat
 
 :InterruptSchedulingLab
@@ -12914,16 +12913,16 @@ echo.                                         %yellow%==========================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %yellow%=======================================================
 echo %c%Reboot to apply the new interrupt routing. Use [2] Revert if a device misbehaves.%u%
-pause >nul
+call :DexWaitKey
 goto InterruptSchedulingLab
 
 :InterruptLabSnapshot
-for /f "delims=" %%T in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd_HHmmss_fff" 2^>nul') do set "DEX_IRQ_TIME=%%T"
+for /f "delims=" %%T in ('powershell -NoProfile -NonInteractive -Command "Get-Date -Format yyyyMMdd_HHmmss_fff" 2^>nul ^<nul') do set "DEX_IRQ_TIME=%%T"
 if not defined DEX_IRQ_TIME set "DEX_IRQ_TIME=%RANDOM%"
 set "DEX_IRQ_SNAPSHOT=%DEX_BACKUPS%\InterruptLab_%DEX_IRQ_TIME%"
 mkdir "%DEX_IRQ_SNAPSHOT%" >nul 2>&1
 set "DEX_IRQ_DEVLIST=%TEMP%\dex_irq_devices.txt"
-powershell -NoProfile -Command "@(Get-CimInstance Win32_USBController,Win32_VideoController,Win32_NetworkAdapter,Win32_IDEController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID -Unique) | Set-Content -Encoding ASCII -LiteralPath '%DEX_IRQ_DEVLIST%'" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "@(Get-CimInstance Win32_USBController,Win32_VideoController,Win32_NetworkAdapter,Win32_IDEController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID -Unique) | Set-Content -Encoding ASCII -LiteralPath '%DEX_IRQ_DEVLIST%'" >nul 2>&1 <nul
 set /a DEX_IRQ_IDX=0
 if exist "%DEX_IRQ_DEVLIST%" for /f "usebackq delims=" %%i in ("%DEX_IRQ_DEVLIST%") do (
     set /a DEX_IRQ_IDX+=1
@@ -12977,7 +12976,7 @@ if "!NumberOfCores!" == "2" (
 )
 if !NumberOfCores! gtr 4 (
 	set "_aff_vc_found="
-	for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+	for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
 		set "_aff_vc_found=1"
 		reg.exe add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "DevicePolicy" /t REG_DWORD /d "3" /f
 		reg.exe delete "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "AssignmentSetOverride" /f
@@ -12987,7 +12986,7 @@ if !NumberOfCores! gtr 4 (
 		reg.exe delete "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "AssignmentSetOverride" /f
 	) > nul 2> nul
 	set "_aff_na_found="
-	for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+	for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
 		set "_aff_na_found=1"
 		reg.exe add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "DevicePolicy" /t REG_DWORD /d "5" /f
 		reg.exe delete "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "AssignmentSetOverride" /f
@@ -13003,7 +13002,7 @@ exit /b 0
 :ApplyHyperThreadingAffinity
 if !NumberOfLogicalProcessors! gtr !NumberOfCores! (
 set "_ht_usb_found="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_USBController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_USBController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
 	set "_ht_usb_found=1"
 	reg.exe add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "DevicePolicy" /t REG_DWORD /d "4" /f
 	reg.exe add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "AssignmentSetOverride" /t REG_BINARY /d "C0" /f
@@ -13013,7 +13012,7 @@ if not defined _ht_usb_found for /f %%i in ('wmic path Win32_USBController get P
 	reg.exe add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "AssignmentSetOverride" /t REG_BINARY /d "C0" /f
 	) > nul 2> nul
 set "_ht_vc_found="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
 	set "_ht_vc_found=1"
 	reg.exe add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "DevicePolicy" /t REG_DWORD /d "3" /f
 	reg.exe delete "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "AssignmentSetOverride" /f
@@ -13023,7 +13022,7 @@ if not defined _ht_vc_found for /f %%i in ('wmic path Win32_VideoController get 
 	reg.exe delete "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "AssignmentSetOverride" /f
 	) > nul 2> nul
 set "_ht_na_found="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
 	set "_ht_na_found=1"
 	reg.exe add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "DevicePolicy" /t REG_DWORD /d "4" /f
 	reg.exe add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "AssignmentSetOverride" /t REG_BINARY /d "30" /f
@@ -13038,7 +13037,7 @@ exit /b 0
 :ApplyMSIMode
 cls
 set "_msi_usb_found="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_USBController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_USBController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
 	set "_msi_usb_found=1"
 	reg.exe add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties" /v "MSISupported" /t REG_DWORD /d "1" /f
 	reg.exe delete "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "DevicePriority" /f
@@ -13049,7 +13048,7 @@ if not defined _msi_usb_found for /f %%i in ('wmic path Win32_USBController get 
 ) > nul 2> nul
 
 set "_msi_vc_found="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
 	set "_msi_vc_found=1"
 	reg.exe add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties" /v "MSISupported" /t REG_DWORD /d "1" /f
 	reg.exe delete "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "DevicePriority" /f
@@ -13060,7 +13059,7 @@ if not defined _msi_vc_found for /f %%i in ('wmic path Win32_VideoController get
 ) > nul 2> nul
 
 set "_msi_na_found="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_NetworkAdapter -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
 	set "_msi_na_found=1"
 	reg.exe add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties" /v "MSISupported" /t REG_DWORD /d "1" /f
 	reg.exe delete "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "DevicePriority" /f
@@ -13071,7 +13070,7 @@ if not defined _msi_na_found for /f %%i in ('wmic path Win32_NetworkAdapter get 
 ) > nul 2> nul
 
 set "_msi_ide_found="
-for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_IDEController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul') do (
+for /f "delims=" %%i in ('powershell -NoProfile -NonInteractive -Command "Get-CimInstance -ClassName Win32_IDEController -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -like 'PCI\VEN_*' } | Select-Object -ExpandProperty PNPDeviceID" 2^>nul ^<nul') do (
 	set "_msi_ide_found=1"
 	reg.exe add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties" /v "MSISupported" /t REG_DWORD /d "1" /f
 	reg.exe delete "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "DevicePriority" /f
@@ -13086,7 +13085,7 @@ rem chcp and the "exit /b" that follow and kept scanning into :ScheduledTasks
 rem looking for the missing ")". The VMware branch was dead code as well: the
 rem last reg.exe add overwrote DevicePriority with REG_DWORD 2 either way, and
 rem %VMWare% expanded at parse time (always empty inside the block).
-for /f %%i in ('powershell -NoProfile -Command "(Get-CimInstance Win32_NetworkAdapter -ErrorAction SilentlyContinue).PNPDeviceID" 2^>nul') do (
+for /f %%i in ('powershell -NoProfile -NonInteractive -Command "(Get-CimInstance Win32_NetworkAdapter -ErrorAction SilentlyContinue).PNPDeviceID" 2^>nul ^<nul') do (
     set "str=%%i"
     if "!str:PCI\VEN_=!" neq "!str!" (
         reg.exe add "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties" /v "MSISupported" /t REG_DWORD /d "1" /f
@@ -13190,7 +13189,7 @@ echo.
 echo.                                         %yellow%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %yellow%=======================================================
-pause >nul
+call :DexWaitKey
 goto :GameBoosters
 
 :Boosters
@@ -13238,7 +13237,7 @@ echo %c%Running this again on the same game will UNDO the tweaks.%u%
 echo.
 echo.
 echo Please select the game executable ^(file^) for applying performance tweaks:
-for /f "delims=" %%p in ('powershell -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; $d=New-Object System.Windows.Forms.OpenFileDialog; $d.Filter='Executable Files (*.exe)|*.exe'; if($d.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){ Write-Output $d.FileName }"') do set "file=%%p"
+for /f "delims=" %%p in ('powershell -NoProfile -NonInteractive -Command "Add-Type -AssemblyName System.Windows.Forms; $d=New-Object System.Windows.Forms.OpenFileDialog; $d.Filter='Executable Files (*.exe)|*.exe'; if($d.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){ Write-Output $d.FileName }" ^<nul') do set "file=%%p"
 if "%file%"=="" (
     echo No file was selected.
     pause
@@ -13264,7 +13263,7 @@ echo.
 echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
-pause >nul
+call :DexWaitKey
 goto Boosters
 
 :Valorant
@@ -13283,7 +13282,7 @@ echo %c%- Auto-update and ping telemetry disabled%u%
 echo.
 echo.
 for %%i in (valorant valorant-win64-shipping vgtray vgc) do (
-    PowerShell -NoProfile -Command "Set-ProcessMitigation -Name %%i.exe -Enable CFG"
+    PowerShell -NoProfile -NonInteractive -Command "Set-ProcessMitigation -Name %%i.exe -Enable CFG" <nul
 )
 
 reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT" /v "Version" /t REG_SZ /d "1.0" /f
@@ -13310,7 +13309,7 @@ reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT-Shipping" /v 
 reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT-Shipping" /v "DSCP Value" /t REG_SZ /d "46" /f
 reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\VALORANT-Shipping" /v "Throttle Rate" /t REG_SZ /d "-1" /f
 
-powershell -NoProfile -Command "Get-Process RiotClientServices -ErrorAction SilentlyContinue | ForEach-Object { $_.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::High }" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-Process RiotClientServices -ErrorAction SilentlyContinue | ForEach-Object { $_.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::High }" >nul 2>&1 <nul
 
 reg.exe add "HKCU\Software\Riot Games\Riot Client" /v "autoUpdateOnLaunch" /t REG_DWORD /d 0 /f
 reg.exe add "HKCU\Software\Riot Games\Riot Client" /v "pingUrl" /t REG_SZ /d "" /f
@@ -13319,7 +13318,7 @@ echo.
 echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
-pause >nul
+call :DexWaitKey
 goto Boosters
 
 :Fortnite
@@ -13370,7 +13369,7 @@ echo.
 echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
-pause >nul
+call :DexWaitKey
 goto Boosters
 
 :CS2
@@ -13389,7 +13388,7 @@ echo %c%- Pagefile optimized for system RAM%u%
 echo %c%- Steam overlay, auto-update and cache cleared%u%
 echo.
 echo.
-powershell -NoProfile -Command "Get-Process cs2 -ErrorAction SilentlyContinue | ForEach-Object { $_.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::High }" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-Process cs2 -ErrorAction SilentlyContinue | ForEach-Object { $_.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::High }" >nul 2>&1 <nul
 
 reg add "HKCU\Control Panel\Mouse" /v "MouseSensitivity" /t REG_SZ /d "10" /f >nul 2>&1
 reg add "HKCU\Control Panel\Mouse" /v "MouseSpeed" /t REG_SZ /d "0" /f >nul 2>&1
@@ -13400,8 +13399,8 @@ reg add "HKCU\System\GameConfigStore" /v "GameDVR_FSEBehaviorMode" /t REG_DWORD 
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v "MaxConnectionsPerServer" /t REG_DWORD /d 16 /f >nul 2>&1
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v "MaxConnectionsPer1_0Server" /t REG_DWORD /d 16 /f >nul 2>&1
 
-for /f %%r in ('powershell -NoProfile -Command "[math]::Round((Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum/1MB)"') do set "TotalRAMMB=%%r"
-powershell -NoProfile -Command "$ram=[math]::Round((Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum/1MB); $pf=[math]::Min([math]::Max($ram*2,4096),32768); $cs=Get-CimInstance Win32_ComputerSystem; Set-CimInstance -InputObject $cs -Property @{AutomaticManagedPagefile=$false}; $existing=Get-CimInstance Win32_PageFileSetting; if($existing){Set-CimInstance -InputObject $existing -Property @{InitialSize=$pf;MaximumSize=$pf}}else{New-CimInstance -ClassName Win32_PageFileSetting -Property @{Name='C:\pagefile.sys';InitialSize=$pf;MaximumSize=$pf}}" >nul 2>&1
+for /f %%r in ('powershell -NoProfile -NonInteractive -Command "[math]::Round((Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum/1MB)" ^<nul') do set "TotalRAMMB=%%r"
+powershell -NoProfile -NonInteractive -Command "$ram=[math]::Round((Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum/1MB); $pf=[math]::Min([math]::Max($ram*2,4096),32768); $cs=Get-CimInstance Win32_ComputerSystem; Set-CimInstance -InputObject $cs -Property @{AutomaticManagedPagefile=$false}; $existing=Get-CimInstance Win32_PageFileSetting; if($existing){Set-CimInstance -InputObject $existing -Property @{InitialSize=$pf;MaximumSize=$pf}}else{New-CimInstance -ClassName Win32_PageFileSetting -Property @{Name='C:\pagefile.sys';InitialSize=$pf;MaximumSize=$pf}}" >nul 2>&1 <nul
 
 reg add "HKCU\System\GameConfigStore" /v "GameBarEnabled" /t REG_DWORD /d 0 /f >nul 2>&1
 taskkill /f /im "steam.exe" >nul 2>&1
@@ -13418,7 +13417,7 @@ echo.
 echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
-pause >nul
+call :DexWaitKey
 goto Boosters
 
 :Warzone
@@ -13445,13 +13444,13 @@ reg add "HKCU\System\GameConfigStore" /v "GameDVR_FSEBehavior" /t REG_DWORD /d 2
 reg add "HKCU\System\GameConfigStore" /v "GameDVR_FSEBehaviorMode" /t REG_DWORD /d 2 /f >nul 2>&1
 reg add "HKCU\Control Panel\Mouse" /v "MouseSensitivity" /t REG_SZ /d "10" /f >nul 2>&1
 reg add "HKCU\Control Panel\Mouse" /v "MouseSpeed" /t REG_SZ /d "0" /f >nul 2>&1
-powershell -NoProfile -Command "$ram=[math]::Round((Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum/1MB); $pf=[math]::Min([math]::Max($ram*2,4096),32768); $cs=Get-CimInstance Win32_ComputerSystem; Set-CimInstance -InputObject $cs -Property @{AutomaticManagedPagefile=$false}; $existing=Get-CimInstance Win32_PageFileSetting; if($existing){Set-CimInstance -InputObject $existing -Property @{InitialSize=$pf;MaximumSize=$pf}}else{New-CimInstance -ClassName Win32_PageFileSetting -Property @{Name='C:\pagefile.sys';InitialSize=$pf;MaximumSize=$pf}}" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "$ram=[math]::Round((Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum/1MB); $pf=[math]::Min([math]::Max($ram*2,4096),32768); $cs=Get-CimInstance Win32_ComputerSystem; Set-CimInstance -InputObject $cs -Property @{AutomaticManagedPagefile=$false}; $existing=Get-CimInstance Win32_PageFileSetting; if($existing){Set-CimInstance -InputObject $existing -Property @{InitialSize=$pf;MaximumSize=$pf}}else{New-CimInstance -ClassName Win32_PageFileSetting -Property @{Name='C:\pagefile.sys';InitialSize=$pf;MaximumSize=$pf}}" >nul 2>&1 <nul
 cls
 echo.
 echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
-pause >nul
+call :DexWaitKey
 goto Boosters
 
 :Minecraft
@@ -13559,7 +13558,7 @@ echo.
 echo.                                         %c%=======================================================
 echo.                                           %c%  Operation Completed, Press any key to continue%u%
 echo.                                         %c%=======================================================%u%
-pause >nul
+call :DexWaitKey
 goto Boosters
 
 :Toolbox
@@ -14062,7 +14061,7 @@ call :DexSleep 3
 exit /b
 
 :ValidateManagedSnapshotPath
-powershell -NoProfile -Command "try{$base=[IO.Path]::GetFullPath($env:DEX_BACKUPS).TrimEnd('\')+'\';$candidate=[IO.Path]::GetFullPath($env:DEX_RESTORE_PATH).TrimEnd('\')+'\';$leaf=Split-Path $candidate.TrimEnd('\') -Leaf;if($candidate.StartsWith($base,[StringComparison]::OrdinalIgnoreCase)-and$leaf -match '^Managed_[0-9A-Za-z_-]+$'){exit 0}else{exit 1}}catch{exit 1}" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "try{$base=[IO.Path]::GetFullPath($env:DEX_BACKUPS).TrimEnd('\')+'\';$candidate=[IO.Path]::GetFullPath($env:DEX_RESTORE_PATH).TrimEnd('\')+'\';$leaf=Split-Path $candidate.TrimEnd('\') -Leaf;if($candidate.StartsWith($base,[StringComparison]::OrdinalIgnoreCase)-and$leaf -match '^Managed_[0-9A-Za-z_-]+$'){exit 0}else{exit 1}}catch{exit 1}" >nul 2>&1 <nul
 exit /b %errorlevel%
 
 :Install
@@ -14130,7 +14129,7 @@ echo.
 set /p "searchTerm=%c%Enter software name to search (or Enter to go back) >%u% "
 if "!searchTerm!"=="" goto START
 set "DEX_VALIDATE_TEXT=!searchTerm!"
-powershell -NoProfile -Command "if($env:DEX_VALIDATE_TEXT -match '^[0-9A-Za-z ._+-]{1,80}$'){exit 0}else{exit 1}" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "if($env:DEX_VALIDATE_TEXT -match '^[0-9A-Za-z ._+-]{1,80}$'){exit 0}else{exit 1}" >nul 2>&1 <nul
 if errorlevel 1 (
     echo %red%Invalid search. Use up to 80 letters, numbers, spaces, dots, underscores, pluses or hyphens.%u%
     pause
@@ -14145,7 +14144,7 @@ echo.
 
 set /p "installPkg=%c%Enter exact package name to install (or Enter to return) >%u% "
 if "!installPkg!"=="" goto START
-powershell -NoProfile -Command "if($env:installPkg -match '^[0-9A-Za-z][0-9A-Za-z._+-]{0,79}$'){exit 0}else{exit 1}" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "if($env:installPkg -match '^[0-9A-Za-z][0-9A-Za-z._+-]{0,79}$'){exit 0}else{exit 1}" >nul 2>&1 <nul
 if errorlevel 1 (
     echo %red%Invalid package name. Use only letters, numbers, dot, underscore, plus, or hyphen.%u%
     pause
@@ -14225,14 +14224,14 @@ echo.
 echo %c%Installed Chocolatey packages:%u%
 echo %red%Do NOT uninstall any Chocolatey core services.%u%
 echo.
-powershell -Command "Get-ChildItem 'C:\ProgramData\chocolatey\lib' | Select-Object Name | Format-Table -HideTableHeaders"
+powershell -NoProfile -NonInteractive -Command "Get-ChildItem 'C:\ProgramData\chocolatey\lib' | Select-Object Name | Format-Table -HideTableHeaders" <nul
 echo.
 set /p "uninstallPackage=%c%Enter package name to uninstall (or Enter to go back) >%u% "
 if "!uninstallPackage!"=="" (
     endlocal
     goto START
 )
-powershell -NoProfile -Command "if($env:uninstallPackage -match '^[0-9A-Za-z][0-9A-Za-z._+-]{0,79}$'){exit 0}else{exit 1}" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "if($env:uninstallPackage -match '^[0-9A-Za-z][0-9A-Za-z._+-]{0,79}$'){exit 0}else{exit 1}" >nul 2>&1 <nul
 if errorlevel 1 (
     echo %red%Invalid package name. Use only letters, numbers, dot, underscore, plus, or hyphen.%u%
     pause
@@ -14271,9 +14270,9 @@ goto START
 @echo off
 setlocal
 set "DEX_SELF_FILE=%~f0"
-powershell -NoProfile -Command "$lines=[IO.File]::ReadAllLines($env:DEX_SELF_FILE,[Text.UTF8Encoding]::new($false));$labels=@{};$dup=@();for($i=0;$i-lt$lines.Count;$i++){if($lines[$i]-match '^:(?!:)\s*([A-Za-z0-9_.-]+)'){$n=$matches[1].ToLower();if($labels.ContainsKey($n)){$dup+=$n}else{$labels[$n]=$i+1}}};$skipFrom=-1;$skipTo=-1;for($i=0;$i-lt$lines.Count;$i++){if($lines[$i]-match '^:DexSelfTestEntry\s*$'){$skipFrom=$i}elseif($skipFrom-ge 0-and$skipTo-lt 0-and$lines[$i]-match '^:'){$skipTo=$i}};$missing=@();for($i=0;$i-lt$lines.Count;$i++){if($skipFrom-ge 0-and$i-ge$skipFrom-and($skipTo-lt 0-or$i-lt$skipTo)){continue};if($lines[$i]-match '^\s*(rem\s|::)'){continue};foreach($m in [regex]::Matches($lines[$i],'(?i)\bgoto\s+:?([A-Za-z0-9_.-]+)')){$n=$m.Groups[1].Value.ToLower();if($n-ne'eof'-and-not$labels.ContainsKey($n)){$missing+=('goto '+$n)}};foreach($m in [regex]::Matches($lines[$i],'(?i)\bcall\s+:([A-Za-z0-9_.-]+)')){$n=$m.Groups[1].Value.ToLower();if($n-ne'eof'-and-not$labels.ContainsKey($n)){$missing+=('call '+$n)}}};$required=@('menu','dashboardcenter','profilescenter','changecenter','backupmanager','healthcenter','benchmarkcenter','globalsearch','historycenter','restartcenter','destruct','dexchoice','dexsleep','dexpreflight');$missingRequired=@($required|Where-Object{-not$labels.ContainsKey($_)});$nonAscii=@($lines|Where-Object{$_-match '[^\x00-\x7F]'});$lf=[regex]::Matches([IO.File]::ReadAllText($env:DEX_SELF_FILE),'(?<!\r)\n').Count;$cp=@($lines|Where-Object{$_-match '^\s*chcp\s'});Write-Host ('Dex Tweaks self-test: {0} lines, {1} labels, {2} chcp calls' -f $lines.Count,$labels.Count,$cp.Count);if($dup.Count){Write-Host ('Duplicate labels: '+(($dup|Sort-Object -Unique)-join', '))};if($missing.Count){Write-Host ('Missing goto/call targets: '+(($missing|Sort-Object -Unique)-join', '))};if($missingRequired.Count){Write-Host ('Missing required modules: '+($missingRequired-join', '))};if($nonAscii.Count){Write-Host ('Non-ASCII lines (batch parsing must stay code-page independent): '+$nonAscii.Count)};if($lf){Write-Host ('Lines with LF-only endings (batch files must be CRLF): '+$lf)};if($cp.Count-gt 3){Write-Host ('Too many code page switches: '+$cp.Count)};if($dup.Count-or$missing.Count-or$missingRequired.Count-or$nonAscii.Count-or$lf-or($cp.Count-gt 3)){exit 1}else{Write-Host 'PASS: navigation, required modules, ASCII source and code page usage are valid.';exit 0}"
+powershell -NoProfile -NonInteractive -Command "$lines=[IO.File]::ReadAllLines($env:DEX_SELF_FILE,[Text.UTF8Encoding]::new($false));$labels=@{};$dup=@();for($i=0;$i-lt$lines.Count;$i++){if($lines[$i]-match '^:(?!:)\s*([A-Za-z0-9_.-]+)'){$n=$matches[1].ToLower();if($labels.ContainsKey($n)){$dup+=$n}else{$labels[$n]=$i+1}}};$skipFrom=-1;$skipTo=-1;for($i=0;$i-lt$lines.Count;$i++){if($lines[$i]-match '^:DexSelfTestEntry\s*$'){$skipFrom=$i}elseif($skipFrom-ge 0-and$skipTo-lt 0-and$lines[$i]-match '^:'){$skipTo=$i}};$missing=@();for($i=0;$i-lt$lines.Count;$i++){if($skipFrom-ge 0-and$i-ge$skipFrom-and($skipTo-lt 0-or$i-lt$skipTo)){continue};if($lines[$i]-match '^\s*(rem\s|::)'){continue};foreach($m in [regex]::Matches($lines[$i],'(?i)\bgoto\s+:?([A-Za-z0-9_.-]+)')){$n=$m.Groups[1].Value.ToLower();if($n-ne'eof'-and-not$labels.ContainsKey($n)){$missing+=('goto '+$n)}};foreach($m in [regex]::Matches($lines[$i],'(?i)\bcall\s+:([A-Za-z0-9_.-]+)')){$n=$m.Groups[1].Value.ToLower();if($n-ne'eof'-and-not$labels.ContainsKey($n)){$missing+=('call '+$n)}}};$required=@('menu','dashboardcenter','profilescenter','changecenter','backupmanager','healthcenter','benchmarkcenter','globalsearch','historycenter','restartcenter','destruct','dexchoice','dexsleep','dexpreflight');$missingRequired=@($required|Where-Object{-not$labels.ContainsKey($_)});$nonAscii=@($lines|Where-Object{$_-match '[^\x00-\x7F]'});$lf=[regex]::Matches([IO.File]::ReadAllText($env:DEX_SELF_FILE),'(?<!\r)\n').Count;$cp=@($lines|Where-Object{$_-match '^\s*chcp\s'});Write-Host ('Dex Tweaks self-test: {0} lines, {1} labels, {2} chcp calls' -f $lines.Count,$labels.Count,$cp.Count);if($dup.Count){Write-Host ('Duplicate labels: '+(($dup|Sort-Object -Unique)-join', '))};if($missing.Count){Write-Host ('Missing goto/call targets: '+(($missing|Sort-Object -Unique)-join', '))};if($missingRequired.Count){Write-Host ('Missing required modules: '+($missingRequired-join', '))};if($nonAscii.Count){Write-Host ('Non-ASCII lines (batch parsing must stay code-page independent): '+$nonAscii.Count)};if($lf){Write-Host ('Lines with LF-only endings (batch files must be CRLF): '+$lf)};if($cp.Count-gt 3){Write-Host ('Too many code page switches: '+$cp.Count)};if($dup.Count-or$missing.Count-or$missingRequired.Count-or$nonAscii.Count-or$lf-or($cp.Count-gt 3)){exit 1}else{Write-Host 'PASS: navigation, required modules, ASCII source and code page usage are valid.';exit 0}" <nul
 set "DEX_SELF_RC=%errorlevel%"
-if "%DEX_SELF_RC%"=="0" powershell -NoProfile -Command "$lines=[IO.File]::ReadAllLines($env:DEX_SELF_FILE,[Text.UTF8Encoding]::new($false));$active=@($lines|Where-Object{$_ -notmatch '^\s*(?:rem\b|::)' -and $_ -notmatch '\$patterns=@'});$pct=[char]37;$unsafeInput=$pct+'(?:userInput|preset|M|input|choice|TR_OPT|TR_CUSTOM|NvChoice|svc_mode|IA_MODE|G(?:1|2|3|4|5|6|7|8|9|10|11)|bl_choice|sc_choice|ENC_PICK|QUAL_PICK|mainChoice|p1Choice|p2Choice|p3Choice|p4Choice|confirm|searchTerm|installPkg|confirmInstall|uninstallPackage|confirmUninstall|hyperv_choice|restart_choice|featureChoice|defenderConfirm)(?::[^'+$pct+']+)?'+$pct;$patterns=@('\biex\s*\(','DownloadString\s*\(','\bbcdedit\b.*(?:nointegritychecks|disableelamdrivers|nx\s+AlwaysOff)','\b(?:del|rd|rmdir|move|ren|takeown)\b.*(?:\\System32\\|\\WindowsApps\\|\\DriverStore\\)','rmdir\s+/s\s+/q\s+.*\\FortniteGame.*$',$unsafeInput);$bad=@();for($i=0;$i-lt$active.Count;$i++){foreach($p in $patterns){if($active[$i]-match $p){$bad+=$active[$i];break}}};if($bad.Count){Write-Host 'Blocked safety patterns found:'; $bad|Select-Object -Unique|ForEach-Object{Write-Host ('  '+$_)};exit 1};Write-Host 'PASS: interactive input and destructive-command safety guards are valid.';exit 0"
+if "%DEX_SELF_RC%"=="0" powershell -NoProfile -NonInteractive -Command "$lines=[IO.File]::ReadAllLines($env:DEX_SELF_FILE,[Text.UTF8Encoding]::new($false));$active=@($lines|Where-Object{$_ -notmatch '^\s*(?:rem\b|::)' -and $_ -notmatch '\$patterns=@'});$pct=[char]37;$unsafeInput=$pct+'(?:userInput|preset|M|input|choice|TR_OPT|TR_CUSTOM|NvChoice|svc_mode|IA_MODE|G(?:1|2|3|4|5|6|7|8|9|10|11)|bl_choice|sc_choice|ENC_PICK|QUAL_PICK|mainChoice|p1Choice|p2Choice|p3Choice|p4Choice|confirm|searchTerm|installPkg|confirmInstall|uninstallPackage|confirmUninstall|hyperv_choice|restart_choice|featureChoice|defenderConfirm)(?::[^'+$pct+']+)?'+$pct;$patterns=@('\biex\s*\(','DownloadString\s*\(','\bbcdedit\b.*(?:nointegritychecks|disableelamdrivers|nx\s+AlwaysOff)','\b(?:del|rd|rmdir|move|ren|takeown)\b.*(?:\\System32\\|\\WindowsApps\\|\\DriverStore\\)','rmdir\s+/s\s+/q\s+.*\\FortniteGame.*$',$unsafeInput);$bad=@();for($i=0;$i-lt$active.Count;$i++){foreach($p in $patterns){if($active[$i]-match $p){$bad+=$active[$i];break}}};if($bad.Count){Write-Host 'Blocked safety patterns found:'; $bad|Select-Object -Unique|ForEach-Object{Write-Host ('  '+$_)};exit 1};Write-Host 'PASS: interactive input and destructive-command safety guards are valid.';exit 0" <nul
 if errorlevel 1 set "DEX_SELF_RC=1"
 endlocal & exit /b %DEX_SELF_RC%
 
@@ -14368,7 +14367,7 @@ set "DEX_REPORTS=%DEX_ROOT%\Reports"
 set "DEX_STATE_DIR=%DEX_ROOT%\State"
 for %%D in ("%DEX_ROOT%" "%DEX_LOG_DIR%" "%DEX_BACKUPS%" "%DEX_REPORTS%" "%DEX_STATE_DIR%") do if not exist "%%~D" mkdir "%%~D" >nul 2>&1
 if not defined DEX_TEST_ROOT icacls "%DEX_ROOT%" /inheritance:r /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" >nul 2>&1
-for /f "delims=" %%T in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd_HHmmss_fff" 2^>nul') do set "DEX_SESSION=%%T"
+for /f "delims=" %%T in ('powershell -NoProfile -NonInteractive -Command "Get-Date -Format yyyyMMdd_HHmmss_fff" 2^>nul ^<nul') do set "DEX_SESSION=%%T"
 if not defined DEX_SESSION set "DEX_SESSION=%RANDOM%_%RANDOM%"
 set "DEX_LOG=%DEX_LOG_DIR%\Session_%DEX_SESSION%.log"
 set "DEX_QUEUE=%DEX_STATE_DIR%\pending.queue"
@@ -14380,7 +14379,7 @@ set "DEX_BASELINE=%DEX_REPORTS%\benchmark_baseline.txt"
 set "DEX_AFTER=%DEX_REPORTS%\benchmark_after.txt"
 set "DEX_CATALOG=%DEX_STATE_DIR%\search_catalog.txt"
 set "DEX_DESKTOP=%USERPROFILE%\Desktop"
-for /f "delims=" %%D in ('powershell -NoProfile -Command "[Environment]::GetFolderPath('Desktop')" 2^>nul') do if not "%%D"=="" set "DEX_DESKTOP=%%D"
+for /f "delims=" %%D in ('powershell -NoProfile -NonInteractive -Command "[Environment]::GetFolderPath('Desktop')" 2^>nul ^<nul') do if not "%%D"=="" set "DEX_DESKTOP=%%D"
 set "DEX_LAST_PROFILE=Not applied"
 if exist "%DEX_PROFILE_FILE%" set /p DEX_LAST_PROFILE=<"%DEX_PROFILE_FILE%"
 > "%DEX_LOG%" echo Dex Tweaks - Session %DEX_SESSION%
@@ -14416,7 +14415,7 @@ if not defined DEX_TEST_BUILD (
     rem Registry was unavailable for build and/or product type: fall back to
     rem CIM/PowerShell, still guarded against the UTF-8 console code page.
     if "!_OS_BUILD!"=="0" (
-        for /f "tokens=1,2 delims=|" %%b in ('powershell -NoProfile -Command "$o=Get-CimInstance -ClassName Win32_OperatingSystem -ErrorAction SilentlyContinue; $v=@($o.BuildNumber,$o.ProductType) | ForEach-Object{if($_){$_}else{'NA'}}; $v -join '|'" 2^>nul') do (
+        for /f "tokens=1,2 delims=|" %%b in ('powershell -NoProfile -NonInteractive -Command "$o=Get-CimInstance -ClassName Win32_OperatingSystem -ErrorAction SilentlyContinue; $v=@($o.BuildNumber,$o.ProductType) | ForEach-Object{if($_){$_}else{'NA'}}; $v -join '|'" 2^>nul ^<nul') do (
             set "_OS_BUILD=%%b"
             set "_OS_PRODUCTTYPE_NUM=%%c"
         )
@@ -14487,6 +14486,39 @@ if not errorlevel 1 exit /b
 set /a _DEX_PING=%~1+1 >nul 2>&1
 if not defined _DEX_PING set "_DEX_PING=2"
 ping -n %_DEX_PING% -w 1000 127.0.0.1 >nul 2>&1
+exit /b
+
+:DexWaitKey
+rem ---------------------------------------------------------------------------
+rem Final "press any key" wait for result screens. Keys pressed while an action
+rem was running (Enter to "unstick" a step, for example) stay in the console
+rem input buffer and would satisfy PAUSE at once, so the result screen flashed
+rem past. The buffer is flushed first. STDIN must NOT be redirected here:
+rem FlushInputBuffer works on the real console input handle.
+rem ---------------------------------------------------------------------------
+powershell -NoProfile -NonInteractive -Command "$Host.UI.RawUI.FlushInputBuffer()" >nul 2>&1
+pause >nul
+exit /b
+
+:DexCleanmgrProfile
+rem ---------------------------------------------------------------------------
+rem Selects the Disk Cleanup categories used by "cleanmgr /sagerun:N" by writing
+rem StateFlagsNNNN under VolumeCaches, replacing the interactive /sageset dialog
+rem and the /verylowdisk result box that used to stop the script mid-action.
+rem   %~1 = profile number N (0-9999)
+rem   %~2 = 1 to include "D3D Shader Cache"; anything else keeps it
+rem Every category gets 2 (selected) or 0 (not selected), so choices left by an
+rem earlier /sageset run cannot re-enable an excluded category. Always kept,
+rem matching what the cleanup screens promise: the Downloads folder, File
+rem History versions, crash dumps and setup/upgrade/reset logs.
+rem ---------------------------------------------------------------------------
+set "DEX_CM_FLAG=000%~1"
+set "DEX_CM_FLAG=StateFlags%DEX_CM_FLAG:~-4%"
+set "DEX_CM_SKIP=DownloadsFolder;User file versions;System error memory dump files;System error minidump files;Setup Log Files;Windows Upgrade Log Files;Windows Reset Log Files"
+if not "%~2"=="1" set "DEX_CM_SKIP=%DEX_CM_SKIP%;D3D Shader Cache"
+powershell -NoProfile -NonInteractive -Command "$skip=$env:DEX_CM_SKIP -split ';'; Get-ChildItem -LiteralPath 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches' -ErrorAction SilentlyContinue | ForEach-Object { $v=2; if ($skip -contains $_.PSChildName) { $v=0 }; Set-ItemProperty -LiteralPath $_.PSPath -Name $env:DEX_CM_FLAG -Value $v -Type DWord -Force -ErrorAction SilentlyContinue }" >nul 2>&1 <nul
+set "DEX_CM_FLAG="
+set "DEX_CM_SKIP="
 exit /b
 
 :DexChoice
@@ -14621,7 +14653,7 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
-powershell -NoProfile -ExecutionPolicy Bypass -Command "try { Checkpoint-Computer -Description 'DexTweaks_Expert_%DEX_SESSION%' -RestorePointType MODIFY_SETTINGS -ErrorAction Stop; exit 0 } catch { exit 1 }" >nul 2>&1
+powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "try { Checkpoint-Computer -Description 'DexTweaks_Expert_%DEX_SESSION%' -RestorePointType MODIFY_SETTINGS -ErrorAction Stop; exit 0 } catch { exit 1 }" >nul 2>&1 <nul
 if errorlevel 1 (
     call :LogEvent "WARN" "Expert action Restore Point could not be created"
 ) else (
@@ -14641,7 +14673,7 @@ set "DEX_DEFENDER=Unknown"
 set "DEX_POWER=Unknown"
 set "DEX_NETWORK=Offline"
 set "DEX_BACKUP_COUNT=0"
-for /f "tokens=1-4 delims=|" %%a in ('powershell -NoProfile -Command "$d='Unknown';try{$s=Get-MpComputerStatus -ErrorAction Stop;if($s.AntivirusEnabled -and $s.RealTimeProtectionEnabled){$d='Protected'}elseif($s.AntivirusEnabled){$d='Limited'}else{$d='Disabled'}}catch{$d='Unavailable'};$p='Unknown';try{$x=powercfg /getactivescheme;if($x -match '\(([^\)]+)\)'){$p=$matches[1]}else{$p='Active scheme'}}catch{};$n='Offline';try{if(Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object Status -eq 'Up'){$n='Online'}}catch{};$b=0;try{$b=@(Get-ChildItem -LiteralPath '%DEX_BACKUPS%' -Directory -ErrorAction SilentlyContinue).Count}catch{};if(-not $d){$d='Unknown'};if(-not $p){$p='Unknown'};if(-not $n){$n='Offline'};if($null -eq $b){$b=0};($d,$p,$n,$b) -join '|'" 2^>nul') do (
+for /f "tokens=1-4 delims=|" %%a in ('powershell -NoProfile -NonInteractive -Command "$d='Unknown';try{$s=Get-MpComputerStatus -ErrorAction Stop;if($s.AntivirusEnabled -and $s.RealTimeProtectionEnabled){$d='Protected'}elseif($s.AntivirusEnabled){$d='Limited'}else{$d='Disabled'}}catch{$d='Unavailable'};$p='Unknown';try{$x=powercfg /getactivescheme;if($x -match '\(([^\)]+)\)'){$p=$matches[1]}else{$p='Active scheme'}}catch{};$n='Offline';try{if(Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object Status -eq 'Up'){$n='Online'}}catch{};$b=0;try{$b=@(Get-ChildItem -LiteralPath '%DEX_BACKUPS%' -Directory -ErrorAction SilentlyContinue).Count}catch{};if(-not $d){$d='Unknown'};if(-not $p){$p='Unknown'};if(-not $n){$n='Offline'};if($null -eq $b){$b=0};($d,$p,$n,$b) -join '|'" 2^>nul ^<nul') do (
     set "DEX_DEFENDER=%%a"
     set "DEX_POWER=%%b"
     set "DEX_NETWORK=%%c"
@@ -14873,11 +14905,11 @@ goto ProfilesCenter
 
 :RunCompatibilityPreflight
 set "DEX_DEVICE_TYPE=Desktop"
-for /f "delims=" %%D in ('powershell -NoProfile -Command "if(Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue){'Laptop'}else{'Desktop'}" 2^>nul') do set "DEX_DEVICE_TYPE=%%D"
+for /f "delims=" %%D in ('powershell -NoProfile -NonInteractive -Command "if(Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue){'Laptop'}else{'Desktop'}" 2^>nul ^<nul') do set "DEX_DEVICE_TYPE=%%D"
 set "DEX_EDITION=Unknown edition"
-for /f "delims=" %%E in ('powershell -NoProfile -Command "try {(Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).Caption} catch {'Unknown edition'}" 2^>nul') do set "DEX_EDITION=%%E"
+for /f "delims=" %%E in ('powershell -NoProfile -NonInteractive -Command "try {(Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).Caption} catch {'Unknown edition'}" 2^>nul ^<nul') do set "DEX_EDITION=%%E"
 set "DEX_FREE_GB=Unknown"
-for /f "delims=" %%F in ('powershell -NoProfile -Command "[math]::Round((Get-PSDrive $env:SystemDrive.Substring(0,1)).Free/1GB,1)" 2^>nul') do set "DEX_FREE_GB=%%F GB"
+for /f "delims=" %%F in ('powershell -NoProfile -NonInteractive -Command "[math]::Round((Get-PSDrive $env:SystemDrive.Substring(0,1)).Free/1GB,1)" 2^>nul ^<nul') do set "DEX_FREE_GB=%%F GB"
 set "DEX_QUEUE_COUNT=0"
 for /f %%N in ('find /v /c "" ^< "%DEX_QUEUE%"') do set /a DEX_QUEUE_COUNT=%%N-1
 set "DEX_QUEUE_INCOMPATIBLE=0"
@@ -14992,7 +15024,7 @@ if errorlevel 1 (
     exit /b
 )
 if /I "%DEX_CHANGE%"=="DEFENDER_ON" (
-    powershell -NoProfile -Command "try { Set-MpPreference -DisableRealtimeMonitoring $false -DisableBehaviorMonitoring $false -DisableBlockAtFirstSeen $false -DisableIOAVProtection $false -DisableScriptScanning $false -MAPSReporting Advanced -ErrorAction Stop; Remove-MpPreference -ExclusionPath 'C:\Windows\Temp','C:\Windows\Prefetch','C:\Windows\SoftwareDistribution','%TEMP%' -ErrorAction SilentlyContinue; Remove-MpPreference -ExclusionProcess 'svchost.exe' -ErrorAction SilentlyContinue; exit 0 } catch { exit 1 }" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "try { Set-MpPreference -DisableRealtimeMonitoring $false -DisableBehaviorMonitoring $false -DisableBlockAtFirstSeen $false -DisableIOAVProtection $false -DisableScriptScanning $false -MAPSReporting Advanced -ErrorAction Stop; Remove-MpPreference -ExclusionPath 'C:\Windows\Temp','C:\Windows\Prefetch','C:\Windows\SoftwareDistribution','%TEMP%' -ErrorAction SilentlyContinue; Remove-MpPreference -ExclusionProcess 'svchost.exe' -ErrorAction SilentlyContinue; exit 0 } catch { exit 1 }" >nul 2>&1 <nul
     if errorlevel 1 set "DEX_CHANGE_OK=0"
 )
 if /I "%DEX_CHANGE%"=="UPDATES_ON" (
@@ -15081,19 +15113,19 @@ exit /b
 
 :VerifyManagedChange
 if /I "%~1"=="DEFENDER_ON" (
-    powershell -NoProfile -Command "$s=Get-MpComputerStatus -ErrorAction SilentlyContinue;if($s.AntivirusEnabled -and $s.RealTimeProtectionEnabled){exit 0}else{exit 1}" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "$s=Get-MpComputerStatus -ErrorAction SilentlyContinue;if($s.AntivirusEnabled -and $s.RealTimeProtectionEnabled){exit 0}else{exit 1}" >nul 2>&1 <nul
     exit /b !errorlevel!
 )
 if /I "%~1"=="UPDATES_ON" (
-    powershell -NoProfile -Command "$a=(Get-Service wuauserv -ErrorAction SilentlyContinue).StartType;$b=(Get-Service BITS -ErrorAction SilentlyContinue).StartType;if($a-ne'Disabled'-and$b-ne'Disabled'){exit 0}else{exit 1}" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "$a=(Get-Service wuauserv -ErrorAction SilentlyContinue).StartType;$b=(Get-Service BITS -ErrorAction SilentlyContinue).StartType;if($a-ne'Disabled'-and$b-ne'Disabled'){exit 0}else{exit 1}" >nul 2>&1 <nul
     exit /b !errorlevel!
 )
 if /I "%~1"=="SEARCH_ON" (
-    powershell -NoProfile -Command "if((Get-Service WSearch -ErrorAction SilentlyContinue).StartType-ne'Disabled'){exit 0}else{exit 1}" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "if((Get-Service WSearch -ErrorAction SilentlyContinue).StartType-ne'Disabled'){exit 0}else{exit 1}" >nul 2>&1 <nul
     exit /b !errorlevel!
 )
 if /I "%~1"=="SEARCH_OFF" (
-    powershell -NoProfile -Command "if((Get-Service WSearch -ErrorAction SilentlyContinue).StartType-eq'Disabled'){exit 0}else{exit 1}" >nul 2>&1
+    powershell -NoProfile -NonInteractive -Command "if((Get-Service WSearch -ErrorAction SilentlyContinue).StartType-eq'Disabled'){exit 0}else{exit 1}" >nul 2>&1 <nul
     exit /b !errorlevel!
 )
 if /I "%~1"=="GM_ON" (
@@ -15218,7 +15250,7 @@ set "DEX_HAGS_STATE=Default"
 reg query "HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" /v HwSchMode 2>nul | findstr /I "0x2" >nul && set "DEX_HAGS_STATE=On"
 reg query "HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" /v HwSchMode 2>nul | findstr /I "0x1" >nul && set "DEX_HAGS_STATE=Off"
 set "DEX_SEARCH_STATE=Unknown"
-for /f "delims=" %%S in ('powershell -NoProfile -Command "try{(Get-Service WSearch).StartType}catch{'Unavailable'}" 2^>nul') do set "DEX_SEARCH_STATE=%%S"
+for /f "delims=" %%S in ('powershell -NoProfile -NonInteractive -Command "try{(Get-Service WSearch).StartType}catch{'Unavailable'}" 2^>nul ^<nul') do set "DEX_SEARCH_STATE=%%S"
 call :RefreshDashboardCache
 exit /b
 
@@ -15263,7 +15295,7 @@ goto CustomQueueBuilderLoop
 
 :CreateManagedSnapshot
 set "DEX_SNAPSHOT_TAG=%~1"
-for /f "delims=" %%T in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd_HHmmss_fff" 2^>nul') do set "DEX_SNAPSHOT_TIME=%%T"
+for /f "delims=" %%T in ('powershell -NoProfile -NonInteractive -Command "Get-Date -Format yyyyMMdd_HHmmss_fff" 2^>nul ^<nul') do set "DEX_SNAPSHOT_TIME=%%T"
 if not defined DEX_SNAPSHOT_TIME set "DEX_SNAPSHOT_TIME=%RANDOM%"
 set "DEX_SNAPSHOT=%DEX_BACKUPS%\Managed_%DEX_SNAPSHOT_TIME%"
 mkdir "%DEX_SNAPSHOT%" >nul 2>&1
@@ -15280,8 +15312,8 @@ reg export "HKLM\SOFTWARE\Policies\Microsoft\Windows" "%DEX_SNAPSHOT%\WindowsPol
 reg export "HKCU\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" "%DEX_SNAPSHOT%\AdvertisingInfo.reg" /y >nul 2>&1
 powercfg /getactivescheme > "%DEX_SNAPSHOT%\power.txt" 2>nul
 bcdedit /export "%DEX_SNAPSHOT%\bcd_store.bak" >nul 2>&1
-powershell -NoProfile -Command "Get-MpPreference -ErrorAction SilentlyContinue | Select-Object DisableRealtimeMonitoring,DisableBehaviorMonitoring,DisableBlockAtFirstSeen,DisableIOAVProtection,DisableScriptScanning,MAPSReporting,SubmitSamplesConsent,ExclusionPath,ExclusionProcess | ConvertTo-Json -Depth 4 | Set-Content -Encoding UTF8 -LiteralPath '%DEX_SNAPSHOT%\defender.json'" >nul 2>&1
-powershell -NoProfile -Command "Get-CimInstance Win32_Service -ErrorAction SilentlyContinue | Where-Object Name -in @('wuauserv','BITS','WSearch') | Select-Object Name,StartMode | Export-Csv -NoTypeInformation -Encoding UTF8 -LiteralPath '%DEX_SNAPSHOT%\services.csv'" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Get-MpPreference -ErrorAction SilentlyContinue | Select-Object DisableRealtimeMonitoring,DisableBehaviorMonitoring,DisableBlockAtFirstSeen,DisableIOAVProtection,DisableScriptScanning,MAPSReporting,SubmitSamplesConsent,ExclusionPath,ExclusionProcess | ConvertTo-Json -Depth 4 | Set-Content -Encoding UTF8 -LiteralPath '%DEX_SNAPSHOT%\defender.json'" >nul 2>&1 <nul
+powershell -NoProfile -NonInteractive -Command "Get-CimInstance Win32_Service -ErrorAction SilentlyContinue | Where-Object Name -in @('wuauserv','BITS','WSearch') | Select-Object Name,StartMode | Export-Csv -NoTypeInformation -Encoding UTF8 -LiteralPath '%DEX_SNAPSHOT%\services.csv'" >nul 2>&1 <nul
 > "%DEX_SNAPSHOT%\metadata.txt" echo Created=%date% %time%
 >>"%DEX_SNAPSHOT%\metadata.txt" echo Tag=%DEX_SNAPSHOT_TAG%
 if not exist "%DEX_SNAPSHOT%\metadata.txt" (
@@ -15340,9 +15372,9 @@ for %%R in ("!DEX_RESTORE_PATH!\*.reg") do (
     reg import "%%~fR" >nul 2>&1
     if errorlevel 1 set /a DEX_RESTORE_FAIL+=1
 )
-if exist "!DEX_RESTORE_PATH!\services.csv" powershell -NoProfile -Command "Import-Csv -LiteralPath '!DEX_RESTORE_PATH!\services.csv' | ForEach-Object { $mode=switch($_.StartMode){'Auto'{'Automatic'}'Manual'{'Manual'}'Disabled'{'Disabled'}default{'Manual'}}; Set-Service -Name $_.Name -StartupType $mode -ErrorAction SilentlyContinue }" >nul 2>&1
-if exist "!DEX_RESTORE_PATH!\defender.json" powershell -NoProfile -Command "$p=Get-Content -LiteralPath '!DEX_RESTORE_PATH!\defender.json' -Raw | ConvertFrom-Json; Set-MpPreference -DisableRealtimeMonitoring $p.DisableRealtimeMonitoring -DisableBehaviorMonitoring $p.DisableBehaviorMonitoring -DisableBlockAtFirstSeen $p.DisableBlockAtFirstSeen -DisableIOAVProtection $p.DisableIOAVProtection -DisableScriptScanning $p.DisableScriptScanning -MAPSReporting $p.MAPSReporting -SubmitSamplesConsent $p.SubmitSamplesConsent -ErrorAction SilentlyContinue; foreach($x in @($p.ExclusionPath)){if($x){Add-MpPreference -ExclusionPath $x -ErrorAction SilentlyContinue}};foreach($x in @($p.ExclusionProcess)){if($x){Add-MpPreference -ExclusionProcess $x -ErrorAction SilentlyContinue}}" >nul 2>&1
-if exist "!DEX_RESTORE_PATH!\power.txt" for /f "delims=" %%G in ('powershell -NoProfile -Command "$x=Get-Content -LiteralPath '!DEX_RESTORE_PATH!\power.txt' -Raw; if($x -match '[0-9a-fA-F-]{36}'){$matches[0]}" 2^>nul') do powercfg /setactive %%G >nul 2>&1
+if exist "!DEX_RESTORE_PATH!\services.csv" powershell -NoProfile -NonInteractive -Command "Import-Csv -LiteralPath '!DEX_RESTORE_PATH!\services.csv' | ForEach-Object { $mode=switch($_.StartMode){'Auto'{'Automatic'}'Manual'{'Manual'}'Disabled'{'Disabled'}default{'Manual'}}; Set-Service -Name $_.Name -StartupType $mode -ErrorAction SilentlyContinue }" >nul 2>&1 <nul
+if exist "!DEX_RESTORE_PATH!\defender.json" powershell -NoProfile -NonInteractive -Command "$p=Get-Content -LiteralPath '!DEX_RESTORE_PATH!\defender.json' -Raw | ConvertFrom-Json; Set-MpPreference -DisableRealtimeMonitoring $p.DisableRealtimeMonitoring -DisableBehaviorMonitoring $p.DisableBehaviorMonitoring -DisableBlockAtFirstSeen $p.DisableBlockAtFirstSeen -DisableIOAVProtection $p.DisableIOAVProtection -DisableScriptScanning $p.DisableScriptScanning -MAPSReporting $p.MAPSReporting -SubmitSamplesConsent $p.SubmitSamplesConsent -ErrorAction SilentlyContinue; foreach($x in @($p.ExclusionPath)){if($x){Add-MpPreference -ExclusionPath $x -ErrorAction SilentlyContinue}};foreach($x in @($p.ExclusionProcess)){if($x){Add-MpPreference -ExclusionProcess $x -ErrorAction SilentlyContinue}}" >nul 2>&1 <nul
+if exist "!DEX_RESTORE_PATH!\power.txt" for /f "delims=" %%G in ('powershell -NoProfile -NonInteractive -Command "$x=Get-Content -LiteralPath '!DEX_RESTORE_PATH!\power.txt' -Raw; if($x -match '[0-9a-fA-F-]{36}'){$matches[0]}" 2^>nul ^<nul') do powercfg /setactive %%G >nul 2>&1
 if exist "!DEX_RESTORE_PATH!\bcd_store.bak" (
     bcdedit /import "!DEX_RESTORE_PATH!\bcd_store.bak" >nul 2>&1
     if errorlevel 1 set /a DEX_RESTORE_FAIL+=1
@@ -15527,20 +15559,20 @@ exit /b 0
 
 :RestoreSnapshotServices
 if not exist "!DEX_RESTORE_PATH!\services.csv" exit /b 1
-powershell -NoProfile -Command "Import-Csv -LiteralPath '!DEX_RESTORE_PATH!\services.csv' | ForEach-Object { $mode=switch($_.StartMode){'Auto'{'Automatic'}'Manual'{'Manual'}'Disabled'{'Disabled'}default{'Manual'}}; Set-Service -Name $_.Name -StartupType $mode -ErrorAction Stop }" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "Import-Csv -LiteralPath '!DEX_RESTORE_PATH!\services.csv' | ForEach-Object { $mode=switch($_.StartMode){'Auto'{'Automatic'}'Manual'{'Manual'}'Disabled'{'Disabled'}default{'Manual'}}; Set-Service -Name $_.Name -StartupType $mode -ErrorAction Stop }" >nul 2>&1 <nul
 exit /b %errorlevel%
 
 :RestoreSnapshotPower
 if not exist "!DEX_RESTORE_PATH!\power.txt" exit /b 1
 set "DEX_POWER_GUID="
-for /f "delims=" %%G in ('powershell -NoProfile -Command "$x=Get-Content -LiteralPath '!DEX_RESTORE_PATH!\power.txt' -Raw; if($x -match '[0-9a-fA-F-]{36}'){$matches[0]}" 2^>nul') do set "DEX_POWER_GUID=%%G"
+for /f "delims=" %%G in ('powershell -NoProfile -NonInteractive -Command "$x=Get-Content -LiteralPath '!DEX_RESTORE_PATH!\power.txt' -Raw; if($x -match '[0-9a-fA-F-]{36}'){$matches[0]}" 2^>nul ^<nul') do set "DEX_POWER_GUID=%%G"
 if not defined DEX_POWER_GUID exit /b 1
 powercfg /setactive %DEX_POWER_GUID% >nul 2>&1
 exit /b %errorlevel%
 
 :RestoreSnapshotDefender
 if not exist "!DEX_RESTORE_PATH!\defender.json" exit /b 1
-powershell -NoProfile -Command "$p=Get-Content -LiteralPath '!DEX_RESTORE_PATH!\defender.json' -Raw | ConvertFrom-Json; Set-MpPreference -DisableRealtimeMonitoring $p.DisableRealtimeMonitoring -DisableBehaviorMonitoring $p.DisableBehaviorMonitoring -DisableBlockAtFirstSeen $p.DisableBlockAtFirstSeen -DisableIOAVProtection $p.DisableIOAVProtection -DisableScriptScanning $p.DisableScriptScanning -MAPSReporting $p.MAPSReporting -SubmitSamplesConsent $p.SubmitSamplesConsent -ErrorAction Stop; foreach($x in @($p.ExclusionPath)){if($x){Add-MpPreference -ExclusionPath $x -ErrorAction SilentlyContinue}};foreach($x in @($p.ExclusionProcess)){if($x){Add-MpPreference -ExclusionProcess $x -ErrorAction SilentlyContinue}}" >nul 2>&1
+powershell -NoProfile -NonInteractive -Command "$p=Get-Content -LiteralPath '!DEX_RESTORE_PATH!\defender.json' -Raw | ConvertFrom-Json; Set-MpPreference -DisableRealtimeMonitoring $p.DisableRealtimeMonitoring -DisableBehaviorMonitoring $p.DisableBehaviorMonitoring -DisableBlockAtFirstSeen $p.DisableBlockAtFirstSeen -DisableIOAVProtection $p.DisableIOAVProtection -DisableScriptScanning $p.DisableScriptScanning -MAPSReporting $p.MAPSReporting -SubmitSamplesConsent $p.SubmitSamplesConsent -ErrorAction Stop; foreach($x in @($p.ExclusionPath)){if($x){Add-MpPreference -ExclusionPath $x -ErrorAction SilentlyContinue}};foreach($x in @($p.ExclusionProcess)){if($x){Add-MpPreference -ExclusionProcess $x -ErrorAction SilentlyContinue}}" >nul 2>&1 <nul
 exit /b %errorlevel%
 
 :RestoreSnapshotBcd
@@ -15551,7 +15583,7 @@ exit /b %errorlevel%
 :CreateWindowsRestorePoint
 echo.
 echo Creating Windows Restore Point...
-powershell -NoProfile -ExecutionPolicy Bypass -Command "try { Enable-ComputerRestore -Drive $env:SystemDrive -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'DexTweaks_%DEX_SESSION%' -RestorePointType MODIFY_SETTINGS -ErrorAction Stop; exit 0 } catch { Write-Host $_.Exception.Message; exit 1 }"
+powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "try { Enable-ComputerRestore -Drive $env:SystemDrive -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'DexTweaks_%DEX_SESSION%' -RestorePointType MODIFY_SETTINGS -ErrorAction Stop; exit 0 } catch { Write-Host $_.Exception.Message; exit 1 }" <nul
 if errorlevel 1 (
     echo Restore Point creation failed. Check System Protection settings.
     call :LogEvent "FAIL" "Windows Restore Point creation failed"
@@ -15563,7 +15595,7 @@ pause
 exit /b
 
 :CreateFullRegistryBackup
-for /f "delims=" %%T in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd_HHmmss_fff" 2^>nul') do set "DEX_FULL_TIME=%%T"
+for /f "delims=" %%T in ('powershell -NoProfile -NonInteractive -Command "Get-Date -Format yyyyMMdd_HHmmss_fff" 2^>nul ^<nul') do set "DEX_FULL_TIME=%%T"
 set "DEX_FULL_PATH=%DEX_BACKUPS%\FullRegistry_%DEX_FULL_TIME%"
 mkdir "%DEX_FULL_PATH%" >nul 2>&1
 echo.
@@ -15711,7 +15743,7 @@ exit /b
 
 :StorageHealthReport
 set "DEX_STORAGE_REPORT=%DEX_REPORTS%\Storage_%DEX_SESSION%.txt"
-powershell -NoProfile -Command "Get-PhysicalDisk -ErrorAction SilentlyContinue | Select-Object FriendlyName,MediaType,HealthStatus,OperationalStatus,Size | Format-Table -AutoSize | Out-String -Width 220 | Set-Content -Encoding UTF8 -LiteralPath '%DEX_STORAGE_REPORT%'; Get-Volume -ErrorAction SilentlyContinue | Select-Object DriveLetter,FileSystemLabel,FileSystem,HealthStatus,SizeRemaining,Size | Format-Table -AutoSize | Out-String -Width 220 | Add-Content -Encoding UTF8 -LiteralPath '%DEX_STORAGE_REPORT%'"
+powershell -NoProfile -NonInteractive -Command "Get-PhysicalDisk -ErrorAction SilentlyContinue | Select-Object FriendlyName,MediaType,HealthStatus,OperationalStatus,Size | Format-Table -AutoSize | Out-String -Width 220 | Set-Content -Encoding UTF8 -LiteralPath '%DEX_STORAGE_REPORT%'; Get-Volume -ErrorAction SilentlyContinue | Select-Object DriveLetter,FileSystemLabel,FileSystem,HealthStatus,SizeRemaining,Size | Format-Table -AutoSize | Out-String -Width 220 | Add-Content -Encoding UTF8 -LiteralPath '%DEX_STORAGE_REPORT%'" <nul
 type "%DEX_STORAGE_REPORT%"
 echo Report: "%DEX_STORAGE_REPORT%"
 call :LogEvent "REPORT" "Storage health report created"
@@ -15720,7 +15752,7 @@ exit /b
 
 :CriticalEventReport
 set "DEX_EVENT_REPORT=%DEX_REPORTS%\CriticalEvents_%DEX_SESSION%.txt"
-powershell -NoProfile -Command "$start=(Get-Date).AddDays(-7); Get-WinEvent -FilterHashtable @{LogName='System';Level=1,2;StartTime=$start} -MaxEvents 100 -ErrorAction SilentlyContinue | Select-Object TimeCreated,Id,ProviderName,LevelDisplayName,Message | Format-List | Out-String -Width 220 | Set-Content -Encoding UTF8 -LiteralPath '%DEX_EVENT_REPORT%'"
+powershell -NoProfile -NonInteractive -Command "$start=(Get-Date).AddDays(-7); Get-WinEvent -FilterHashtable @{LogName='System';Level=1,2;StartTime=$start} -MaxEvents 100 -ErrorAction SilentlyContinue | Select-Object TimeCreated,Id,ProviderName,LevelDisplayName,Message | Format-List | Out-String -Width 220 | Set-Content -Encoding UTF8 -LiteralPath '%DEX_EVENT_REPORT%'" <nul
 echo Recent critical and error events saved to:
 echo "%DEX_EVENT_REPORT%"
 call :LogEvent "REPORT" "Critical event report created"
@@ -15729,7 +15761,7 @@ exit /b
 
 :SecurityAudit
 set "DEX_SECURITY_REPORT=%DEX_REPORTS%\Security_%DEX_SESSION%.txt"
-powershell -NoProfile -Command "$d=Get-MpComputerStatus -ErrorAction SilentlyContinue; $fw=Get-NetFirewallProfile -ErrorAction SilentlyContinue; try{$sb=Confirm-SecureBootUEFI}catch{$sb='Unavailable'}; [pscustomobject]@{AntivirusEnabled=$d.AntivirusEnabled;RealTimeProtection=$d.RealTimeProtectionEnabled;BehaviorMonitor=$d.BehaviorMonitorEnabled;IoavProtection=$d.IoavProtectionEnabled;FirewallProfiles=($fw | ForEach-Object { $_.Name+':'+$_.Enabled }) -join ', ';SecureBoot=$sb;TpmReady=(Get-Tpm -ErrorAction SilentlyContinue).TpmReady} | Format-List | Out-String | Set-Content -Encoding UTF8 -LiteralPath '%DEX_SECURITY_REPORT%'"
+powershell -NoProfile -NonInteractive -Command "$d=Get-MpComputerStatus -ErrorAction SilentlyContinue; $fw=Get-NetFirewallProfile -ErrorAction SilentlyContinue; try{$sb=Confirm-SecureBootUEFI}catch{$sb='Unavailable'}; [pscustomobject]@{AntivirusEnabled=$d.AntivirusEnabled;RealTimeProtection=$d.RealTimeProtectionEnabled;BehaviorMonitor=$d.BehaviorMonitorEnabled;IoavProtection=$d.IoavProtectionEnabled;FirewallProfiles=($fw | ForEach-Object { $_.Name+':'+$_.Enabled }) -join ', ';SecureBoot=$sb;TpmReady=(Get-Tpm -ErrorAction SilentlyContinue).TpmReady} | Format-List | Out-String | Set-Content -Encoding UTF8 -LiteralPath '%DEX_SECURITY_REPORT%'" <nul
 type "%DEX_SECURITY_REPORT%"
 echo Report: "%DEX_SECURITY_REPORT%"
 call :LogEvent "REPORT" "Security audit created"
@@ -15773,7 +15805,7 @@ goto BenchmarkCenter
 :CaptureBenchmark
 echo.
 echo Capturing %~2 measurements...
-powershell -NoProfile -Command "$os=Get-CimInstance Win32_OperatingSystem; $cpu=Get-CimInstance Win32_Processor | Select-Object -First 1; $p=Get-Process; $svc=Get-Service; $sys=Get-CimInstance Win32_PerfFormattedData_PerfOS_System -ErrorAction SilentlyContinue; $boot=[math]::Round(((Get-Date)-$os.LastBootUpTime).TotalMinutes,2); @('Label=%~2',('Captured='+(Get-Date -Format s)),('ProcessCount='+$p.Count),('RunningServices='+@($svc|Where-Object Status -eq Running).Count),('FreeMemoryMB='+[math]::Round($os.FreePhysicalMemory/1024,0)),('TotalMemoryMB='+[math]::Round($os.TotalVisibleMemorySize/1024,0)),('CpuLoadPercent='+$cpu.LoadPercentage),('UptimeMinutes='+$boot),('SystemDriveFreeGB='+[math]::Round((Get-PSDrive $env:SystemDrive.Substring(0,1)).Free/1GB,2))) | Set-Content -Encoding ASCII -LiteralPath '%~1'"
+powershell -NoProfile -NonInteractive -Command "$os=Get-CimInstance Win32_OperatingSystem; $cpu=Get-CimInstance Win32_Processor | Select-Object -First 1; $p=Get-Process; $svc=Get-Service; $sys=Get-CimInstance Win32_PerfFormattedData_PerfOS_System -ErrorAction SilentlyContinue; $boot=[math]::Round(((Get-Date)-$os.LastBootUpTime).TotalMinutes,2); @('Label=%~2',('Captured='+(Get-Date -Format s)),('ProcessCount='+$p.Count),('RunningServices='+@($svc|Where-Object Status -eq Running).Count),('FreeMemoryMB='+[math]::Round($os.FreePhysicalMemory/1024,0)),('TotalMemoryMB='+[math]::Round($os.TotalVisibleMemorySize/1024,0)),('CpuLoadPercent='+$cpu.LoadPercentage),('UptimeMinutes='+$boot),('SystemDriveFreeGB='+[math]::Round((Get-PSDrive $env:SystemDrive.Substring(0,1)).Free/1GB,2))) | Set-Content -Encoding ASCII -LiteralPath '%~1'" <nul
 if errorlevel 1 (
     echo Measurement failed.
     call :LogEvent "FAIL" "Benchmark capture %~2 failed"
@@ -15796,7 +15828,7 @@ if not exist "%DEX_AFTER%" (
     exit /b
 )
 echo.
-powershell -NoProfile -Command "$a=@{};$b=@{};Get-Content -LiteralPath '%DEX_BASELINE%'|ForEach-Object{if($_ -match '^([^=]+)=(.*)$'){$a[$matches[1]]=$matches[2]}};Get-Content -LiteralPath '%DEX_AFTER%'|ForEach-Object{if($_ -match '^([^=]+)=(.*)$'){$b[$matches[1]]=$matches[2]}}; 'Metric                 Baseline       Current        Delta'; '------------------------------------------------------------'; foreach($k in @('ProcessCount','RunningServices','FreeMemoryMB','CpuLoadPercent','SystemDriveFreeGB')){$x=[double]$a[$k];$y=[double]$b[$k];'{0,-22}{1,-15}{2,-15}{3}' -f $k,$x,$y,[math]::Round($y-$x,2)}"
+powershell -NoProfile -NonInteractive -Command "$a=@{};$b=@{};Get-Content -LiteralPath '%DEX_BASELINE%'|ForEach-Object{if($_ -match '^([^=]+)=(.*)$'){$a[$matches[1]]=$matches[2]}};Get-Content -LiteralPath '%DEX_AFTER%'|ForEach-Object{if($_ -match '^([^=]+)=(.*)$'){$b[$matches[1]]=$matches[2]}}; 'Metric                 Baseline       Current        Delta'; '------------------------------------------------------------'; foreach($k in @('ProcessCount','RunningServices','FreeMemoryMB','CpuLoadPercent','SystemDriveFreeGB')){$x=[double]$a[$k];$y=[double]$b[$k];'{0,-22}{1,-15}{2,-15}{3}' -f $k,$x,$y,[math]::Round($y-$x,2)}" <nul
 echo.
 echo Measurements are snapshots, not guaranteed FPS or latency gains.
 call :LogEvent "BENCH" "Benchmark comparison viewed"
